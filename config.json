@@ -1,0 +1,16 @@
+[
+    {
+        "Name": "Export To Files",
+        "Desc": "Export to files on disk.",
+        "Icon": "export_to_files.ico",
+        "Path": "script_export_to_files.py",
+        "Params": []
+    },
+    {
+        "Name": "Import From Files",
+        "Desc": "Import from files on disk.",
+        "Icon": "import_from_files.ico",
+        "Path": "script_import_from_files.py",
+        "Params": []
+    }
+]
