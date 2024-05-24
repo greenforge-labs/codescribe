@@ -4,7 +4,36 @@ _/koh-DEH-skribe/_
 
 CODESYS plaintext import and export scripts.
 
-No python installation is required to use the scripts as CODESYS ships with its own copy of python.
+No python installation is required to use the scripts as CODESYS ships with its own copy of Python 2.
+
+CODESCRIBE supplies CODESYS scripts to:
+- export a project to plaintext files that can be tracked in source control, as well as edited in other editors
+- import plaintext files back into a CODESYS project for uploading / debugging / etc
+
+A CODESYS project like this:
+![example_project_codesys](docs/example_project_codesys.png)
+
+Becomes a plaintext project like this:
+![example_project_vscode](docs/example_project_vscode.png)
+
+The following items are exported:
+- Folders
+- POUs
+- EVLs
+- EVCs
+- Task Configurations
+- DUTs
+- Methods
+- Properties
+- Actions
+- Transitions
+
+Items are exported in formatted structured text (`.st`) where possible, and in native CODESYS xml everywhere else.
+
+The intention of CODESCRIBE is not to export a complete copy of the project, but to only export the implementation logic of the project, enabling collaboration via git and other source control methods. An empty, but configured, underlying project file should also be committed to the repo to manage any other configuration that CODESYS provides (e.g. project level configuration, device configuration).
+
+## Status
+CODESCRIBE has been tested only on CODESYS V3.5 SP11, using the project structure supplied by the IFM CR711s packages.
 
 ## Installing
 
@@ -53,8 +82,9 @@ Once installed, proceed to [Adding the Script Toolbar to CODESYS](#adding-the-sc
 ![Step 4](docs/step_4.png)
 
 5. Under Categories, scroll down, select ScriptEngine Commands and pick the script you want to add
-    - Scripts supplied by this repo are `Export To Files` and `Export From Files`
-![Step 5](docs/step_5.png)
+    - Scripts supplied by this repo are `Export To Files` and `Export From Files` 
+
+    ![Step 5](docs/step_5.png)
 
 6. Repeat the process to add the other scripts
 ![Step 6](docs/step_6.png)
