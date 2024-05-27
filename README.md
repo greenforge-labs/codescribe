@@ -12,6 +12,8 @@ CODESCRIBE supplies CODESYS scripts to:
 - import plaintext files back into a CODESYS project for uploading / debugging / etc
 - generate a "template" project by making a copy of the current project and deleting all exportable objects
 
+![toolbar](docs/toolbar.png)
+
 With CODESCRIBE, a CODESYS project like this:
 ![example_project_codesys](docs/example_project_codesys.png)
 
