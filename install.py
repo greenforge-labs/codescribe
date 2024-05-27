@@ -136,12 +136,22 @@ def get_or_create_script_path(codesys_install_path: Path) -> Path:
 def rename_or_get_config_json_destination(script_path: Path) -> Path:
     config_json = script_path / "config.json"
     if config_json.exists():
-        print_warning(f"WARNING: existing config found, renaming to config.backup.json: {config_json}")
-        try:
-            backup_path = config_json.parent / "config.backup.json"
-            config_json.rename(backup_path)
-        except FileExistsError:
-            print_fail(f"ERROR: file already exists: {backup_path}")
+        print_warning(f"WARNING: existing config found")
+        success = False
+        for i in range(100):
+            try:
+                backup_json = f"config.backup_{i}.json"
+                backup_path = config_json.parent / backup_json
+                config_json.rename(backup_path)
+                print_ok(f"Renamed config.json to {backup_json}")
+                success = True
+                break
+            except FileExistsError:
+                pass
+
+        if not success:
+            print_fail(f"ERROR: file already exists: {backup_path}.")
+            print_fail(f"Please remove some backups in {backup_path.parent}")
             exit(0)
 
     return config_json
