@@ -10,6 +10,8 @@ from entrypoint import find_application, get_device_entrypoints
 from import_export import *
 from util import *
 
+PROJECT_EXT = ".project"
+
 
 def find_template_paths(project):
     working_dir = os.path.dirname(project.path)
@@ -19,7 +21,7 @@ def find_template_paths(project):
 
     for child in os.listdir(working_dir):
         name, ext = os.path.splitext(child)
-        if ext == ".project" and name.startswith(template_name_start):
+        if ext == PROJECT_EXT and name.startswith(template_name_start):
             version_str = name.replace(template_name_start, "")
             try:
                 version = int(version_str)
@@ -32,14 +34,14 @@ def find_template_paths(project):
             print("New template version: " + str(new_version))
 
             template_path = os.path.join(working_dir, child)
-            new_template_path = os.path.join(working_dir, template_name_start + str(new_version) + ext)
+            new_template_path = os.path.join(working_dir, template_name_start + str(new_version) + PROJECT_EXT)
             return template_path, new_template_path
 
     print("No existing template found!")
     print("New template version: 1")
 
     template_path = None
-    new_template_path = os.path.join(working_dir, template_name_start + "1")
+    new_template_path = os.path.join(working_dir, template_name_start + "1" + PROJECT_EXT)
     return template_path, new_template_path
 
 
