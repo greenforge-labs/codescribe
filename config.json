@@ -12,5 +12,12 @@
         "Icon": "import_from_files.ico",
         "Path": "script_import_from_files.py",
         "Params": []
+    },
+    {
+        "Name": "Save As Template",
+        "Desc": "Save as template.",
+        "Icon": "blank_folder.ico",
+        "Path": "script_save_as_template.py",
+        "Params": []
     }
 ]
