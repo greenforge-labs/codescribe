@@ -55,17 +55,26 @@ def import_directory_child(child, dir_path, dir_parent_obj):
 print_python_version()
 assert_project_open()
 
-src_folder = get_src_folder(scriptengine.projects.primary)
-print("Reading from: " + src_folder)
-assert_path_exists(src_folder)
+ui_continue = scriptengine.system.ui.prompt(
+    "Import from Files will overwrite changes in the current project!\n\nDo you want to continue?",
+    choice=scriptengine.PromptChoice.YesNo,
+    default_result=scriptengine.PromptResult.No,
+    store_description="Don't show again",
+    store_key="import_from_files_confirm",
+)
 
-for device_obj in get_device_entrypoints(scriptengine.projects.primary):
-    device_folder = os.path.join(src_folder, device_obj.get_name())
-    assert_path_exists(device_folder)
+if ui_continue == scriptengine.PromptResult.Yes:
+    src_folder = get_src_folder(scriptengine.projects.primary)
+    print("Reading from: " + src_folder)
+    assert_path_exists(src_folder)
 
-    application = find_application(device_obj)
-    remove_tracked_objects(application.get_children())
+    for device_obj in get_device_entrypoints(scriptengine.projects.primary):
+        device_folder = os.path.join(src_folder, device_obj.get_name())
+        assert_path_exists(device_folder)
 
-    import_directory(device_folder, application)
+        application = find_application(device_obj)
+        remove_tracked_objects(application.get_children())
+
+        import_directory(device_folder, application)
 
 print("Done!")
