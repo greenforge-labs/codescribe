@@ -30,7 +30,7 @@ def get_new_template_version(template_versions):
 def delete_old_templates(template_paths):
     print("Deleting " + str(len(template_paths)) + " old template(s):")
     for path in template_paths:
-        print(path)
+        print("    " + path)
         os.remove(path)
 
 
