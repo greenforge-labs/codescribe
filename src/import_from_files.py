@@ -1,5 +1,6 @@
 import os
 
+from communication_import_export import import_communication
 from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
 from import_export import *
 from util import *
@@ -60,3 +61,6 @@ def import_from_files(project):
         application_folder = os.path.join(device_folder, "application")
         remove_tracked_objects(application.get_children())
         import_directory(application_folder, application)
+
+        communication = find_communication(device_obj)
+        import_communication(communication, device_folder)
