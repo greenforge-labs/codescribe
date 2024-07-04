@@ -42,8 +42,6 @@ for device_obj in get_device_entrypoints(scriptengine.projects.primary):
         export_child(child_obj, application, application_folder)
 
     communication = find_communication(device_obj)
-    communication_folder = os.path.join(device_folder, "communication")
-    os.mkdir(communication_folder)
-    export_communication(communication, communication_folder)
+    export_communication(communication, device_folder)
 
 print("Done!")
