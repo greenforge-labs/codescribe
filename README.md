@@ -33,6 +33,9 @@ The following items are exported:
 - Properties
 - Actions
 - Transitions
+- Communication Devices\*
+
+\*see [Exporting and Importing Communication Devices](#exporting-and-importing-communication-devices)
 
 Items are exported in formatted structured text (`.st`) where possible, and in native CODESYS xml everywhere else.
 
@@ -47,6 +50,12 @@ _Note, it is recommended to not source control the actual working copy of the pr
 A template file can be generated from an existing project file by using the `Save As Template` script. This script will copy the project, give it the appropriate name and delete any objects that can be imported by CODESCRIBE. If an existing project following the template naming scheme is found, the new template will use an incremented version number.
 
 To generate a project from a template file, you need two things: the `<project_name>_template_v<X>.project` file and a folder named `<project_name>` with the files exported by the `Export To Files` script. To generate a project, copy the template project in the same location and rename it to `<project_name>.project`. Open the copy with CODESYS and use the `Import From Files` button to import the project files.
+
+## Exporting and Importing Communication Devices
+
+Exporting communication devices has been hardcoded to create folders for top-level devices under `Communication`. Any devices under these top-level devices will be exported using native CODESYS xml. This is done because the top-level devices can not be removed from the CODESYS project.
+
+**If this functionality is causing you problems, it can be disabled by adding a folder with the name `_NO_EXPORT` directly under `Communication`.** You can then still rely on your project template to carry your communication configurations.
 
 ## Status
 
