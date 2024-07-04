@@ -6,7 +6,8 @@ import shutil
 
 import scriptengine  # type: ignore
 
-from entrypoint import find_application, get_device_entrypoints
+from communication_import_export import remove_tracked_communication_devices
+from entrypoint import find_application, find_communication, get_device_entrypoints
 from import_export import *
 from project_template import find_template_paths_and_versions, generate_template_path
 from util import *
@@ -47,6 +48,8 @@ template_project = scriptengine.projects.get_by_path(new_template_path)
 for device_obj in get_device_entrypoints(template_project):
     application = find_application(device_obj)
     remove_tracked_objects(application.get_children())
+    communication = find_communication(device_obj)
+    remove_tracked_communication_devices(communication)
 
 template_project.save()
 

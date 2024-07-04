@@ -3,13 +3,19 @@ import os
 from object_type import ObjectType
 from util import *
 
+NO_EXPORT_FOLDER_NAME = "_NO_EXPORT"
+
+
+def no_export_folder_exists(communication_obj):
+    return first_of_type_or_none(communication_obj.find(NO_EXPORT_FOLDER_NAME), ObjectType.FOLDER) is not None
+
 
 def export_communication(communication_obj, device_folder):
     """
     Export communication is hardcoded to create folders for the top level devices inside the communication object, and
     then do a native recursive export for any devices under those top level devices.
     """
-    if first_of_type_or_none(communication_obj.find("_NO_EXPORT"), ObjectType.FOLDER) is not None:
+    if no_export_folder_exists(communication_obj):
         return
 
     communication_folder = os.path.join(device_folder, "communication")
@@ -29,10 +35,7 @@ def import_communication(communication_obj, device_folder):
     if not os.path.exists(communication_folder):
         return
 
-    # remove all children from top level devices
-    for top_level_device in communication_obj.get_children():
-        for child in top_level_device.get_children():
-            child.remove()
+    remove_tracked_communication_devices(communication_obj)
 
     # for top level folders inside the communcation folder, do a native import on the corresponding communication device
     for name in os.listdir(communication_folder):
@@ -47,3 +50,13 @@ def import_communication(communication_obj, device_folder):
             _, ext = os.path.splitext(child_name)
             if ext == ".xml":
                 top_level_device.import_native(os.path.join(full_path, child_name))
+
+
+def remove_tracked_communication_devices(communication_obj):
+    if no_export_folder_exists(communication_obj):
+        return
+
+    # remove all children from top level devices
+    for top_level_device in communication_obj.get_children():
+        for child in top_level_device.get_children():
+            child.remove()
