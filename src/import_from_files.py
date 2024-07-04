@@ -57,6 +57,8 @@ def import_from_files(project):
         assert_path_exists(device_folder)
 
         application = find_application(device_obj)
+        application_folder = os.path.join(device_folder, "application")
+
         remove_tracked_objects(application.get_children())
 
-        import_directory(device_folder, application)
+        import_directory(application_folder, application)
