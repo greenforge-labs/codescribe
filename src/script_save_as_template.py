@@ -8,47 +8,36 @@ import scriptengine  # type: ignore
 
 from entrypoint import find_application, get_device_entrypoints
 from import_export import *
+from project_template import find_template_paths_and_versions, generate_template_path
 from util import *
 
-PROJECT_EXT = ".project"
+
+def get_new_template_version(template_versions):
+    if len(template_versions) < 1:
+        print("No existing template found!")
+        print("New template version: 1")
+        return 1
+
+    current_version = max(template_versions)
+    new_version = current_version + 1
+    print("Found a template with version: " + str(current_version))
+    print("New template version: " + str(new_version))
+    return new_version
 
 
-def find_template_paths(project):
-    working_dir = os.path.dirname(project.path)
-    project_name, _ = os.path.splitext(os.path.basename(scriptengine.projects.primary.path))
-
-    template_name_start = project_name + "_template_v"
-
-    for child in os.listdir(working_dir):
-        name, ext = os.path.splitext(child)
-        if ext == PROJECT_EXT and name.startswith(template_name_start):
-            version_str = name.replace(template_name_start, "")
-            try:
-                version = int(version_str)
-            except ValueError:
-                raise ValueError("Found a template with invalid version: " + version_str)
-
-            new_version = version + 1
-
-            print("Found a template with version: " + str(version))
-            print("New template version: " + str(new_version))
-
-            template_path = os.path.join(working_dir, child)
-            new_template_path = os.path.join(working_dir, template_name_start + str(new_version) + PROJECT_EXT)
-            return template_path, new_template_path
-
-    print("No existing template found!")
-    print("New template version: 1")
-
-    template_path = None
-    new_template_path = os.path.join(working_dir, template_name_start + "1" + PROJECT_EXT)
-    return template_path, new_template_path
+def delete_old_templates(template_paths):
+    print("Deleting " + str(len(template_paths)) + " old template(s):")
+    for path in template_paths:
+        print("    " + path)
+        os.remove(path)
 
 
 print_python_version()
 assert_project_open()
 
-template_path, new_template_path = find_template_paths(scriptengine.projects.primary)
+template_paths, template_versions = find_template_paths_and_versions(scriptengine.projects.primary)
+new_template_version = get_new_template_version(template_versions)
+new_template_path = generate_template_path(scriptengine.projects.primary, new_template_version)
 
 shutil.copyfile(scriptengine.projects.primary.path, new_template_path)
 scriptengine.projects.open(new_template_path, primary=False)
@@ -61,7 +50,7 @@ for device_obj in get_device_entrypoints(template_project):
 
 template_project.save()
 
-if template_path is not None:
-    os.remove(template_path)
+if len(template_paths) > 0:
+    delete_old_templates(template_paths)
 
 print("Done!")
