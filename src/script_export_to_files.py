@@ -6,7 +6,8 @@ import shutil
 
 import scriptengine  # type: ignore
 
-from entrypoint import find_application, get_device_entrypoints, get_src_folder
+from communication_import_export import export_communication
+from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
 from import_export import OBJECT_TYPE_TO_EXPORT_FUNCTION
 from object_type import get_object_type
 from util import *
@@ -39,5 +40,10 @@ for device_obj in get_device_entrypoints(scriptengine.projects.primary):
 
     for child_obj in application.get_children():
         export_child(child_obj, application, application_folder)
+
+    communication = find_communication(device_obj)
+    communication_folder = os.path.join(device_folder, "communication")
+    os.mkdir(communication_folder)
+    export_communication(communication, communication_folder)
 
 print("Done!")
