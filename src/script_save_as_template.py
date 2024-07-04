@@ -11,8 +11,6 @@ from import_export import *
 from project_template import find_template_paths_and_versions, generate_template_path
 from util import *
 
-PROJECT_EXT = ".project"
-
 
 def get_new_template_version(template_versions):
     if len(template_versions) < 1:

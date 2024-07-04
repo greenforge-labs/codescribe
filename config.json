@@ -19,5 +19,12 @@
         "Icon": "blank_folder.ico",
         "Path": "script_save_as_template.py",
         "Params": []
+    },
+    {
+        "Name": "Update From Template",
+        "Desc": "Update from template.",
+        "Icon": "update_from_template.ico",
+        "Path": "script_update_from_template.py",
+        "Params": []
     }
 ]
