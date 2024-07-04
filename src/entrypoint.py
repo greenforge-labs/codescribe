@@ -28,3 +28,10 @@ def find_application(device_obj):
         device_obj.find("Application", recursive=True),
         "Couldn't find Application inside " + device_obj.get_name(),
     )
+
+
+def find_communication(device_obj):
+    return first_or_error(
+        device_obj.find("Communication", recursive=True),
+        "Couldn't find Communication inside " + device_obj.get_name(),
+    )

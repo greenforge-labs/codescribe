@@ -6,17 +6,18 @@ import shutil
 
 import scriptengine  # type: ignore
 
-from entrypoint import find_application, get_device_entrypoints, get_src_folder
+from communication_import_export import export_communication
+from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
 from import_export import OBJECT_TYPE_TO_EXPORT_FUNCTION
 from object_type import get_object_type
 from util import *
 
 
-def export_application_child(child_obj, parent_obj, parent_folder_path):
+def export_child(child_obj, parent_obj, parent_folder_path):
     child_obj_type = get_object_type(child_obj)
     export_fn = OBJECT_TYPE_TO_EXPORT_FUNCTION.get(child_obj_type)
     if export_fn is not None:
-        export_fn(child_obj, parent_obj, parent_folder_path, export_application_child)
+        export_fn(child_obj, parent_obj, parent_folder_path, export_child)
 
 
 print_python_version()
@@ -34,8 +35,13 @@ for device_obj in get_device_entrypoints(scriptengine.projects.primary):
     os.mkdir(device_folder)
 
     application = find_application(device_obj)
+    application_folder = os.path.join(device_folder, "application")
+    os.mkdir(application_folder)
 
     for child_obj in application.get_children():
-        export_application_child(child_obj, application, device_folder)
+        export_child(child_obj, application, application_folder)
+
+    communication = find_communication(device_obj)
+    export_communication(communication, device_folder)
 
 print("Done!")

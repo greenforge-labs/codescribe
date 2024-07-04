@@ -32,6 +32,13 @@ def first_of_type_or_error(lst, obj_type, err):
     raise ValueError(err)
 
 
+def first_of_type_or_none(lst, obj_type):
+    for obj in lst:
+        if get_object_type(obj) == obj_type:
+            return obj
+    return None
+
+
 def first_or_error(lst, err):
     try:
         return next(iter(lst))
