@@ -11,6 +11,7 @@ CODESCRIBE supplies CODESYS scripts to:
 - export a project to plaintext files that can be tracked in source control, as well as edited in other editors
 - import plaintext files back into a CODESYS project for uploading / debugging / etc
 - generate a "template" project by making a copy of the current project and deleting all exportable objects
+- update the current working project from a template by copying the template file and importing plaintext files
 
 ![toolbar](docs/toolbar.png)
 
@@ -103,7 +104,7 @@ Once installed, proceed to [Adding the Script Toolbar to CODESYS](#adding-the-sc
 
 5. Under Categories, scroll down, select ScriptEngine Commands and pick the script you want to add
 
-    - Scripts supplied by this repo are `Export To Files`, `Export From Files` and `Save As Template`
+    - Scripts supplied by this repo are `Export To Files`, `Export From Files`, `Save As Template` and `Update From Template`
 
     ![Step 5](docs/step_5.png)
 
