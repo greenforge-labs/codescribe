@@ -5,7 +5,7 @@ import inspect
 class ObjectType:
     POU = "POU"
     DUT = "DUT"
-    EVL = "EVL"
+    GVL = "EVL"
     EVC = "EVC"
     METHOD = "METHOD"
     PROPERTY = "PROPERTY"
@@ -31,7 +31,7 @@ class ObjectType:
 GUID_TYPE_MAPPING = {
     "6f9dac99-8de1-4efc-8465-68ac443b7d08": ObjectType.POU,
     "2db5746d-d284-4425-9f7f-2663a34b0ebc": ObjectType.DUT,
-    "ffbfa93a-b94d-45fc-a329-229860183b1d": ObjectType.EVL,
+    "ffbfa93a-b94d-45fc-a329-229860183b1d": ObjectType.GVL,
     "327b6465-4e7f-4116-846a-8369c730fd66": ObjectType.EVC,
     "f8a58466-d7f6-439f-bbb8-d4600e41d099": ObjectType.METHOD,
     "5a3b8626-d3e9-4f37-98b5-66420063d91e": ObjectType.PROPERTY,

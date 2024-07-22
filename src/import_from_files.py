@@ -27,7 +27,13 @@ def import_directory_child(child, dir_path, dir_parent_obj):
     if os.path.isdir(full_path):
         import_folder(child, dir_path, dir_parent_obj, import_directory)
 
-    if "." in filename:
+    if filename.endswith(".gvl"):
+        if ext == ".xml":
+            # this is just here to point out that the xml is imported alongside the st file
+            pass
+        if ext == ".st":
+            import_gvl(child, dir_path, dir_parent_obj, import_directory)
+    elif "." in filename:
         # . means some sort of sub POU
         if ext == ".xml":
             import_sub_pou(child, dir_path, dir_parent_obj, import_directory)
