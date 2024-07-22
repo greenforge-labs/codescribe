@@ -8,18 +8,28 @@ IMPLEMENTATION_DELIMITER_SPLIT = "// --- BEGIN IMPLEMENTATION ---"
 IMPLEMENTATION_DELIMITER_INSERT = "\n" + IMPLEMENTATION_DELIMITER_SPLIT + "\n\n"
 
 
-def write_st_with_impl(obj, f):
+def write_st(obj, f):
     f.write(obj.textual_declaration.text)
     f.write(IMPLEMENTATION_DELIMITER_INSERT)
     f.write(obj.textual_implementation.text)
 
 
-def import_st_with_impl(f, obj):
+def write_st_decl_only(obj, f):
+    f.write(obj.textual_declaration.text)
+
+
+def import_st(f, obj):
     f.seek(0)
     content = str(f.read())
     declaration, implementation = content.split(IMPLEMENTATION_DELIMITER_SPLIT)
     obj.textual_declaration.replace(declaration.strip() + "\n")
     obj.textual_implementation.replace(implementation.strip() + "\n")
+
+
+def import_st_decl_only(f, obj):
+    f.seek(0)
+    content = str(f.read())
+    obj.textual_declaration.replace(content.strip() + "\n")
 
 
 def export_folder(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -42,7 +52,7 @@ def import_folder(child, dir_path, dir_parent_obj, import_dir_fn):
 def export_pou(child_obj, parent_obj, parent_folder_path, export_child_fn):
     if child_obj.has_textual_implementation:
         with open(os.path.join(parent_folder_path, child_obj.get_name() + ".st"), "w") as f:
-            write_st_with_impl(child_obj, f)
+            write_st(child_obj, f)
     else:
         export_native(child_obj, parent_obj, parent_folder_path, export_child_fn)
 
@@ -54,7 +64,43 @@ def import_pou_st(child, dir_path, dir_parent_obj, import_dir_fn):
     filename, _ = os.path.splitext(child)
     pou_obj = dir_parent_obj.create_pou(filename)
     with open(os.path.join(dir_path, child), "r") as f:
-        import_st_with_impl(f, pou_obj)
+        import_st(f, pou_obj)
+
+
+def export_gvl(child_obj, parent_obj, parent_folder_path, export_child_fn):
+    """
+    Exports native xml and structured text representation.
+    This is because we need to support EVL and NVL as well, using this function.
+    """
+    child_obj.export_native(os.path.join(parent_folder_path, child_obj.get_name() + ".gvl.xml"), recursive=False)
+    with open(os.path.join(parent_folder_path, child_obj.get_name() + ".gvl.st"), "w") as f:
+        write_st_decl_only(child_obj, f)
+
+
+def import_gvl(child, dir_path, dir_parent_obj, import_dir_fn):
+    """
+    Import the native xml and then overwrite the textual definition with the structured text.
+    """
+    name, ext = os.path.splitext(child)
+
+    if ".gvl" not in name:
+        raise ValueError(".gvl not in file name!")
+
+    name = name.replace(".gvl", "")
+
+    if ext != ".st":
+        raise ValueError("Expected GVL st file!")
+
+    gvl_xml_path = os.path.join(dir_path, name + ".gvl.xml")
+    if not os.path.exists(gvl_xml_path):
+        raise ValueError("Expected GVL xml file at " + gvl_xml_path)
+
+    import_native(gvl_xml_path, dir_path, dir_parent_obj, import_dir_fn)
+    with open(os.path.join(dir_path, child), "r") as f:
+        imported_obj = first_of_type_or_error(
+            dir_parent_obj.find(name), ObjectType.GVL, name + " GVL should have been created, but cannot be found"
+        )
+        import_st_decl_only(f, imported_obj)
 
 
 def export_native(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -87,7 +133,7 @@ def export_method(child_obj, parent_obj, parent_folder_path, export_child_fn):
         with open(
             os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name() + ".st"), "w"
         ) as f:
-            write_st_with_impl(child_obj, f)
+            write_st(child_obj, f)
     else:
         child_obj.export_native(
             os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name() + ".xml"),
@@ -107,7 +153,7 @@ def import_method_st(child, dir_path, dir_parent_obj, import_dir_fn):
 
     method_obj = parent_obj.create_method(method_name)
     with open(full_path, "r") as f:
-        import_st_with_impl(f, method_obj)
+        import_st(f, method_obj)
 
 
 def export_sub_pou(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -132,7 +178,7 @@ def import_sub_pou(child, dir_path, dir_parent_obj, import_dir_fn):
 OBJECT_TYPE_TO_EXPORT_FUNCTION = {
     ObjectType.FOLDER: export_folder,
     ObjectType.POU: export_pou,
-    ObjectType.EVL: export_native,
+    ObjectType.GVL: export_gvl,  # EVL, NVL are "special types" of GVL which show up with the same UUID
     ObjectType.EVC: export_native,
     ObjectType.TASK_CONFIGURATION: export_native_recursive,
     ObjectType.DUT: export_dut,
