@@ -29,6 +29,10 @@ class ObjectType:
         return elements
 
 
+# Other mapping lists:
+# https://github.com/tkucic/codesys_workflow_automation/blob/main/src/codesysBulker.py#L9
+# https://github.com/18thCentury/CodeSys/blob/master/export.py#L10
+
 GUID_TYPE_MAPPING = {
     "6f9dac99-8de1-4efc-8465-68ac443b7d08": ObjectType.POU,
     "2db5746d-d284-4425-9f7f-2663a34b0ebc": ObjectType.DUT,
