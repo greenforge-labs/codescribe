@@ -38,6 +38,7 @@ def import_st_decl_only(f, obj):
 def write_native(obj, path, recursive=False):
     obj.export_native(path, recursive=recursive)
 
+    # using regex instead of an xml parser because it is much quicker (sorry)
     with open(path, "r+") as f:
         lines = f.read()
         # uuid_replaced = re.sub(
@@ -46,6 +47,8 @@ def write_native(obj, path, recursive=False):
         #     lines,
         #     flags=re.MULTILINE,
         # )
+
+        # match any tags with Timestamp or Id and replace their contents with "0"
         timestamp_replaced = re.sub(
             r'(^.+<Single Name="(?:Timestamp|Id)" Type="long">).+(<\/Single>$)',
             r"\g<1>0\g<2>",
