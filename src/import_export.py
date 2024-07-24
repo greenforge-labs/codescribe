@@ -1,11 +1,14 @@
 # REMEMBER: this is python 2.7
 import os
+import re
 
 from object_type import ObjectType, get_object_type
 from util import *
 
 IMPLEMENTATION_DELIMITER_SPLIT = "// --- BEGIN IMPLEMENTATION ---"
 IMPLEMENTATION_DELIMITER_INSERT = "\n" + IMPLEMENTATION_DELIMITER_SPLIT + "\n\n"
+
+NATIVE_EXPORT_POSTFIX = "_NATIVE_EXP"
 
 
 def write_st(obj, f):
@@ -30,6 +33,45 @@ def import_st_decl_only(f, obj):
     f.seek(0)
     content = str(f.read())
     obj.textual_declaration.replace(content.strip() + "\n")
+
+
+def write_native(obj, path, recursive=False):
+    print(path)
+    # if get_object_type(obj) == ObjectType.CALL_TO_POU:
+    #     return
+
+    obj.export_native(path, recursive=recursive)
+
+    with open(path, "r+") as f:
+        lines = f.read()
+        # uuid_replaced = re.sub(r'(^.+<Single Name="(?:EventPOUGuid|ParentSVNodeGuid|ParentGuid|LmGuid|LmStructTypeGuid|LmArrayTypeGuid|IoConfigGlobalsGuid|IoConfigGLobalsMappingGuid|IoConfigVarConfigGuid|IoConfigErrorPouGuid)".+?>).+(<\/Single>$)',r"\g<1>00000000-0000-0000-0000-000000000000\g<2>", lines, flags=re.MULTILINE)
+        timestamp_replaced = re.sub(
+            r'(^.+<Single Name="(?:Timestamp)".+?>).+(<\/Single>$)', r"\g<1>0\g<2>", lines, flags=re.MULTILINE
+        )
+        f.seek(0)
+        f.write(timestamp_replaced)
+        f.truncate()
+
+    # if recursive and len(obj.get_children()) > 0:
+    #     curr_folder = os.path.dirname(path)
+    #     child_obj_folder = os.path.join(curr_folder, obj.get_name() + NATIVE_EXPORT_POSTFIX)
+    #     os.mkdir(child_obj_folder)
+    #     for child_obj in obj.get_children():
+    #         write_native(child_obj, os.path.join(child_obj_folder, child_obj.get_name() + ".xml"), recursive=True)
+
+
+def read_native(f, obj):
+    print(f)
+    obj.import_native(f)
+    # curr_folder, filename = os.path.split(f)
+    # name, _ = os.path.splitext(filename)
+    # imported_obj = first_or_error(obj.find(name), name + "should have been created, but cannot be found")
+    # native_export_folder_path = os.path.join(curr_folder, name + NATIVE_EXPORT_POSTFIX)
+    # if os.path.exists(native_export_folder_path) and os.path.isdir(native_export_folder_path):
+    #     for o in os.listdir(native_export_folder_path):
+    #         _, ext = os.path.splitext(o)
+    #         if ext == "xml":
+    #             read_native(os.path.join(native_export_folder_path, o), imported_obj)
 
 
 def export_folder(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -72,7 +114,7 @@ def export_gvl(child_obj, parent_obj, parent_folder_path, export_child_fn):
     Exports native xml and structured text representation.
     This is because we need to support EVL and NVL as well, using this function.
     """
-    child_obj.export_native(os.path.join(parent_folder_path, child_obj.get_name() + ".gvl.xml"), recursive=False)
+    write_native(child_obj, os.path.join(parent_folder_path, child_obj.get_name() + ".gvl.xml"), recursive=False)
     with open(os.path.join(parent_folder_path, child_obj.get_name() + ".gvl.st"), "w") as f:
         write_st_decl_only(child_obj, f)
 
@@ -104,15 +146,15 @@ def import_gvl(child, dir_path, dir_parent_obj, import_dir_fn):
 
 
 def export_native(child_obj, parent_obj, parent_folder_path, export_child_fn):
-    child_obj.export_native(os.path.join(parent_folder_path, child_obj.get_name() + ".xml"), recursive=False)
+    write_native(child_obj, os.path.join(parent_folder_path, child_obj.get_name() + ".xml"), recursive=False)
 
 
 def export_native_recursive(child_obj, parent_obj, parent_folder_path, export_child_fn):
-    child_obj.export_native(os.path.join(parent_folder_path, child_obj.get_name() + ".xml"), recursive=True)
+    write_native(child_obj, os.path.join(parent_folder_path, child_obj.get_name() + ".xml"), recursive=True)
 
 
 def import_native(child, dir_path, dir_parent_obj, import_dir_fn):
-    dir_parent_obj.import_native(os.path.join(dir_path, child))
+    read_native(os.path.join(dir_path, child), dir_parent_obj)
 
 
 def export_dut(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -135,7 +177,8 @@ def export_method(child_obj, parent_obj, parent_folder_path, export_child_fn):
         ) as f:
             write_st(child_obj, f)
     else:
-        child_obj.export_native(
+        write_native(
+            child_obj,
             os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name() + ".xml"),
             recursive=False,
         )
@@ -157,8 +200,10 @@ def import_method_st(child, dir_path, dir_parent_obj, import_dir_fn):
 
 
 def export_sub_pou(child_obj, parent_obj, parent_folder_path, export_child_fn):
-    child_obj.export_native(
-        os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name() + ".xml"), recursive=True
+    write_native(
+        child_obj,
+        os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name() + ".xml"),
+        recursive=True,
     )
 
 

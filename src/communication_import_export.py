@@ -1,5 +1,6 @@
 import os
 
+from import_export import write_native
 from object_type import ObjectType
 from util import *
 
@@ -25,8 +26,8 @@ def export_communication(communication_obj, device_folder):
         top_level_device_folder = os.path.join(communication_folder, top_level_device.get_name())
         os.mkdir(top_level_device_folder)
         for child_device in top_level_device.get_children():
-            child_device.export_native(
-                os.path.join(top_level_device_folder, child_device.get_name() + ".xml"), recursive=True
+            write_native(
+                child_device, os.path.join(top_level_device_folder, child_device.get_name() + ".xml"), recursive=True
             )
 
 
