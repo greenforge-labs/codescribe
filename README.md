@@ -133,3 +133,7 @@ Once installed, proceed to [Adding the Script Toolbar to CODESYS](#adding-the-sc
 
 - https://help.codesys.com/webapp/idx-scriptingengine;product=ScriptEngine;version=3.5.10.0
 - `C:\<CODESYS INSTALL LOCATION>\CODESYS\Online Help\en\ScriptEngine.chm`
+
+## Similar Projects
+
+- https://github.com/18thCentury/CodeSys

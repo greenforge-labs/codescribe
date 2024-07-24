@@ -36,42 +36,29 @@ def import_st_decl_only(f, obj):
 
 
 def write_native(obj, path, recursive=False):
-    print(path)
-    # if get_object_type(obj) == ObjectType.CALL_TO_POU:
-    #     return
-
     obj.export_native(path, recursive=recursive)
 
     with open(path, "r+") as f:
         lines = f.read()
-        # uuid_replaced = re.sub(r'(^.+<Single Name="(?:EventPOUGuid|ParentSVNodeGuid|ParentGuid|LmGuid|LmStructTypeGuid|LmArrayTypeGuid|IoConfigGlobalsGuid|IoConfigGLobalsMappingGuid|IoConfigVarConfigGuid|IoConfigErrorPouGuid)".+?>).+(<\/Single>$)',r"\g<1>00000000-0000-0000-0000-000000000000\g<2>", lines, flags=re.MULTILINE)
+        # uuid_replaced = re.sub(
+        #     r'(^.+<Single Name="(?:EventPOUGuid|ParentSVNodeGuid|ParentGuid|LmGuid|LmStructTypeGuid|LmArrayTypeGuid|IoConfigGlobalsGuid|IoConfigGLobalsMappingGuid|IoConfigVarConfigGuid|IoConfigErrorPouGuid)".+?>).+(<\/Single>$)',
+        #     r"\g<1>00000000-0000-0000-0000-000000000000\g<2>",
+        #     lines,
+        #     flags=re.MULTILINE,
+        # )
         timestamp_replaced = re.sub(
-            r'(^.+<Single Name="(?:Timestamp)".+?>).+(<\/Single>$)', r"\g<1>0\g<2>", lines, flags=re.MULTILINE
+            r'(^.+<Single Name="(?:Timestamp|Id)" Type="long">).+(<\/Single>$)',
+            r"\g<1>0\g<2>",
+            lines,
+            flags=re.MULTILINE,
         )
         f.seek(0)
         f.write(timestamp_replaced)
         f.truncate()
 
-    # if recursive and len(obj.get_children()) > 0:
-    #     curr_folder = os.path.dirname(path)
-    #     child_obj_folder = os.path.join(curr_folder, obj.get_name() + NATIVE_EXPORT_POSTFIX)
-    #     os.mkdir(child_obj_folder)
-    #     for child_obj in obj.get_children():
-    #         write_native(child_obj, os.path.join(child_obj_folder, child_obj.get_name() + ".xml"), recursive=True)
-
 
 def read_native(f, obj):
-    print(f)
     obj.import_native(f)
-    # curr_folder, filename = os.path.split(f)
-    # name, _ = os.path.splitext(filename)
-    # imported_obj = first_or_error(obj.find(name), name + "should have been created, but cannot be found")
-    # native_export_folder_path = os.path.join(curr_folder, name + NATIVE_EXPORT_POSTFIX)
-    # if os.path.exists(native_export_folder_path) and os.path.isdir(native_export_folder_path):
-    #     for o in os.listdir(native_export_folder_path):
-    #         _, ext = os.path.splitext(o)
-    #         if ext == "xml":
-    #             read_native(os.path.join(native_export_folder_path, o), imported_obj)
 
 
 def export_folder(child_obj, parent_obj, parent_folder_path, export_child_fn):
