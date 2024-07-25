@@ -17,6 +17,7 @@ class ObjectType:
     PROJECT_SETTINGS = "PROJECT_SETTINGS"
     DEVICE = "DEVICE"
     FOLDER = "FOLDER"
+    CALL_TO_POU = "CALL_TO_POU"
     UNKNOWN = "UNKNOWN"
 
     @classmethod
@@ -27,6 +28,10 @@ class ObjectType:
                 elements.append(value)
         return elements
 
+
+# Other mapping lists:
+# https://github.com/tkucic/codesys_workflow_automation/blob/main/src/codesysBulker.py#L9
+# https://github.com/18thCentury/CodeSys/blob/master/export.py#L10
 
 GUID_TYPE_MAPPING = {
     "6f9dac99-8de1-4efc-8465-68ac443b7d08": ObjectType.POU,
@@ -43,6 +48,7 @@ GUID_TYPE_MAPPING = {
     "8753fe6f-4a22-4320-8103-e553c4fc8e04": ObjectType.PROJECT_SETTINGS,
     "225bfe47-7336-4dbc-9419-4105a7c831fa": ObjectType.DEVICE,
     "738bea1e-99bb-4f04-90bb-a7a567e74e3a": ObjectType.FOLDER,
+    "413e2a7d-adb1-4d2c-be29-6ae6e4fab820": ObjectType.CALL_TO_POU,
 }
 
 
