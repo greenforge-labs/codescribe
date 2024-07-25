@@ -24,7 +24,7 @@ def import_directory_child(child, dir_path, dir_parent_obj):
     full_path = os.path.join(dir_path, child)
     filename, ext = os.path.splitext(child)
 
-    if os.path.isdir(full_path) and not filename.endswith(NATIVE_EXPORT_POSTFIX):
+    if os.path.isdir(full_path):
         import_folder(child, dir_path, dir_parent_obj, import_directory)
 
     if filename.endswith(".gvl"):

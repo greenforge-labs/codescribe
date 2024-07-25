@@ -8,8 +8,6 @@ from util import *
 IMPLEMENTATION_DELIMITER_SPLIT = "// --- BEGIN IMPLEMENTATION ---"
 IMPLEMENTATION_DELIMITER_INSERT = "\n" + IMPLEMENTATION_DELIMITER_SPLIT + "\n\n"
 
-NATIVE_EXPORT_POSTFIX = "_NATIVE_EXP"
-
 
 def write_st(obj, f):
     f.write(obj.textual_declaration.text)
