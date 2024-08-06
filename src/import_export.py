@@ -213,6 +213,7 @@ OBJECT_TYPE_TO_EXPORT_FUNCTION = {
     ObjectType.POU: export_pou,
     ObjectType.GVL: export_gvl,  # EVL, NVL are "special types" of GVL which show up with the same UUID
     ObjectType.EVC: export_native,
+    ObjectType.VISUALISATION: export_native,
     ObjectType.TASK_CONFIGURATION: export_native_recursive,
     ObjectType.DUT: export_dut,
     ObjectType.METHOD: export_method,
