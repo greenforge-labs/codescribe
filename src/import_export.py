@@ -39,6 +39,11 @@ def write_native(obj, path, recursive=False):
     # using regex instead of an xml parser because it is much quicker (sorry)
     with open(path, "r+") as f:
         lines = f.read()
+
+        # XXX: Warning! Overwriting Id's broke visualisations
+        # It's probably a bad idea to overwrite Id's and UUIDs, even if it is annoying to have them show up in the diff
+        # Stick to just overwriting timestamps for now
+
         # uuid_replaced = re.sub(
         #     r'(^.+<Single Name="(?:EventPOUGuid|ParentSVNodeGuid|ParentGuid|LmGuid|LmStructTypeGuid|LmArrayTypeGuid|IoConfigGlobalsGuid|IoConfigGLobalsMappingGuid|IoConfigVarConfigGuid|IoConfigErrorPouGuid)".+?>).+(<\/Single>$)',
         #     r"\g<1>00000000-0000-0000-0000-000000000000\g<2>",
@@ -47,12 +52,20 @@ def write_native(obj, path, recursive=False):
         # )
 
         # match any tags with Timestamp or Id and replace their contents with "0"
+        # timestamp_replaced = re.sub(
+        #     r'(^.+<Single Name="(?:Timestamp|Id)" Type="long">).+(<\/Single>$)',
+        #     r"\g<1>0\g<2>",
+        #     lines,
+        #     flags=re.MULTILINE,
+        # )
+
         timestamp_replaced = re.sub(
-            r'(^.+<Single Name="(?:Timestamp|Id)" Type="long">).+(<\/Single>$)',
+            r'(^.+<Single Name="(?:Timestamp)" Type="long">).+(<\/Single>$)',
             r"\g<1>0\g<2>",
             lines,
             flags=re.MULTILINE,
         )
+
         f.seek(0)
         f.write(timestamp_replaced)
         f.truncate()
