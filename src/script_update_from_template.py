@@ -19,29 +19,33 @@ def get_newest_template_path(template_paths, template_versions):
     return newest_path
 
 
-print_python_version()
-assert_project_open()
+try:
+    print_python_version()
+    assert_project_open()
 
-template_paths, template_versions = find_template_paths_and_versions(scriptengine.projects.primary)
-newest_template_path = get_newest_template_path(template_paths, template_versions)
+    template_paths, template_versions = find_template_paths_and_versions(scriptengine.projects.primary)
+    newest_template_path = get_newest_template_path(template_paths, template_versions)
 
-ui_continue = scriptengine.system.ui.prompt(
-    "Update From Template will overwrite unexported changes in the current project!\n\nDo you want to continue?",
-    choice=scriptengine.PromptChoice.YesNo,
-    default_result=scriptengine.PromptResult.No,
-    store_description="Don't show again",
-    store_key="update_from_template_confirm",
-)
+    ui_continue = scriptengine.system.ui.prompt(
+        "Update From Template will overwrite unexported changes in the current project!\n\nDo you want to continue?",
+        choice=scriptengine.PromptChoice.YesNo,
+        default_result=scriptengine.PromptResult.No,
+        store_description="Don't show again",
+        store_key="update_from_template_confirm",
+    )
 
-if ui_continue == scriptengine.PromptResult.Yes:
-    project_path = scriptengine.projects.primary.path
+    if ui_continue == scriptengine.PromptResult.Yes:
+        project_path = scriptengine.projects.primary.path
 
-    scriptengine.projects.primary.close()
-    shutil.copyfile(newest_template_path, project_path)
-    scriptengine.projects.open(project_path)
+        scriptengine.projects.primary.close()
+        shutil.copyfile(newest_template_path, project_path)
+        scriptengine.projects.open(project_path)
 
-    import_from_files(scriptengine.projects.primary)
+        import_from_files(scriptengine.projects.primary)
 
-    scriptengine.projects.primary.save()
+        scriptengine.projects.primary.save()
+except Exception as e:
+    print(e)
+    raise e
 
 print("Done!")
