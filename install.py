@@ -9,6 +9,9 @@ import shutil
 
 from typing import TypeVar
 
+import ctypes
+import ntpath
+
 
 class TerminalColours:
     HEADER = "\033[95m"
@@ -163,8 +166,12 @@ def copy_config_json_and_remap_paths(repo_config: Path, config_destination: Path
     with open(config_destination, "r") as f:
         contents = f.read()
 
+    kdll = ctypes.windll.LoadLibrary("kernel32.dll")
     for find, replace in path_remappings.items():
-        contents = contents.replace(find, replace)
+        linkFilePath = Path(replace).with_suffix(".symlink")
+        linkFile = ntpath.basename(linkFilePath)
+        kdll.CreateSymbolicLinkW(str(config_destination.parent / linkFile), replace, 0)
+        contents = contents.replace(find, linkFile)
 
     with open(config_destination, "w") as f:
         f.write(contents)
