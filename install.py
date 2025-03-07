@@ -167,11 +167,16 @@ def copy_config_json_and_remap_paths(repo_config: Path, config_destination: Path
         contents = f.read()
 
     kdll = ctypes.windll.LoadLibrary("kernel32.dll")
+    linkFolderPathsrc = Path(repo_config.parent / f"src")
+    linkFolderPathicons = Path(repo_config.parent / f"icons")
+    kdll.CreateSymbolicLinkW(str(config_destination.parent / f"src"), str(linkFolderPathsrc), 1)
+    kdll.CreateSymbolicLinkW(str(config_destination.parent / f"icons"), str(linkFolderPathicons), 1)
+
     for find, replace in path_remappings.items():
-        linkFilePath = Path(replace).with_suffix(".symlink")
+        linkFilePath = Path(replace)
+        linkFileParent = ntpath.basename(linkFilePath.parent)
         linkFile = ntpath.basename(linkFilePath)
-        kdll.CreateSymbolicLinkW(str(config_destination.parent / linkFile), replace, 0)
-        contents = contents.replace(find, linkFile)
+        contents = contents.replace(find, linkFileParent + "\\\\" + linkFile)
 
     with open(config_destination, "w") as f:
         f.write(contents)
