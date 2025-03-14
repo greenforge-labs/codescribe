@@ -3,14 +3,11 @@ Needs to be run as administrator!
 Use install.bat: Right click -> "Run as administrator"
 """
 
-import json
+import ctypes
 from pathlib import Path
 import shutil
 
 from typing import TypeVar
-
-import ctypes
-import ntpath
 
 
 class TerminalColours:
@@ -65,43 +62,13 @@ def select_option(options: list[T], *, none_msg: str, one_msg: str, many_msg: st
                 print_fail("Unknown selection!\n")
 
 
-def find_repo_config_json() -> Path:
-    repo_path = Path(__file__).parent
+def find_repo_config_json(repo_path: Path) -> Path:
     config_json = repo_path / "config.json"
     if not config_json.exists():
         print_fail(f"ERROR: expecting to find config.json at {config_json}")
         exit(0)
 
     return config_json
-
-
-def get_config_path_remappings(config_path: Path) -> dict[str, str]:
-    with open(config_path, "r") as f:
-        config = json.load(f)
-
-    remappings = {}
-    success = True
-    src_path = config_path.parent / "src"
-    icons_path = config_path.parent / "icons"
-    for script in config:
-        script_path = src_path / str(script["Path"])
-        if script_path.exists():
-            remappings[str(script["Path"])] = str(script_path).replace("\\", "\\\\")
-        else:
-            print_fail(f"ERROR: expecting script at {script_path}")
-            success = False
-
-        icon_path = icons_path / str(script["Icon"])
-        if icon_path.exists():
-            remappings[str(script["Icon"])] = str(icon_path).replace("\\", "\\\\")
-        else:
-            print_fail(f"ERROR: expecting icon at {icon_path}")
-            success = False
-
-    if not success:
-        exit(0)
-
-    return remappings
 
 
 def find_codesys_install_paths() -> list[Path]:
@@ -160,35 +127,28 @@ def rename_or_get_config_json_destination(script_path: Path) -> Path:
     return config_json
 
 
-def copy_config_json_and_remap_paths(repo_config: Path, config_destination: Path, path_remappings: dict[str, str]):
-    shutil.copy(repo_config, config_destination)
-
-    with open(config_destination, "r") as f:
-        contents = f.read()
-
-    kdll = ctypes.windll.LoadLibrary("kernel32.dll")
-    linkFolderPathsrc = Path(repo_config.parent / f"src")
-    linkFolderPathicons = Path(repo_config.parent / f"icons")
-    kdll.CreateSymbolicLinkW(str(config_destination.parent / f"src"), str(linkFolderPathsrc), 1)
-    kdll.CreateSymbolicLinkW(str(config_destination.parent / f"icons"), str(linkFolderPathicons), 1)
-
-    for find, replace in path_remappings.items():
-        linkFilePath = Path(replace)
-        linkFileParent = ntpath.basename(linkFilePath.parent)
-        linkFile = ntpath.basename(linkFilePath)
-        contents = contents.replace(find, linkFileParent + "\\\\" + linkFile)
-
-    with open(config_destination, "w") as f:
-        f.write(contents)
+def copy_config_json(repo_config: Path, config_destination: Path):
+    try:
+        shutil.copy(repo_config, config_destination)
+    except Exception as e:
+        print_fail(f"ERROR copying config json: {e}")
+        exit(0)
 
     print_ok(f"SUCCESS: config written to {config_destination}")
+
+
+def symlink_install_repo_folder(repo: Path, destination: Path):
+    symlink_folder = destination / "codescribe"
+    kdll = ctypes.windll.LoadLibrary("kernel32.dll")
+    flag_is_a_directory = 1
+    kdll.CreateSymbolicLinkW(str(symlink_folder), str(repo), flag_is_a_directory)
 
 
 if __name__ == "__main__":
     try:
         print()
-        repo_config_json = find_repo_config_json()
-        config_path_remappings = get_config_path_remappings(repo_config_json)
+        repo_path = Path(__file__).parent
+        repo_config_json = find_repo_config_json(repo_path)
 
         install_paths = find_codesys_install_paths()
         install_path = select_option(
@@ -201,7 +161,8 @@ if __name__ == "__main__":
         script_path = get_or_create_script_path(install_path)
         config_json_destination = rename_or_get_config_json_destination(script_path)
 
-        copy_config_json_and_remap_paths(repo_config_json, config_json_destination, config_path_remappings)
+        symlink_install_repo_folder(repo_path, script_path)
+        copy_config_json(repo_config_json, config_json_destination)
     except PermissionError:
         print_fail(f"Permission error! Are you running as administrator?")
         exit(0)
