@@ -39,6 +39,27 @@ The following items are exported:
 
 Items are exported in formatted structured text (`.st`) where possible, and in native CODESYS xml everywhere else.
 
+## Unicode & Safe Filenames
+
+CODESCRIBE normalises smart punctuation (e.g. smart quotes, en/em dashes, non-breaking spaces) to plain ASCII during export so that files always save as UTF-8 without raising `ascii` codec errors. Object names are converted to filesystem-safe ASCII, replacing unsupported characters with underscores while preserving readability.
+
+## Custom Export and Import Paths
+
+You can direct the export and import scripts to a specific folder by setting `sys.argv[1]` before executing them in the ScriptEngine console. This avoids file-lock issues when the project is open and lets you work from dedicated folders.
+
+```python
+# Export to a custom folder
+import sys
+sys.argv = [r"C:\codescribe\src\script_export_to_files.py",
+            r"C:\_exports\IceMachine_Run1"]
+execfile(r"C:\codescribe\src\script_export_to_files.py")
+
+# Import from a custom folder
+sys.argv = [r"C:\codescribe\src\script_import_from_files.py",
+            r"C:\_exports\IceMachine_Run1"]
+execfile(r"C:\codescribe\src\script_import_from_files.py")
+```
+
 ## Project Templates
 
 The intention of CODESCRIBE is not to export a complete copy of the project, but to only export the implementation logic of the project, enabling collaboration via git and other source control methods. An empty, but configured, underlying project file should also be committed to the repo to manage any other configuration that CODESYS provides (e.g. project level configuration, device configuration). For example, `Example Project_template_v1.project`:
