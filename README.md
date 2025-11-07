@@ -57,6 +57,13 @@ Exporting communication devices has been hardcoded to create folders for top-lev
 
 **If this functionality is causing you problems, it can be disabled by adding a folder with the name `_NO_EXPORT` directly under `Communication`.** You can then still rely on your project template to carry your communication configurations.
 
+## Export Destination Picker
+
+- Running `Export To Files` now opens a Windows folder picker that defaults to `<project>\src`. Choose any writable folder (including network drives) and the export will be written there.
+- Canceling the picker cleanly aborts the script—no files are deleted and the previous export remains intact.
+- The selected folder receives a `.codescribe_export_manifest.json` file that lists the device directories the script created. On the next export, only those directories are removed so unrelated files in the same folder are preserved.
+- If the picker UI is unavailable (for example, when ScriptEngine runs headless), the script automatically falls back to the original `<project>\src` location.
+
 ## Status
 
 CODESCRIBE has been tested only on CODESYS V3.5 SP11, using the project structure supplied by the IFM CR711s packages.

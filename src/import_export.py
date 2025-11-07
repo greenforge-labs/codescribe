@@ -9,14 +9,18 @@ IMPLEMENTATION_DELIMITER_SPLIT = "// --- BEGIN IMPLEMENTATION ---"
 IMPLEMENTATION_DELIMITER_INSERT = "\n" + IMPLEMENTATION_DELIMITER_SPLIT + "\n\n"
 
 
+def write_text(f, text):
+    f.write(ensure_utf8_bytes(text))
+
+
 def write_st(obj, f):
-    f.write(obj.textual_declaration.text)
-    f.write(IMPLEMENTATION_DELIMITER_INSERT)
-    f.write(obj.textual_implementation.text)
+    write_text(f, obj.textual_declaration.text)
+    write_text(f, IMPLEMENTATION_DELIMITER_INSERT)
+    write_text(f, obj.textual_implementation.text)
 
 
 def write_st_decl_only(obj, f):
-    f.write(obj.textual_declaration.text)
+    write_text(f, obj.textual_declaration.text)
 
 
 def import_st(f, obj):
@@ -160,7 +164,7 @@ def import_native(child, dir_path, dir_parent_obj, import_dir_fn):
 
 def export_dut(child_obj, parent_obj, parent_folder_path, export_child_fn):
     with open(os.path.join(parent_folder_path, child_obj.get_name() + ".st"), "w") as f:
-        f.write(child_obj.textual_declaration.text)
+        write_text(f, child_obj.textual_declaration.text)
 
 
 def import_dut(child, dir_path, dir_parent_obj, import_dir_fn):
