@@ -135,14 +135,15 @@ def import_gvl(child, dir_path, dir_parent_obj, import_dir_fn):
         raise ValueError("Expected GVL st file!")
 
     gvl_xml_path = os.path.join(dir_path, name + ".gvl.xml")
-    if not os.path.exists(gvl_xml_path):
-        raise ValueError("Expected GVL xml file at " + gvl_xml_path)
-
-    import_native(gvl_xml_path, dir_path, dir_parent_obj, import_dir_fn)
-    with open(os.path.join(dir_path, child), "r") as f:
+    if os.path.exists(gvl_xml_path):
+        import_native(gvl_xml_path, dir_path, dir_parent_obj, import_dir_fn)
         imported_obj = first_of_type_or_error(
             dir_parent_obj.find(name), ObjectType.GVL, name + " GVL should have been created, but cannot be found"
         )
+    else:
+        imported_obj = dir_parent_obj.create_gvl(name)
+
+    with open(os.path.join(dir_path, child), "r") as f:
         import_st_decl_only(f, imported_obj)
 
 
