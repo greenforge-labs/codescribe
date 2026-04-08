@@ -131,8 +131,9 @@ Once installed, proceed to [Adding the Script Toolbar to CODESYS](#adding-the-sc
 
 ## CODESYS Scripting Docs
 
-- https://help.codesys.com/webapp/idx-scriptingengine;product=ScriptEngine;version=3.5.10.0
+- https://help.codesys.com/webapp/idx-scriptingengine;product=ScriptEngine;version=3.5.10.0 (dead link)
 - `C:\<CODESYS INSTALL LOCATION>\CODESYS\Online Help\en\ScriptEngine.chm`
+- [ScriptEngine V3.5 SP11 API Reference (converted from CHM)](docs/references/codesys_scriptengine_v3.5_sp11_api_reference.md)
 
 ## Similar Projects
 
