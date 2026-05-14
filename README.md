@@ -1,3 +1,7 @@
+> [!WARNING]
+> **This repository has been archived.** `codescribe` has moved to a new home at **[nineyards-robotics/codescribe](https://github.com/nineyards-robotics/codescribe)**.
+> You can find it here: https://github.com/nineyards-robotics/codescribe
+
 # CODESCRIBE
 
 _/koh-DEH-skribe/_
