@@ -1,10 +1,18 @@
 # REMEMBER: this is python 2.7
+import io
 import os
 import sys
 
 import scriptengine  # type: ignore
 
 from object_type import get_object_type
+
+
+def open_utf8(path, mode):
+    # ScriptEngine runs on Python 2.7; the builtin open() writes a byte stream and would
+    # implicitly encode unicode text as ascii, crashing on Cyrillic / accented chars / smart
+    # punctuation. io.open with an explicit encoding keeps everything UTF-8 round-trippable.
+    return io.open(path, mode, encoding="utf-8")
 
 
 def print_python_version():

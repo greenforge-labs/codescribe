@@ -45,7 +45,7 @@ def import_directory_child(child, dir_path, dir_parent_obj):
             import_native(child, dir_path, dir_parent_obj, import_directory)
         if ext == ".st":
             # Have to check for keywords to determine if POU or DUT
-            with open(full_path, "r") as f:
+            with open_utf8(full_path, "r") as f:
                 for word in first_word_of_line_iter(f):
                     if word == "TYPE":
                         import_dut(child, dir_path, dir_parent_obj, import_directory)
