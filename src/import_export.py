@@ -2,6 +2,8 @@
 import os
 import re
 
+import scriptengine  # type: ignore
+
 from object_type import ObjectType, get_object_type
 from util import *
 
@@ -202,6 +204,64 @@ def import_method_st(child, dir_path, dir_parent_obj, import_dir_fn):
         import_st(f, method_obj)
 
 
+def _export_member_st_or_xml(child_obj, parent_obj, parent_folder_path, st_suffix):
+    # Actions and Transitions have no textual declaration - the on-disk format is the
+    # implementation text alone, with the kind encoded in the filename (.action.st / .transition.st)
+    # so import dispatch is deterministic.
+    base = os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name())
+    if child_obj.has_textual_implementation:
+        with open_utf8(base + st_suffix + ".st", "w") as f:
+            f.write(child_obj.textual_implementation.text)
+    else:
+        write_native(child_obj, base + ".xml", recursive=False)
+
+
+def export_action(child_obj, parent_obj, parent_folder_path, export_child_fn):
+    _export_member_st_or_xml(child_obj, parent_obj, parent_folder_path, ".action")
+
+
+def export_transition(child_obj, parent_obj, parent_folder_path, export_child_fn):
+    _export_member_st_or_xml(child_obj, parent_obj, parent_folder_path, ".transition")
+
+
+def _import_member_st(child, dir_path, dir_parent_obj, st_suffix, create_fn):
+    full_path = os.path.join(dir_path, child)
+    filename, _ = os.path.splitext(child)
+    filename = filename[: -len(st_suffix)]
+    parent_name, child_name = filename.split(".")
+    parent_obj = first_of_type_or_error(
+        dir_parent_obj.find(parent_name),
+        ObjectType.POU,
+        parent_name + " should have been created, but cannot be found",
+    )
+
+    new_obj = create_fn(parent_obj, child_name)
+    with open_utf8(full_path, "r") as f:
+        new_obj.textual_implementation.replace(f.read().strip() + u"\n")
+
+
+def import_action_st(child, dir_path, dir_parent_obj, import_dir_fn):
+    # Pass the ST language explicitly: unlike methods, actions have no declaration line
+    # for CODESYS to infer the language from.
+    _import_member_st(
+        child,
+        dir_path,
+        dir_parent_obj,
+        ".action",
+        lambda parent, name: parent.create_action(name, scriptengine.ImplementationLanguages.st),
+    )
+
+
+def import_transition_st(child, dir_path, dir_parent_obj, import_dir_fn):
+    _import_member_st(
+        child,
+        dir_path,
+        dir_parent_obj,
+        ".transition",
+        lambda parent, name: parent.create_transition(name, scriptengine.ImplementationLanguages.st),
+    )
+
+
 def export_sub_pou(child_obj, parent_obj, parent_folder_path, export_child_fn):
     write_native(
         child_obj,
@@ -233,8 +293,8 @@ OBJECT_TYPE_TO_EXPORT_FUNCTION = {
     ObjectType.DUT: export_dut,
     ObjectType.METHOD: export_method,
     ObjectType.PROPERTY: export_sub_pou,
-    ObjectType.ACTION: export_sub_pou,
-    ObjectType.TRANSITION: export_sub_pou,
+    ObjectType.ACTION: export_action,
+    ObjectType.TRANSITION: export_transition,
 }
 
 

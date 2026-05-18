@@ -34,12 +34,18 @@ def import_directory_child(child, dir_path, dir_parent_obj):
         if ext == ".st":
             import_gvl(child, dir_path, dir_parent_obj, import_directory)
     elif "." in filename:
-        # . means some sort of sub POU
+        # . means some sort of sub POU (method, action, transition, property)
         if ext == ".xml":
             import_sub_pou(child, dir_path, dir_parent_obj, import_directory)
         if ext == ".st":
-            # currently only methods are exported as ST if possible
-            import_method_st(child, dir_path, dir_parent_obj, import_directory)
+            # Filename suffix selects the sub-POU kind. "action" / "transition" are
+            # reserved IEC keywords so they can't collide with a method name.
+            if filename.endswith(".action"):
+                import_action_st(child, dir_path, dir_parent_obj, import_directory)
+            elif filename.endswith(".transition"):
+                import_transition_st(child, dir_path, dir_parent_obj, import_directory)
+            else:
+                import_method_st(child, dir_path, dir_parent_obj, import_directory)
     else:
         if ext == ".xml":
             import_native(child, dir_path, dir_parent_obj, import_directory)
