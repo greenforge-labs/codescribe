@@ -69,4 +69,5 @@ def import_from_files(project):
         import_directory(application_folder, application)
 
         communication = find_communication(device_obj)
-        import_communication(communication, device_folder)
+        if communication is not None:
+            import_communication(communication, device_folder)
