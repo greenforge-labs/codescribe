@@ -50,7 +50,8 @@ try:
         application = find_application(device_obj)
         remove_tracked_objects(application.get_children())
         communication = find_communication(device_obj)
-        remove_tracked_communication_devices(communication)
+        if communication is not None:
+            remove_tracked_communication_devices(communication)
 
     template_project.save()
 
