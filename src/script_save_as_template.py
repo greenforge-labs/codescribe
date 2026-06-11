@@ -59,6 +59,8 @@ try:
         delete_old_templates(template_paths)
 except Exception as e:
     print(e)
+    ui_error_with_traceback("Save As Template failed!")
     raise e
 
 print("Done!")
+ui_info("Save As Template complete.\n\nCreated: " + new_template_path)

@@ -2,10 +2,21 @@
 import io
 import os
 import sys
+import traceback
 
 import scriptengine  # type: ignore
 
 from object_type import get_object_type
+
+
+def ui_info(message):
+    # Blocking dialog; the message view is easy to miss, so entry scripts report
+    # their outcome through these as well.
+    scriptengine.system.ui.info(message)
+
+
+def ui_error_with_traceback(message):
+    scriptengine.system.ui.error(message + "\n\n" + traceback.format_exc())
 
 
 def open_utf8(path, mode):

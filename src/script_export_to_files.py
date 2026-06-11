@@ -47,6 +47,8 @@ try:
             export_communication(communication, device_folder)
 except Exception as e:
     print(e)
+    ui_error_with_traceback("Export To Files failed!")
     raise e
 
 print("Done!")
+ui_info("Export To Files complete.\n\nWrote: " + src_folder)
