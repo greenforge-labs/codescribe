@@ -31,6 +31,6 @@ def find_application(device_obj):
 
 
 def find_communication(device_obj):
-    # Not every device has a Communication object — depends on the device package.
+    # Not every device has a Communication object - depends on the device package.
     # Callers must treat None as "skip the communication step".
     return first_or_none(device_obj.find("Communication", recursive=True))
