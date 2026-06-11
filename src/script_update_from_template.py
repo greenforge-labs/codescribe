@@ -44,8 +44,12 @@ try:
         import_from_files(scriptengine.projects.primary)
 
         scriptengine.projects.primary.save()
+        ui_info("Update From Template complete.")
+    else:
+        print("Update cancelled.")
 except Exception as e:
     print(e)
+    ui_error_with_traceback("Update From Template failed!")
     raise e
 
 print("Done!")

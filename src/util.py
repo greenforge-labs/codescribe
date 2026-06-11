@@ -1,10 +1,29 @@
 # REMEMBER: this is python 2.7
+import io
 import os
 import sys
+import traceback
 
 import scriptengine  # type: ignore
 
 from object_type import get_object_type
+
+
+def ui_info(message):
+    # Blocking dialog; the message view is easy to miss, so entry scripts report
+    # their outcome through these as well.
+    scriptengine.system.ui.info(message)
+
+
+def ui_error_with_traceback(message):
+    scriptengine.system.ui.error(message + "\n\n" + traceback.format_exc())
+
+
+def open_utf8(path, mode):
+    # ScriptEngine runs on Python 2.7; the builtin open() writes a byte stream and would
+    # implicitly encode unicode text as ascii, crashing on Cyrillic / accented chars / smart
+    # punctuation. io.open with an explicit encoding keeps everything UTF-8 round-trippable.
+    return io.open(path, mode, encoding="utf-8")
 
 
 def print_python_version():

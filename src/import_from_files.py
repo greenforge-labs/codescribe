@@ -34,24 +34,41 @@ def import_directory_child(child, dir_path, dir_parent_obj):
         if ext == ".st":
             import_gvl(child, dir_path, dir_parent_obj, import_directory)
     elif "." in filename:
-        # . means some sort of sub POU
+        # . means some sort of sub POU (method, action, transition, property)
         if ext == ".xml":
             import_sub_pou(child, dir_path, dir_parent_obj, import_directory)
         if ext == ".st":
-            # currently only methods are exported as ST if possible
-            import_method_st(child, dir_path, dir_parent_obj, import_directory)
+            # Filename suffix selects the sub-POU kind. "action" / "transition" are
+            # reserved IEC keywords so they can't collide with a method name.
+            if filename.endswith(".action"):
+                import_action_st(child, dir_path, dir_parent_obj, import_directory)
+            elif filename.endswith(".transition"):
+                import_transition_st(child, dir_path, dir_parent_obj, import_directory)
+            else:
+                import_method_st(child, dir_path, dir_parent_obj, import_directory)
     else:
         if ext == ".xml":
             import_native(child, dir_path, dir_parent_obj, import_directory)
         if ext == ".st":
-            # Have to check for keywords to determine if POU or DUT
-            with open(full_path, "r") as f:
+            # Have to check for keywords to determine if POU or DUT.
+            # Finish (close) this read before dispatching: the import functions re-open
+            # the same file, and IronPython's io.open holds a .NET file lock that makes
+            # a nested open of an already-open file fail with a sharing violation.
+            kind = None
+            with open_utf8(full_path, "r") as f:
                 for word in first_word_of_line_iter(f):
                     if word == "TYPE":
-                        import_dut(child, dir_path, dir_parent_obj, import_directory)
+                        kind = "dut"
+                        break
 
                     if word in ["PROGRAM", "FUNCTION_BLOCK", "FUNCTION"]:
-                        import_pou_st(child, dir_path, dir_parent_obj, import_directory)
+                        kind = "pou"
+                        break
+
+            if kind == "dut":
+                import_dut(child, dir_path, dir_parent_obj, import_directory)
+            elif kind == "pou":
+                import_pou_st(child, dir_path, dir_parent_obj, import_directory)
 
 
 def import_from_files(project):
@@ -69,4 +86,5 @@ def import_from_files(project):
         import_directory(application_folder, application)
 
         communication = find_communication(device_obj)
-        import_communication(communication, device_folder)
+        if communication is not None:
+            import_communication(communication, device_folder)

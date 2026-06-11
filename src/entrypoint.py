@@ -31,7 +31,6 @@ def find_application(device_obj):
 
 
 def find_communication(device_obj):
-    return first_or_error(
-        device_obj.find("Communication", recursive=True),
-        "Couldn't find Communication inside " + device_obj.get_name(),
-    )
+    # Not every device has a Communication object - depends on the device package.
+    # Callers must treat None as "skip the communication step".
+    return first_or_none(device_obj.find("Communication", recursive=True))

@@ -20,8 +20,12 @@ try:
 
     if ui_continue == scriptengine.PromptResult.Yes:
         import_from_files(scriptengine.projects.primary)
+        ui_info("Import From Files complete.")
+    else:
+        print("Import cancelled.")
 except Exception as e:
     print(e)
+    ui_error_with_traceback("Import From Files failed!")
     raise e
 
 print("Done!")

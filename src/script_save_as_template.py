@@ -50,7 +50,8 @@ try:
         application = find_application(device_obj)
         remove_tracked_objects(application.get_children())
         communication = find_communication(device_obj)
-        remove_tracked_communication_devices(communication)
+        if communication is not None:
+            remove_tracked_communication_devices(communication)
 
     template_project.save()
 
@@ -58,6 +59,8 @@ try:
         delete_old_templates(template_paths)
 except Exception as e:
     print(e)
+    ui_error_with_traceback("Save As Template failed!")
     raise e
 
 print("Done!")
+ui_info("Save As Template complete.\n\nCreated: " + new_template_path)

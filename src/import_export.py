@@ -2,11 +2,14 @@
 import os
 import re
 
+import scriptengine  # type: ignore
+
 from object_type import ObjectType, get_object_type
 from util import *
 
-IMPLEMENTATION_DELIMITER_SPLIT = "// --- BEGIN IMPLEMENTATION ---"
-IMPLEMENTATION_DELIMITER_INSERT = "\n" + IMPLEMENTATION_DELIMITER_SPLIT + "\n\n"
+# unicode literals so they can be written to / split out of the UTF-8 text streams below
+IMPLEMENTATION_DELIMITER_SPLIT = u"// --- BEGIN IMPLEMENTATION ---"
+IMPLEMENTATION_DELIMITER_INSERT = u"\n" + IMPLEMENTATION_DELIMITER_SPLIT + u"\n\n"
 
 
 def write_st(obj, f):
@@ -21,7 +24,7 @@ def write_st_decl_only(obj, f):
 
 def import_st(f, obj):
     f.seek(0)
-    content = str(f.read())
+    content = f.read()
     declaration, implementation = content.split(IMPLEMENTATION_DELIMITER_SPLIT)
     obj.textual_declaration.replace(declaration.strip() + "\n")
     obj.textual_implementation.replace(implementation.strip() + "\n")
@@ -29,7 +32,7 @@ def import_st(f, obj):
 
 def import_st_decl_only(f, obj):
     f.seek(0)
-    content = str(f.read())
+    content = f.read()
     obj.textual_declaration.replace(content.strip() + "\n")
 
 
@@ -94,7 +97,7 @@ def import_folder(child, dir_path, dir_parent_obj, import_dir_fn):
 
 def export_pou(child_obj, parent_obj, parent_folder_path, export_child_fn):
     if child_obj.has_textual_implementation:
-        with open(os.path.join(parent_folder_path, child_obj.get_name() + ".st"), "w") as f:
+        with open_utf8(os.path.join(parent_folder_path, child_obj.get_name() + ".st"), "w") as f:
             write_st(child_obj, f)
     else:
         export_native(child_obj, parent_obj, parent_folder_path, export_child_fn)
@@ -106,7 +109,7 @@ def export_pou(child_obj, parent_obj, parent_folder_path, export_child_fn):
 def import_pou_st(child, dir_path, dir_parent_obj, import_dir_fn):
     filename, _ = os.path.splitext(child)
     pou_obj = dir_parent_obj.create_pou(filename)
-    with open(os.path.join(dir_path, child), "r") as f:
+    with open_utf8(os.path.join(dir_path, child), "r") as f:
         import_st(f, pou_obj)
 
 
@@ -116,7 +119,7 @@ def export_gvl(child_obj, parent_obj, parent_folder_path, export_child_fn):
     This is because we need to support EVL and NVL as well, using this function.
     """
     write_native(child_obj, os.path.join(parent_folder_path, child_obj.get_name() + ".gvl.xml"), recursive=False)
-    with open(os.path.join(parent_folder_path, child_obj.get_name() + ".gvl.st"), "w") as f:
+    with open_utf8(os.path.join(parent_folder_path, child_obj.get_name() + ".gvl.st"), "w") as f:
         write_st_decl_only(child_obj, f)
 
 
@@ -143,7 +146,7 @@ def import_gvl(child, dir_path, dir_parent_obj, import_dir_fn):
     else:
         imported_obj = dir_parent_obj.create_gvl(name)
 
-    with open(os.path.join(dir_path, child), "r") as f:
+    with open_utf8(os.path.join(dir_path, child), "r") as f:
         import_st_decl_only(f, imported_obj)
 
 
@@ -160,21 +163,21 @@ def import_native(child, dir_path, dir_parent_obj, import_dir_fn):
 
 
 def export_dut(child_obj, parent_obj, parent_folder_path, export_child_fn):
-    with open(os.path.join(parent_folder_path, child_obj.get_name() + ".st"), "w") as f:
+    with open_utf8(os.path.join(parent_folder_path, child_obj.get_name() + ".st"), "w") as f:
         f.write(child_obj.textual_declaration.text)
 
 
 def import_dut(child, dir_path, dir_parent_obj, import_dir_fn):
     filename, _ = os.path.splitext(child)
     dut_obj = dir_parent_obj.create_dut(filename)
-    with open(os.path.join(dir_path, child), "r") as f:
+    with open_utf8(os.path.join(dir_path, child), "r") as f:
         f.seek(0)
-        dut_obj.textual_declaration.replace(str(f.read()))
+        dut_obj.textual_declaration.replace(f.read())
 
 
 def export_method(child_obj, parent_obj, parent_folder_path, export_child_fn):
     if child_obj.has_textual_implementation:
-        with open(
+        with open_utf8(
             os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name() + ".st"), "w"
         ) as f:
             write_st(child_obj, f)
@@ -197,8 +200,66 @@ def import_method_st(child, dir_path, dir_parent_obj, import_dir_fn):
     )
 
     method_obj = parent_obj.create_method(method_name)
-    with open(full_path, "r") as f:
+    with open_utf8(full_path, "r") as f:
         import_st(f, method_obj)
+
+
+def _export_member_st_or_xml(child_obj, parent_obj, parent_folder_path, st_suffix):
+    # Actions and Transitions have no textual declaration - the on-disk format is the
+    # implementation text alone, with the kind encoded in the filename (.action.st / .transition.st)
+    # so import dispatch is deterministic.
+    base = os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name())
+    if child_obj.has_textual_implementation:
+        with open_utf8(base + st_suffix + ".st", "w") as f:
+            f.write(child_obj.textual_implementation.text)
+    else:
+        write_native(child_obj, base + ".xml", recursive=False)
+
+
+def export_action(child_obj, parent_obj, parent_folder_path, export_child_fn):
+    _export_member_st_or_xml(child_obj, parent_obj, parent_folder_path, ".action")
+
+
+def export_transition(child_obj, parent_obj, parent_folder_path, export_child_fn):
+    _export_member_st_or_xml(child_obj, parent_obj, parent_folder_path, ".transition")
+
+
+def _import_member_st(child, dir_path, dir_parent_obj, st_suffix, create_fn):
+    full_path = os.path.join(dir_path, child)
+    filename, _ = os.path.splitext(child)
+    filename = filename[: -len(st_suffix)]
+    parent_name, child_name = filename.split(".")
+    parent_obj = first_of_type_or_error(
+        dir_parent_obj.find(parent_name),
+        ObjectType.POU,
+        parent_name + " should have been created, but cannot be found",
+    )
+
+    new_obj = create_fn(parent_obj, child_name)
+    with open_utf8(full_path, "r") as f:
+        new_obj.textual_implementation.replace(f.read().strip() + u"\n")
+
+
+def import_action_st(child, dir_path, dir_parent_obj, import_dir_fn):
+    # Pass the ST language explicitly: unlike methods, actions have no declaration line
+    # for CODESYS to infer the language from.
+    _import_member_st(
+        child,
+        dir_path,
+        dir_parent_obj,
+        ".action",
+        lambda parent, name: parent.create_action(name, scriptengine.ImplementationLanguages.st),
+    )
+
+
+def import_transition_st(child, dir_path, dir_parent_obj, import_dir_fn):
+    _import_member_st(
+        child,
+        dir_path,
+        dir_parent_obj,
+        ".transition",
+        lambda parent, name: parent.create_transition(name, scriptengine.ImplementationLanguages.st),
+    )
 
 
 def export_sub_pou(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -232,8 +293,8 @@ OBJECT_TYPE_TO_EXPORT_FUNCTION = {
     ObjectType.DUT: export_dut,
     ObjectType.METHOD: export_method,
     ObjectType.PROPERTY: export_sub_pou,
-    ObjectType.ACTION: export_sub_pou,
-    ObjectType.TRANSITION: export_sub_pou,
+    ObjectType.ACTION: export_action,
+    ObjectType.TRANSITION: export_transition,
 }
 
 
