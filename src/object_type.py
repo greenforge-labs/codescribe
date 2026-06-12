@@ -27,6 +27,10 @@ class ObjectType:
     FOLDER = "FOLDER"
     CALL_TO_POU = "CALL_TO_POU"
     VISUALISATION = "VISUALISATION"
+    VISUALISATION_MANAGER = "VISUALISATION_MANAGER"
+    TARGET_VISUALISATION = "TARGET_VISUALISATION"
+    WEB_VISUALISATION = "WEB_VISUALISATION"
+    VISUALISATION_STYLE = "VISUALISATION_STYLE"
     UNKNOWN = "UNKNOWN"
 
     @classmethod
@@ -67,6 +71,13 @@ GUID_TYPE_MAPPING = {
     "738bea1e-99bb-4f04-90bb-a7a567e74e3a": ObjectType.FOLDER,
     "413e2a7d-adb1-4d2c-be29-6ae6e4fab820": ObjectType.CALL_TO_POU,
     "f18bec89-9fef-401d-9953-2f11739a6808": ObjectType.VISUALISATION,
+    # Visualisation service objects. Named so the UNKNOWN export fallback does not pick
+    # them up: exporting the manager makes every later import raise an interactive
+    # overwrite dialog, and the project template carries these objects anyway.
+    "4d3fdb8f-ab50-4c35-9d3a-d4bb9bb9a628": ObjectType.VISUALISATION_MANAGER,
+    "bc63f5fa-d286-4786-994e-7b27e4f97bd5": ObjectType.TARGET_VISUALISATION,
+    "0fdbf158-1ae0-47d9-9269-cd84be308e9d": ObjectType.WEB_VISUALISATION,
+    "8e687a04-7ca7-42d3-be06-fcbda676c5ef": ObjectType.VISUALISATION_STYLE,
 }
 
 
