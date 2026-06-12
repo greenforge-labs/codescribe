@@ -23,6 +23,7 @@ MODULES = [
     "entrypoint",
     "import_export",
     "communication_import_export",
+    "device_tree_import_export",
     "import_from_files",
     "project_template",
 ]

@@ -1,6 +1,7 @@
 import os
 
 from communication_import_export import import_communication
+from device_tree_import_export import import_device_tree_siblings
 from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
 from import_export import *
 from util import *
@@ -94,3 +95,5 @@ def import_from_files(project):
         communication = find_communication(device_obj)
         if communication is not None:
             import_communication(communication, device_folder)
+
+        import_device_tree_siblings(device_obj, device_folder)
