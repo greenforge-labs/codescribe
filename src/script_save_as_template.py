@@ -54,7 +54,10 @@ try:
         if communication is not None:
             remove_tracked_communication_devices(communication)
 
-        device_folder = os.path.join(get_src_folder(template_project), device_obj.get_name())
+        # The list of tracked devices lives in the primary project's export folder.
+        # The template copy has its own file name, so its src folder never exists
+        # on disk and would make this a no-op.
+        device_folder = os.path.join(get_src_folder(scriptengine.projects.primary), device_obj.get_name())
         remove_tracked_device_tree_devices(device_obj, device_folder)
 
     template_project.save()
