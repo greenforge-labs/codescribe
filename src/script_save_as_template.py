@@ -7,7 +7,8 @@ import shutil
 import scriptengine  # type: ignore
 
 from communication_import_export import remove_tracked_communication_devices
-from entrypoint import find_application, find_communication, get_device_entrypoints
+from device_tree_import_export import remove_tracked_device_tree_devices
+from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
 from import_export import *
 from project_template import find_template_paths_and_versions, generate_template_path
 from util import *
@@ -52,6 +53,9 @@ try:
         communication = find_communication(device_obj)
         if communication is not None:
             remove_tracked_communication_devices(communication)
+
+        device_folder = os.path.join(get_src_folder(template_project), device_obj.get_name())
+        remove_tracked_device_tree_devices(device_obj, device_folder)
 
     template_project.save()
 
