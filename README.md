@@ -4,31 +4,46 @@
 
 _/koh-DEH-skribe/_
 
-CODESYS plaintext import and export scripts.
+Allows you to use version control for CODESYS projects.
 
-No python installation is required to use the scripts as CODESYS ships with its own copy of Python 2.
+## The problem
 
-CODESCRIBE supplies CODESYS scripts to:
+A CODESYS project is a single `.project` file in a proprietary binary format. Git can store it, but it cannot diff it, merge it, or review it since every change is an all-or-nothing binary blob. That rules out meaningful code review, parallel development and a usable change history.
 
-- export a project to plaintext files that can be tracked in source control, as well as edited in other editors
-- import plaintext files back into a CODESYS project for uploading / debugging / etc
-- generate a "template" project by making a copy of the current project and deleting all exportable objects
-- update the current working project from a template by copying the template file and importing plaintext files
+CODESCRIBE exports the logic of a CODESYS project to plaintext files that git handles like any other source code, and imports those files back into CODESYS. A CODESYS project like this:
+
+![example_project_codesys](docs/example_project_codesys.png)
+
+becomes a plaintext project like this:
+
+![example_project_vscode](docs/example_project_vscode.png)
+
+## How it works
+
+CODESCRIBE supplies five scripts that run inside the CODESYS ScriptEngine and appear as toolbar buttons. No Python installation is required to use them as CODESYS ships with its own copy of Python 2.
 
 ![toolbar](docs/toolbar.png)
 
-Since v0.2.0, each script reports its outcome in a dialog when it finishes. Failures show the full Python traceback, so problems no longer hide in the message view.
+- `Export To Files` exports the project to plaintext files that can be tracked in source control, as well as edited in other editors
+- `Import From Files` imports plaintext files back into a CODESYS project for uploading / debugging / etc
+- `Save As Template` generates a "template" project by making a copy of the current project and deleting all exportable objects
+- `Update From Template` updates the current working project by copying the template file and importing the plaintext files
+- `Export Lib To Files` exports a library project, which keeps its objects directly under the project root rather than under a Device (see [Export Lib To Files](#export-lib-to-files))
 
-With CODESCRIBE, a CODESYS project like this:
-![example_project_codesys](docs/example_project_codesys.png)
+A typical workflow:
 
-Becomes a plaintext project like this:
-![example_project_vscode](docs/example_project_vscode.png)
+1. Make changes in CODESYS, then click `Export To Files`.
+2. Commit the exported files. Diff, review and merge them in git like any other code.
+3. Pull a teammate's changes, or edit the `.st` files directly in another editor.
+4. Click `Import From Files` to bring the changes back into CODESYS.
 
-The following items are exported:
+Each script reports its outcome in a dialog when it finishes. Failures show the full Python traceback, so problems do not hide in the message view.
+
+## What gets exported
 
 - Folders
 - POUs
+- GVLs (including persistent variable lists)
 - EVLs
 - EVCs
 - Task Configurations
@@ -38,20 +53,17 @@ The following items are exported:
 - Actions
 - Transitions
 - Communication Devices\*
+- Device-tree devices\*
 
 \*see [Exporting and Importing Communication Devices](#exporting-and-importing-communication-devices)
 
-Items are exported in formatted structured text (`.st`) where possible, and in native CODESYS xml everywhere else. The `.st` files are written as UTF-8, so non-ASCII content (Cyrillic, accented characters, smart punctuation) exports and round-trips correctly since v0.2.0.
+Items are exported in formatted structured text (`.st`) where possible, and in native CODESYS xml everywhere else. The `.st` files are written as UTF-8, so non-ASCII content (Cyrillic, accented characters, smart punctuation) exports and round-trips correctly.
 
-Since v0.2.0, Actions and Transitions export as `.st` rather than native xml. The kind is encoded in the filename (`MyPou.MyAction.action.st`, `MyPou.MyTransition.transition.st`) and the file contains the implementation text only, as these objects have no textual declaration. Exports made with earlier versions (where these objects were `.xml`) still import correctly; re-exporting once after upgrading migrates the tracked files to the new format.
+Actions and Transitions export as `.st` with the kind encoded in the filename (`MyPou.MyAction.action.st`, `MyPou.MyTransition.transition.st`). The file contains the implementation text only, as these objects have no textual declaration.
 
-Visualisations export as `<name>.vis.xml`. Earlier versions wrote `<name>.xml`, which silently collided with any POU of the same name (a `Main` program plus a `Main` visualisation is common). Old plain `.xml` exports still import correctly; re-exporting once migrates the tracked files.
+Visualisations export as `<name>.vis.xml`, so a `Main` visualisation cannot collide with a `Main` POU.
 
-## Export folder locked (Windows)
-
-`Export To Files` writes the export into a sibling folder named `<project_name>.codescribe_staging` and only swaps it into place once the export completes. Earlier versions deleted the target folder up front, so a locked folder (an open Explorer window, IDE, git client or antivirus) aborted the export immediately and a mid-export crash left the on-disk copy destroyed.
-
-If the target folder is locked and cannot be swapped, the staged files are synced into it instead and the export still succeeds. If that also fails, the error dialog reports the staging folder path; the completed export is preserved there, so nothing is lost.
+Exports made with older versions of CODESCRIBE use different filenames for some of these objects; they still import correctly, and re-exporting once migrates the tracked files. See [CHANGELOG.md](CHANGELOG.md) for the details.
 
 ## Export Lib To Files
 
@@ -61,7 +73,7 @@ Importing a library export back into a project is not yet supported.
 
 ## Project Templates
 
-The intention of CODESCRIBE is not to export a complete copy of the project, but to only export the implementation logic of the project, enabling collaboration via git and other source control methods. An empty, but configured, underlying project file should also be committed to the repo to manage any other configuration that CODESYS provides (e.g. project level configuration, device configuration). For example, `Example Project_template_v1.project`:
+CODESCRIBE exports the implementation logic of the project, not a complete copy. An empty, but configured, underlying project file should also be committed to the repo to manage any other configuration that CODESYS provides (e.g. project level configuration, device configuration). For example, `Example Project_template_v1.project`:
 
 ![example_template_file](docs/example_template_file.png)
 
@@ -77,15 +89,25 @@ Exporting communication devices has been hardcoded to create folders for top-lev
 
 **If this functionality is causing you problems, it can be disabled by adding a folder with the name `_NO_EXPORT` directly under `Communication`.** You can then still rely on your project template to carry your communication configurations.
 
-Devices that have no `Communication` object at all are also supported since v0.2.0. The communication step is skipped for that device and no `communication` folder is created in the export; before v0.2.0 this aborted the export, import or Save As Template for the whole device.
+Devices that have no `Communication` object at all are also supported. The communication step is skipped for that device and no `communication` folder is created in the export.
 
 A second layout is also supported: on standard CODESYS hardware, Ethernet, Modbus and fieldbus devices often sit in the device tree as direct children of the PLC device, next to `Plc Logic`, rather than under a `Communication` node. These device-tree siblings are exported to `<device>/devices/<name>.xml` using a native recursive export, one file per top-level device. Children that contain an `Application` (for example the SafetyPLC and StandardPLC of a compound safety project) are excluded, as they are already exported through their own device entrypoint.
 
+On import, each tracked device is removed and recreated from its exported xml. Devices fixed by the device package (for example `Local_IO` and `HMI` on IFM hardware) cannot be removed; they are skipped with a message and their configuration is carried by the project template instead.
+
 **To disable the device-tree export, add a folder with the name `_NO_EXPORT` as a direct child of the PLC device.** The existing `_NO_EXPORT` folder under `Communication` continues to disable only the `Communication` export.
+
+## Export folder locked (Windows)
+
+`Export To Files` writes the export into a sibling folder named `<project_name>.codescribe_staging` and only swaps it into place once the export completes, so a mid-export failure cannot destroy the existing on-disk copy.
+
+If the target folder is locked (an open Explorer window, IDE, git client or antivirus) and cannot be swapped, the staged files are synced into it instead and the export still succeeds. If that also fails, the error dialog reports the staging folder path; the completed export is preserved there, so nothing is lost.
 
 ## Status
 
 CODESCRIBE has been tested only on CODESYS V3.5 SP11, using the project structure supplied by the IFM CR711s packages. Version 0.2.0 was validated end-to-end on V3.5 SP11 (32-bit) with an IFM CR711S compound (Standard + SIL2) project: export/import round-trip, code generation, simulation and a hardware download.
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and upgrade notes.
 
 ## Installing
 
@@ -139,7 +161,7 @@ Once installed, proceed to [Adding the Script Toolbar to CODESYS](#adding-the-sc
 
 5. Under Categories, scroll down, select ScriptEngine Commands and pick the script you want to add
 
-    - Scripts supplied by this repo are `Export To Files`, `Import From Files`, `Save As Template` and `Update From Template`
+    - Scripts supplied by this repo are `Export To Files`, `Export Lib To Files`, `Import From Files`, `Save As Template` and `Update From Template`
 
     ![Step 5](docs/step_5.png)
 
@@ -162,6 +184,7 @@ The scripts run inside the CODESYS ScriptEngine, which embeds IronPython 2.7:
 - All code in `src/` must be Python 2.7 compatible.
 - Source files must be pure ASCII. IronPython enforces PEP 263 (ASCII source unless an encoding is declared), and a single stray em-dash or smart quote in a comment will make CODESYS refuse to load the file.
 - `main` is protected: changes go through a pull request and the CI checks must pass.
+- Changes that alter the export format or behaviour should be noted in [CHANGELOG.md](CHANGELOG.md).
 
 CI runs two jobs on every pull request (see `.github/workflows/ci.yml` and `tools/ci/`):
 
