@@ -53,6 +53,12 @@ Visualisations export as `<name>.vis.xml`. Earlier versions wrote `<name>.xml`, 
 
 If the target folder is locked and cannot be swapped, the staged files are synced into it instead and the export still succeeds. If that also fails, the error dialog reports the staging folder path; the completed export is preserved there, so nothing is lost.
 
+## Export Lib To Files
+
+Library projects keep their POUs, DUTs, GVLs and folders directly under the project root rather than under a Device, so `Export To Files` (which walks device entrypoints) exports nothing for them. `Export Lib To Files` walks the project root instead and writes the same on-disk format as `Export To Files`, without the device and application folder levels. Service objects (Library Manager, Project Information, Project Settings, and the Task/Symbol/Visualization/Alarm/Recipe manager objects) are skipped.
+
+Importing a library export back into a project is not yet supported.
+
 ## Project Templates
 
 The intention of CODESCRIBE is not to export a complete copy of the project, but to only export the implementation logic of the project, enabling collaboration via git and other source control methods. An empty, but configured, underlying project file should also be committed to the repo to manage any other configuration that CODESYS provides (e.g. project level configuration, device configuration). For example, `Example Project_template_v1.project`:
