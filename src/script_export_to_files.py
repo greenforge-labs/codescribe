@@ -6,6 +6,7 @@ import os
 import scriptengine  # type: ignore
 
 from communication_import_export import export_communication
+from device_tree_import_export import export_device_tree_siblings
 from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
 from import_export import OBJECT_TYPE_TO_EXPORT_FUNCTION, write_native
 from object_type import ObjectType, get_object_type
@@ -61,6 +62,8 @@ try:
         communication = find_communication(device_obj)
         if communication is not None:
             export_communication(communication, device_folder)
+
+        export_device_tree_siblings(device_obj, device_folder, application, communication)
 
     finalize_export_folder(src_folder, staging_folder)
 except Exception as e:

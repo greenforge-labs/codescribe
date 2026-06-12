@@ -73,6 +73,10 @@ Exporting communication devices has been hardcoded to create folders for top-lev
 
 Devices that have no `Communication` object at all are also supported since v0.2.0. The communication step is skipped for that device and no `communication` folder is created in the export; before v0.2.0 this aborted the export, import or Save As Template for the whole device.
 
+A second layout is also supported: on standard CODESYS hardware, Ethernet, Modbus and fieldbus devices often sit in the device tree as direct children of the PLC device, next to `Plc Logic`, rather than under a `Communication` node. These device-tree siblings are exported to `<device>/devices/<name>.xml` using a native recursive export, one file per top-level device. Children that contain an `Application` (for example the SafetyPLC and StandardPLC of a compound safety project) are excluded, as they are already exported through their own device entrypoint.
+
+**To disable the device-tree export, add a folder with the name `_NO_EXPORT` as a direct child of the PLC device.** The existing `_NO_EXPORT` folder under `Communication` continues to disable only the `Communication` export.
+
 ## Status
 
 CODESCRIBE has been tested only on CODESYS V3.5 SP11, using the project structure supplied by the IFM CR711s packages. Version 0.2.0 was validated end-to-end on V3.5 SP11 (32-bit) with an IFM CR711S compound (Standard + SIL2) project: export/import round-trip, code generation, simulation and a hardware download.
