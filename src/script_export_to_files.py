@@ -2,7 +2,6 @@
 from __future__ import print_function
 
 import os
-import shutil
 
 import scriptengine  # type: ignore
 
@@ -46,12 +45,10 @@ try:
     src_folder = get_src_folder(scriptengine.projects.primary)
     print("Writing to: " + src_folder)
 
-    if os.path.exists(src_folder):
-        shutil.rmtree(src_folder)
-    os.mkdir(src_folder)
+    staging_folder = begin_export_folder(src_folder)
 
     for device_obj in get_device_entrypoints(scriptengine.projects.primary):
-        device_folder = os.path.join(src_folder, device_obj.get_name())
+        device_folder = os.path.join(staging_folder, device_obj.get_name())
         os.mkdir(device_folder)
 
         application = find_application(device_obj)
@@ -64,6 +61,8 @@ try:
         communication = find_communication(device_obj)
         if communication is not None:
             export_communication(communication, device_folder)
+
+    finalize_export_folder(src_folder, staging_folder)
 except Exception as e:
     print(e)
     ui_error_with_traceback("Export To Files failed!")
