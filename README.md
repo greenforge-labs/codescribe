@@ -1,5 +1,7 @@
 # CODESCRIBE
 
+[![CI](https://github.com/greenforge-labs/codescribe/actions/workflows/ci.yml/badge.svg)](https://github.com/greenforge-labs/codescribe/actions/workflows/ci.yml)
+
 _/koh-DEH-skribe/_
 
 CODESYS plaintext import and export scripts.
@@ -14,6 +16,8 @@ CODESCRIBE supplies CODESYS scripts to:
 - update the current working project from a template by copying the template file and importing plaintext files
 
 ![toolbar](docs/toolbar.png)
+
+Since v0.2.0, each script reports its outcome in a dialog when it finishes. Failures show the full Python traceback, so problems no longer hide in the message view.
 
 With CODESCRIBE, a CODESYS project like this:
 ![example_project_codesys](docs/example_project_codesys.png)
@@ -37,7 +41,9 @@ The following items are exported:
 
 \*see [Exporting and Importing Communication Devices](#exporting-and-importing-communication-devices)
 
-Items are exported in formatted structured text (`.st`) where possible, and in native CODESYS xml everywhere else.
+Items are exported in formatted structured text (`.st`) where possible, and in native CODESYS xml everywhere else. The `.st` files are written as UTF-8, so non-ASCII content (Cyrillic, accented characters, smart punctuation) exports and round-trips correctly since v0.2.0.
+
+Since v0.2.0, Actions and Transitions export as `.st` rather than native xml. The kind is encoded in the filename (`MyPou.MyAction.action.st`, `MyPou.MyTransition.transition.st`) and the file contains the implementation text only, as these objects have no textual declaration. Exports made with earlier versions (where these objects were `.xml`) still import correctly; re-exporting once after upgrading migrates the tracked files to the new format.
 
 ## Project Templates
 
@@ -57,9 +63,11 @@ Exporting communication devices has been hardcoded to create folders for top-lev
 
 **If this functionality is causing you problems, it can be disabled by adding a folder with the name `_NO_EXPORT` directly under `Communication`.** You can then still rely on your project template to carry your communication configurations.
 
+Devices that have no `Communication` object at all are also supported since v0.2.0. The communication step is skipped for that device and no `communication` folder is created in the export; before v0.2.0 this aborted the export, import or Save As Template for the whole device.
+
 ## Status
 
-CODESCRIBE has been tested only on CODESYS V3.5 SP11, using the project structure supplied by the IFM CR711s packages.
+CODESCRIBE has been tested only on CODESYS V3.5 SP11, using the project structure supplied by the IFM CR711s packages. Version 0.2.0 was validated end-to-end on V3.5 SP11 (32-bit) with an IFM CR711S compound (Standard + SIL2) project: export/import round-trip, code generation, simulation and a hardware download.
 
 ## Installing
 
@@ -113,7 +121,7 @@ Once installed, proceed to [Adding the Script Toolbar to CODESYS](#adding-the-sc
 
 5. Under Categories, scroll down, select ScriptEngine Commands and pick the script you want to add
 
-    - Scripts supplied by this repo are `Export To Files`, `Export From Files`, `Save As Template` and `Update From Template`
+    - Scripts supplied by this repo are `Export To Files`, `Import From Files`, `Save As Template` and `Update From Template`
 
     ![Step 5](docs/step_5.png)
 
@@ -128,6 +136,21 @@ Once installed, proceed to [Adding the Script Toolbar to CODESYS](#adding-the-sc
 8. You should now have new icons available in your toolbar
 
     ![Step 8](docs/step_8.png)
+
+## Development
+
+The scripts run inside the CODESYS ScriptEngine, which embeds IronPython 2.7:
+
+- All code in `src/` must be Python 2.7 compatible.
+- Source files must be pure ASCII. IronPython enforces PEP 263 (ASCII source unless an encoding is declared), and a single stray em-dash or smart quote in a comment will make CODESYS refuse to load the file.
+- `main` is protected: changes go through a pull request and the CI checks must pass.
+
+CI runs two jobs on every pull request (see `.github/workflows/ci.yml` and `tools/ci/`):
+
+- `ascii-check`: fails on any non-ASCII byte in `src/*.py`.
+- `ironpython`: compiles every src file with real IronPython 2.7.12 (catches Python 2 syntax errors) and imports the library modules against a stubbed `scriptengine` (catches module-scope errors).
+
+Note that `python -m py_compile` under Python 3 is not a sufficient local check; it misses both failure classes above.
 
 ## CODESYS Scripting Docs
 
