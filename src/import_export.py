@@ -123,6 +123,16 @@ def export_gvl(child_obj, parent_obj, parent_folder_path, export_child_fn):
         write_st_decl_only(child_obj, f)
 
 
+def find_gvl_or_error(parent_obj, name, err):
+    # Persistent variable lists carry their own GUID, so a freshly imported GVL can be
+    # either type.
+    for gvl_type in (ObjectType.GVL, ObjectType.GVL_PERSISTENT):
+        found = first_of_type_or_none(parent_obj.find(name), gvl_type)
+        if found is not None:
+            return found
+    raise ValueError(err)
+
+
 def import_gvl(child, dir_path, dir_parent_obj, import_dir_fn):
     """
     Import the native xml and then overwrite the textual definition with the structured text.
@@ -140,8 +150,8 @@ def import_gvl(child, dir_path, dir_parent_obj, import_dir_fn):
     gvl_xml_path = os.path.join(dir_path, name + ".gvl.xml")
     if os.path.exists(gvl_xml_path):
         import_native(gvl_xml_path, dir_path, dir_parent_obj, import_dir_fn)
-        imported_obj = first_of_type_or_error(
-            dir_parent_obj.find(name), ObjectType.GVL, name + " GVL should have been created, but cannot be found"
+        imported_obj = find_gvl_or_error(
+            dir_parent_obj, name, name + " GVL should have been created, but cannot be found"
         )
     else:
         imported_obj = dir_parent_obj.create_gvl(name)
@@ -152,6 +162,12 @@ def import_gvl(child, dir_path, dir_parent_obj, import_dir_fn):
 
 def export_native(child_obj, parent_obj, parent_folder_path, export_child_fn):
     write_native(child_obj, os.path.join(parent_folder_path, child_obj.get_name() + ".xml"), recursive=False)
+
+
+def export_visualisation(child_obj, parent_obj, parent_folder_path, export_child_fn):
+    # Visualisations regularly share a name with a POU (a Main program and a Main
+    # visualisation, for example), which would collide on Main.xml.
+    write_native(child_obj, os.path.join(parent_folder_path, child_obj.get_name() + ".vis.xml"), recursive=False)
 
 
 def export_native_recursive(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -172,7 +188,9 @@ def import_dut(child, dir_path, dir_parent_obj, import_dir_fn):
     dut_obj = dir_parent_obj.create_dut(filename)
     with open_utf8(os.path.join(dir_path, child), "r") as f:
         f.seek(0)
-        dut_obj.textual_declaration.replace(f.read())
+        # Normalize trailing whitespace the same way import_st does, so that
+        # export -> import -> export round-trips are byte-identical.
+        dut_obj.textual_declaration.replace(f.read().strip() + u"\n")
 
 
 def export_method(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -287,11 +305,13 @@ OBJECT_TYPE_TO_EXPORT_FUNCTION = {
     ObjectType.FOLDER: export_folder,
     ObjectType.POU: export_pou,
     ObjectType.GVL: export_gvl,  # EVL, NVL are "special types" of GVL which show up with the same UUID
+    ObjectType.GVL_PERSISTENT: export_gvl,  # persistent variable lists have their own GUID
     ObjectType.EVC: export_native,
-    ObjectType.VISUALISATION: export_native,
+    ObjectType.VISUALISATION: export_visualisation,
     ObjectType.TASK_CONFIGURATION: export_native_recursive,
     ObjectType.DUT: export_dut,
     ObjectType.METHOD: export_method,
+    ObjectType.METHOD_NORET: export_method,  # methods without a return type have their own GUID
     ObjectType.PROPERTY: export_sub_pou,
     ObjectType.ACTION: export_action,
     ObjectType.TRANSITION: export_transition,

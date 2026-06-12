@@ -8,8 +8,8 @@ import scriptengine  # type: ignore
 
 from communication_import_export import export_communication
 from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
-from import_export import OBJECT_TYPE_TO_EXPORT_FUNCTION
-from object_type import get_object_type
+from import_export import OBJECT_TYPE_TO_EXPORT_FUNCTION, write_native
+from object_type import ObjectType, get_object_type
 from util import *
 
 
@@ -18,6 +18,25 @@ def export_child(child_obj, parent_obj, parent_folder_path):
     export_fn = OBJECT_TYPE_TO_EXPORT_FUNCTION.get(child_obj_type)
     if export_fn is not None:
         export_fn(child_obj, parent_obj, parent_folder_path, export_child)
+        return
+
+    if child_obj_type == ObjectType.UNKNOWN:
+        # An unmapped GUID would otherwise be dropped from the export without a trace
+        # (seen with diagram objects such as an LD nested inside a CFC). Fall back to a
+        # native export and keep walking the children.
+        try:
+            write_native(child_obj, os.path.join(parent_folder_path, child_obj.get_name() + ".xml"), recursive=False)
+        except Exception as fallback_error:
+            print(
+                "Warning: failed to export '"
+                + child_obj.get_name()
+                + "' (unmapped type GUID "
+                + str(child_obj.type)
+                + "): "
+                + str(fallback_error)
+            )
+        for c in child_obj.get_children():
+            export_child(c, child_obj, parent_folder_path)
 
 
 try:

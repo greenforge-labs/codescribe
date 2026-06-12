@@ -33,6 +33,12 @@ def import_directory_child(child, dir_path, dir_parent_obj):
             pass
         if ext == ".st":
             import_gvl(child, dir_path, dir_parent_obj, import_directory)
+    elif filename.endswith(".vis"):
+        # Visualisations export with a .vis.xml suffix so they cannot collide with a
+        # POU of the same name. Plain <name>.xml visualisations from older exports
+        # still arrive through the bare-xml import below.
+        if ext == ".xml":
+            import_native(child, dir_path, dir_parent_obj, import_directory)
     elif "." in filename:
         # . means some sort of sub POU (method, action, transition, property)
         if ext == ".xml":
