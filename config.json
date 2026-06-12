@@ -7,6 +7,13 @@
         "Params": []
     },
     {
+        "Name": "Export Lib To Files",
+        "Desc": "Export a library project to files on disk.",
+        "Icon": "codescribe\\icons\\export_to_files.ico",
+        "Path": "codescribe\\src\\script_lib_export_to_files.py",
+        "Params": []
+    },
+    {
         "Name": "Import From Files",
         "Desc": "Import from files on disk.",
         "Icon": "codescribe\\icons\\import_from_files.ico",
