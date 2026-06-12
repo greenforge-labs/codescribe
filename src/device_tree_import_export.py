@@ -62,6 +62,12 @@ def export_device_tree_siblings(device_obj, device_folder, application, communic
 
 
 def import_device_tree_siblings(device_obj, device_folder):
+    # import_native always pastes the archived object as a child of the receiving node,
+    # it never replaces in place. So the only way to update a tracked device is to
+    # remove it and import the xml into the PLC device. Devices fixed by the device
+    # package (e.g. Local_IO and HMI on IFM hardware) cannot be removed; their
+    # configuration is carried by the project template, like the fixed top-level
+    # communication devices, so they are skipped with a message.
     devices_folder = os.path.join(device_folder, DEVICE_TREE_FOLDER_NAME)
     if not os.path.exists(devices_folder):
         return
@@ -69,17 +75,21 @@ def import_device_tree_siblings(device_obj, device_folder):
     if no_export_device_tree(device_obj):
         return
 
-    remove_tracked_device_tree_devices(device_obj, device_folder)
-
     for child_name in sorted(os.listdir(devices_folder)):
         name, ext = os.path.splitext(child_name)
         if ext != ".xml":
             continue
 
         device_node = _find_device_tree_sibling(device_obj, name)
-        if device_node is None:
-            raise ValueError("Cannot find device-tree device with name " + name)
-        read_native(os.path.join(devices_folder, child_name), device_node)
+        if device_node is not None:
+            try:
+                device_node.remove()
+            except Exception:
+                print("Cannot remove fixed device " + name + ", skipping its import (the template carries its configuration)")
+                continue
+        # Missing device (fresh project from a template) and removed device both
+        # import the same way: the xml recreates the device under the PLC device.
+        read_native(os.path.join(devices_folder, child_name), device_obj)
 
 
 def remove_tracked_device_tree_devices(device_obj, device_folder):
@@ -98,6 +108,8 @@ def remove_tracked_device_tree_devices(device_obj, device_folder):
         device_node = _find_device_tree_sibling(device_obj, name)
         if device_node is None:
             continue
-        # snapshot the children: removing while iterating the live collection skips entries
-        for child in list(device_node.get_children()):
-            child.remove()
+        try:
+            device_node.remove()
+        except Exception:
+            # Fixed package devices stay in the template; import skips them too.
+            print("Cannot remove fixed device " + name + ", leaving it in the template")
