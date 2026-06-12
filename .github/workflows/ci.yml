@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  ascii-check:
+    name: ascii-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail on non-ASCII bytes in src/*.py
+        run: python3 tools/ci/check_ascii.py
+
+  ironpython:
+    name: ironpython
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download IronPython 2.7.12
+        shell: pwsh
+        run: |
+          curl.exe -sL -o ipy.zip https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.12/IronPython.2.7.12.zip
+          Expand-Archive ipy.zip -DestinationPath ipy
+      - name: Compile all src files with IronPython 2.7
+        shell: pwsh
+        run: .\ipy\net45\ipy.exe tools\ci\compile_all.py
+      - name: Import smoke test with stubbed scriptengine
+        shell: pwsh
+        run: .\ipy\net45\ipy.exe tools\ci\import_smoke.py
