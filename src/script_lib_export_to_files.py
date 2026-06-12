@@ -22,6 +22,7 @@ SKIP_NAMES = [
     "Visualization Manager",
     "Alarm Configuration",
     "Recipe Manager",
+    "__VisualizationStyle",  # auto-created in every project; native export of it fails
 ]
 
 
