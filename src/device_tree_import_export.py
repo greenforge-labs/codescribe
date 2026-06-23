@@ -26,6 +26,17 @@ def _find_device_tree_sibling(device_obj, name):
     return None
 
 
+def _contains_task_configuration(root_obj):
+    stack = [root_obj]
+    while len(stack) > 0:
+        current = stack.pop()
+        if get_object_type(current) == ObjectType.TASK_CONFIGURATION:
+            return True
+        for child in current.get_children():
+            stack.append(child)
+    return False
+
+
 def export_device_tree_siblings(device_obj, device_folder, application, communication):
     """
     Export device-tree devices that sit next to Plc Logic as direct children of the PLC device
@@ -41,11 +52,12 @@ def export_device_tree_siblings(device_obj, device_folder, application, communic
             continue
         if communication is not None and child == communication:
             continue
-        # Skip children that carry an Application anywhere in their subtree, not just the
-        # Application passed in. In compound safety projects (e.g. the IFM CR711s) the
-        # SafetyPLC and StandardPLC are DEVICE children that each carry their own
-        # Application and are already exported through their own device entrypoint.
-        if first_or_none(child.find("Application", recursive=True)) is not None:
+        # Skip children that carry their own application subtree. Detect that by
+        # Task Configuration presence rather than the node name, which may be renamed.
+        # In compound safety projects (e.g. the IFM CR711s) the SafetyPLC and
+        # StandardPLC are DEVICE children that each carry their own application and
+        # are already exported through their own device entrypoint.
+        if _contains_task_configuration(child):
             continue
         siblings.append(child)
 

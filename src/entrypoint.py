@@ -23,11 +23,44 @@ def get_device_entrypoints(project):
         yield child
 
 
+def _subtree_contains_type(root_obj, object_type):
+    stack = [root_obj]
+    while len(stack) > 0:
+        current = stack.pop()
+        if get_object_type(current) == object_type:
+            return True
+        for child in current.get_children():
+            stack.append(child)
+    return False
+
+
 def find_application(device_obj):
-    return first_or_error(
-        device_obj.find("Application", recursive=True),
-        "Couldn't find Application inside " + device_obj.get_name(),
-    )
+    # Backward-compatible fast path for the classic default name.
+    by_name = first_or_none(device_obj.find("Application", recursive=True))
+    if by_name is not None:
+        return by_name
+
+    # Some projects rename the node (e.g. RAM3). Detect the application by the
+    # stable object graph marker: it owns a Task Configuration in its subtree.
+    candidates = []
+    for child in device_obj.get_children():
+        if _subtree_contains_type(child, ObjectType.TASK_CONFIGURATION):
+            candidates.append(child)
+
+    if len(candidates) == 1:
+        return candidates[0]
+
+    if len(candidates) > 1:
+        names = ", ".join([c.get_name() for c in candidates])
+        raise ValueError(
+            "Found multiple application candidates inside "
+            + device_obj.get_name()
+            + ": "
+            + names
+            + ". Keep one entrypoint per device."
+        )
+
+    raise ValueError("Couldn't find Application inside " + device_obj.get_name())
 
 
 def find_communication(device_obj):
