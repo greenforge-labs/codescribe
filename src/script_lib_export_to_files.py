@@ -5,7 +5,7 @@ import os
 
 import scriptengine  # type: ignore
 
-from entrypoint import get_src_folder
+from entrypoint import get_lib_src_folder
 import graphical_export
 from import_export import OBJECT_TYPE_TO_EXPORT_FUNCTION, SERVICE_EXPORT_FUNCTIONS, write_native
 from object_type import ObjectType, get_object_type
@@ -69,7 +69,7 @@ try:
     assert_project_open()
     graphical_export.reset_stats()
 
-    src_folder = get_src_folder(scriptengine.projects.primary)
+    src_folder = get_lib_src_folder(scriptengine.projects.primary)
     print("Writing to: " + src_folder)
 
     # A device project keeps its objects under Devices, which this walker never

@@ -115,7 +115,7 @@ Exports made with older versions of CODESCRIBE use different filenames for some 
 
 ## Export Lib To Files
 
-Library projects keep their POUs, DUTs, GVLs and folders directly under the project root rather than under a Device, so `Export To Files` (which walks device entrypoints) exports nothing for them. `Export Lib To Files` walks the project root instead and writes the same on-disk format as `Export To Files`, without the device and application folder levels. Service objects (Library Manager, Project Information, Project Settings, and the Task/Symbol/Visualization/Alarm/Recipe manager objects) are skipped.
+Library projects keep their POUs, DUTs, GVLs and folders directly under the project root rather than under a Device, so `Export To Files` (which walks device entrypoints) exports nothing for them. `Export Lib To Files` walks the project root instead and writes the same on-disk format as `Export To Files` in a sibling folder called `POUs`, without the device and application folder levels. Service objects (Library Manager, Project Information, Project Settings, and the Task/Symbol/Visualization/Alarm/Recipe manager objects) are skipped.
 
 Importing a library export back into a project is not yet supported.
 
