@@ -2,7 +2,13 @@ import os
 
 from communication_import_export import import_communication
 from device_tree_import_export import import_device_tree_siblings
-from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
+from entrypoint import (
+    find_application,
+    find_communication,
+    get_device_entrypoints,
+    get_lib_src_folder,
+    get_src_folder,
+)
 from import_export import *
 from util import *
 
@@ -97,3 +103,14 @@ def import_from_files(project):
             import_communication(communication, device_folder)
 
         import_device_tree_siblings(device_obj, device_folder)
+
+
+def import_lib_from_files(project):
+    pous_folder = get_lib_src_folder(project)
+    print("Reading from: " + pous_folder)
+    assert_path_exists(pous_folder)
+
+    # Service/manager objects are not in OBJECT_TYPE_TO_EXPORT_FUNCTION, so they are
+    # left in place here (they are ignored by the lib export too).
+    remove_tracked_objects(project.get_children())
+    import_directory(pous_folder, project)

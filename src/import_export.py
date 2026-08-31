@@ -446,5 +446,16 @@ OBJECT_TYPE_TO_EXPORT_FUNCTION = {
 def remove_tracked_objects(obj_list):
     for obj in obj_list:
         if get_object_type(obj) in OBJECT_TYPE_TO_EXPORT_FUNCTION:
-            print("Removing " + obj.get_name())
-            obj.remove()
+            try:
+                print("Removing " + obj.get_name())
+                obj.remove()
+            except StandardError as remove_error:
+                # Implicitly generated objects (e.g. functions generated from the project
+                # information) cannot be removed; leave them in place.
+                print(
+                    "Warning: could not remove '"
+                    + obj.get_name()
+                    + "' ("
+                    + str(remove_error)
+                    + "); leaving it in place"
+                )

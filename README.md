@@ -29,6 +29,7 @@ CODESCRIBE supplies five scripts that run inside the CODESYS ScriptEngine and ap
 - `Save As Template` generates a "template" project by making a copy of the current project and deleting all exportable objects
 - `Update From Template` updates the current working project by copying the template file and importing the plaintext files
 - `Export Lib To Files` exports a library project, which keeps its objects directly under the project root rather than under a Device (see [Export Lib To Files](#export-lib-to-files))
+- `Import Lib From Files` imports the files exported by `Export Lib To Files` back into a library project
 
 A typical workflow:
 
@@ -117,7 +118,7 @@ Exports made with older versions of CODESCRIBE use different filenames for some 
 
 Library projects keep their POUs, DUTs, GVLs and folders directly under the project root rather than under a Device, so `Export To Files` (which walks device entrypoints) exports nothing for them. `Export Lib To Files` walks the project root instead and writes the same on-disk format as `Export To Files` in a sibling folder called `POUs`, without the device and application folder levels. Service objects (Library Manager, Project Information, Project Settings, and the Task/Symbol/Visualization/Alarm/Recipe manager objects) are skipped.
 
-Importing a library export back into a project is not yet supported.
+`Import Lib From Files` reads the `POUs` folder back into a library project: it removes tracked objects from the project root and recreates them from the exported files.
 
 ## Project Templates
 
@@ -209,7 +210,7 @@ Once installed, proceed to [Adding the Script Toolbar to CODESYS](#adding-the-sc
 
 5. Under Categories, scroll down, select ScriptEngine Commands and pick the script you want to add
 
-    - Scripts supplied by this repo are `Export To Files`, `Export Lib To Files`, `Import From Files`, `Save As Template` and `Update From Template`
+    - Scripts supplied by this repo are `Export To Files`, `Export Lib To Files`, `Import From Files`, `Import Lib From Files`, `Save As Template` and `Update From Template`
 
     ![Step 5](docs/step_5.png)
 
