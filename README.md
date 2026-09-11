@@ -63,8 +63,8 @@ Actions and Transitions export as `.st` with the kind encoded in the filename (`
 
 Two service objects export **read-only** — written on every export, never imported (the project template carries the real objects):
 
-- The Library Manager exports its reference list as `<name>.libraries.txt` (one line per library: name, version, vendor), so a review or bench check knows exactly which library versions the project resolves.
-- The Visualization Manager exports natively as `<name>.service.txt` (recursively, so the global hotkey/key configuration and target/web visualization settings are included). Importing this object raises interactive overwrite dialogs, which is why it is not round-tripped.
+- The Library Manager exports its reference list as `<name>.libraries.txt` (one line per library: name, version, vendor), so a review or bench check can see the version each library resolves to - shown where CODESYS reports it, and as the requested constraint (such as `*` for newest) where it does not.
+- The Visualization Manager exports natively as `<name>.service.txt` (recursively, to take in the target and web visualization settings under it; the global hotkey/key configuration is in the manager entry itself). Importing this object raises interactive overwrite dialogs, which is why it is not round-tripped.
 
 ### Reading graphical POUs
 
@@ -234,10 +234,11 @@ The scripts run inside the CODESYS ScriptEngine, which embeds IronPython 2.7:
 - `main` is protected: changes go through a pull request and the CI checks must pass.
 - Changes that alter the export format or behaviour should be noted in [CHANGELOG.md](CHANGELOG.md).
 
-CI runs two jobs on every pull request (see `.github/workflows/ci.yml` and `tools/ci/`):
+CI runs three jobs on every pull request (see `.github/workflows/ci.yml` and `tools/ci/`):
 
-- `ascii-check`: fails on any non-ASCII byte in `src/*.py`.
-- `ironpython`: compiles every src file with real IronPython 2.7.12 (catches Python 2 syntax errors) and imports the library modules against a stubbed `scriptengine` (catches module-scope errors).
+- `ascii-check`: fails on any non-ASCII byte in `src/*.py`, then compiles every src file with Python 3.
+- `ironpython`: compiles every src file with real IronPython 2.7.12 (catches Python 2 syntax errors), imports the library modules against a stubbed `scriptengine` (catches module-scope errors), and runs the four renderer test suites under IronPython 2.7.
+- `ladder`: runs the same four renderer test suites under Python 3.
 
 Note that `python -m py_compile` under Python 3 is not a sufficient local check; it misses both failure classes above.
 
