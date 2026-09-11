@@ -226,27 +226,54 @@ def _build_block(node, by_id, visiting, via_pin, drawn):
     side_pins = []
     pin_blocks = []
 
+    # Several connections landing on one pin are a wired OR into that pin -
+    # the same several-<connection>-under-one-connectionPointIn shape a coil
+    # or a contact collects into a Parallel. Grouped by pin so those branches
+    # feed the pin as one OR, rather than being spread across duplicate
+    # captions ("IN := xStart, IN := xRun") that lose the OR and read as two
+    # separate pins.
+    order = []
+    grouped = {}
     for connection in node.inputs:
-        upstream = by_id.get(connection.ref_id)
-        if upstream is None:
-            side_pins.append((connection.target_pin, "?"))
+        if connection.target_pin not in grouped:
+            grouped[connection.target_pin] = []
+            order.append(connection.target_pin)
+        grouped[connection.target_pin].append(connection)
+
+    for pin in order:
+        connections = grouped[pin]
+        branches = []
+        all_from_variables = True
+        for connection in connections:
+            upstream = by_id.get(connection.ref_id)
+            if upstream is None:
+                continue
+            if upstream.kind != IN_VARIABLE:
+                all_from_variables = False
+            branches.append(_build_expr(upstream, by_id, visiting, connection.source_pin, drawn))
+        # The bubble and the P or N ride on the pin, so every connection to it
+        # carries the same pair; the first speaks for the group.
+        negated = connections[0].negated
+        edge = connections[0].edge
+        if not branches:
+            side_pins.append((pin, "?"))
             continue
-        sub_expr = _build_expr(upstream, by_id, visiting, connection.source_pin, drawn)
-        if upstream.kind == IN_VARIABLE:
+        feed = branches[0] if len(branches) == 1 else parallel(branches)
+        if all_from_variables:
             # Flattened through expr_to_text, not taken from the raw label:
             # an in-place negated inVariable must keep its NOT, or the pin
             # silently inverts.
-            side_pins.append((connection.target_pin, _pin_text(sub_expr, connection, pin_blocks)))
+            side_pins.append((pin, _pin_text(feed, connections[0], pin_blocks)))
         elif power_pin is None:
-            power_pin = connection.target_pin
-            power_expr = sub_expr
+            power_pin = pin
+            power_expr = feed
             # The pin's own negation bubble; it inverts the power flow at the
             # box wall, after everything the rung has accumulated. The P or N
             # on that pin sits there too.
-            power_negated = connection.negated
-            power_edge = connection.edge
+            power_negated = negated
+            power_edge = edge
         else:
-            side_pins.append((connection.target_pin, _pin_text(sub_expr, connection, pin_blocks)))
+            side_pins.append((pin, _pin_text(feed, connections[0], pin_blocks)))
 
     input_pins = []
     if power_pin is not None:

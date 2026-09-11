@@ -194,6 +194,31 @@ def check_golden(name, rendered_lines, golden_path):
 check_golden("golden output matches", rendered, EXPECTED)
 
 
+# --- a wired OR into a block pin ---------------------------------------------
+
+# Two contacts in parallel feeding a timer's IN pin - a seal-in, the most
+# ordinary shape in ladder. PLCopen writes the OR as two <connection> under
+# the pin's one connectionPointIn, exactly as it does for a coil. The builder
+# read each connection as a pin of its own, so the box drew two IN rows and
+# the ST emitted "tmr(IN := xStart, IN := xRun)" - the OR lost, and read as a
+# timer with two IN pins. The connections on one pin are now OR'd into it.
+import st_render  # noqa: E402
+
+OR_INTO_PIN = os.path.join(FIXTURES, "ld-or-into-block-pin.xml")
+or_pou = parse_pous(OR_INTO_PIN)[0]
+or_st = st_render.render_pou(or_pou)
+or_art = render_pou(or_pou)
+
+check("or into pin: the pin reads the OR", any("tmr(IN := (xStart OR xRun));" in line for line in or_st))
+check("or into pin: the timer is called once", len([l for l in or_st if l.strip().startswith("tmr(")]) == 1)
+check("or into pin: no duplicate IN argument", not any("IN := xStart, IN := xRun" in line for line in or_st))
+check_equal("or into pin: one box is drawn", len([l for l in or_art if "tmr : TON" in l and ";" not in l]), 1)
+# The two contacts are drawn in parallel ahead of the box, not as two pins.
+check_equal("or into pin: the box has one IN row", len([l for l in or_art if "IN" in l and U["PIN_L"] in l]), 1)
+check("or into pin: the branch is drawn", any(U["T_DOWN"] in l for l in or_art) and any(U["BL"] in l for l in or_art))
+check("or into pin: both contacts are shown", any("xStart" in l for l in or_art) and any("xRun" in l for l in or_art))
+
+
 # --- logic fidelity ----------------------------------------------------------
 
 # Shapes that were dropped or inverted: a rung ending in a jump, its label, a
