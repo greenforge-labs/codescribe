@@ -445,8 +445,8 @@ def build_networks(nodes):
         return root_of(node)
 
     return [
-        Network(comment=comment, title=title, outputs=rungs)
-        for comment, title, rungs in assemble_networks(nodes, network_root, rungs_by_root, label_roots)
+        Network(comment=comment, title=title, label=label, outputs=rungs)
+        for comment, title, label, rungs in assemble_networks(nodes, network_root, rungs_by_root, label_roots)
     ]
 
 

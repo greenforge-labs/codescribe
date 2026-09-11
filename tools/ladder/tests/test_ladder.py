@@ -205,8 +205,9 @@ fidelity_pou = parse_pous(LD_FIDELITY)[0]
 fidelity_st = st_render.render_pou(fidelity_pou)
 fidelity_art = render_pou(fidelity_pou)
 
-# The jump rung and the label rung must both survive as rungs at all.
-check_equal("fidelity: all seven rungs survive", len(fidelity_pou.rungs), 7)
+# The jump rung must survive as a rung at all; the label is the network's,
+# not a rung, and is counted with the networks below.
+check_equal("fidelity: all six rungs survive", len(fidelity_pou.rungs), 6)
 
 # A jump's target lives in a "label" attribute; losing it drew ">>?" and
 # emitted no ST for the whole rung, guard included.
@@ -215,7 +216,10 @@ check("fidelity: jump target is drawn", any(">>SKIP" in line for line in fidelit
 # like the label it targets - not as a note about the program.
 check("fidelity: guarded jump reaches ST", "IF xGo THEN JMP SKIP; END_IF" in fidelity_st)
 check("fidelity: no jump is dressed as a comment", not any("(* JMP" in line for line in fidelity_st))
-check("fidelity: label is drawn", any("SKIP:" in line for line in fidelity_art))
+# A label is the network's own, so it is written under the network's header
+# the way the export writes it - and never as a rung.
+check("fidelity: label heads its network", "SKIP:" in fidelity_art)
+check("fidelity: label is not drawn as a rung", not any("SKIP:" in line and U["T_RIGHT"] in line for line in fidelity_art))
 # A jump target is program structure, not documentation: it is written the
 # way ST writes it, and not inside the delimiters this file uses for comments.
 check("fidelity: label reaches ST", "SKIP:" in fidelity_st)
@@ -414,13 +418,19 @@ check_equal("ld empty: and holds the timer", len(ld_empty_pou.networks[2].output
 
 # A jump label is stored on its network in CODESYS but exported just before
 # it, wired to nothing. Counting it as a network of its own put it under a
-# number of its own and pushed every later number out by one.
+# number of its own and pushed every later number out by one; carrying it
+# into the network's body drew it as a rung, and twice over once the native
+# export supplied the label as well. It is the network's label, nothing else.
 check_equal("fidelity: six networks, not seven", len(fidelity_pou.networks), 6)
-check_equal("fidelity: the label joins the network it labels", len(fidelity_pou.networks[1].outputs), 2)
+check_equal("fidelity: the label is the network's own", fidelity_pou.networks[1].label, "SKIP")
+check_equal("fidelity: and is not in its body", len(fidelity_pou.networks[1].outputs), 1)
 check(
-    "fidelity: the label is drawn above that network",
-    isinstance(fidelity_pou.networks[1].outputs[0], Element)
-    and fidelity_pou.networks[1].outputs[0].kind == LABEL,
+    "fidelity: no label element is left in any body",
+    not any(
+        isinstance(rung, Element) and rung.kind == LABEL
+        for network in fidelity_pou.networks
+        for rung in network.outputs
+    ),
 )
 
 # A negated wired output feeding a coil, and only one bubble drawn for it.

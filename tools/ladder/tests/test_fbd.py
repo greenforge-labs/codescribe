@@ -234,7 +234,8 @@ flow_art = fbd_render.render_pou(flow)
 # it arrives wired to nothing. Counting it as a network of its own put the
 # label under its own number and pushed every later number out by one.
 check_equal("flow: three networks survive", len(flow.networks), 3)
-check("flow: the label heads the network it labels", isinstance(flow.networks[2].outputs[0], Label))
+check_equal("flow: the label is the network's own", flow.networks[2].label, "END")
+check("flow: the label is not in the network's body", not any(isinstance(tree, Label) for tree in flow.networks[2].outputs))
 
 # A jump terminates a network. Leaving it out of SINK_KINDS dropped the entire
 # guard network, because nothing else consumed the OR feeding it.
@@ -242,6 +243,8 @@ check("flow: the guard network is not dropped", any("JMP END" in line for line i
 check("flow: the jump condition is kept", any("Mode.Current = Mode.ESTOP" in line for line in flow_st))
 check("flow: the jump target is drawn", any(">> END" in line for line in flow_art))
 check("flow: the label is shown", "END:" in flow_st)
+check("flow: the label heads the diagram too", "END:" in flow_art)
+check("flow: the label is not drawn as a rung", not any("END:" in line and line != "END:" for line in flow_art))
 check("flow: the label is not dressed as a comment", not any("(* label" in line for line in flow_st + flow_art))
 
 # negated="true" on an inVariable inverts the logic if it is ignored.
@@ -251,7 +254,7 @@ check_equal("flow: negation renders", box(guard.condition).inputs[0][1].text, "N
 check("flow: negation survives into ST", any("(NOT xInitDone) OR" in line for line in flow_st))
 
 # An EXECUTE box is nothing but inline ST; drawing the box alone loses it all.
-execute = flow.networks[2].outputs[1]
+execute = flow.networks[2].outputs[0]
 check_equal("flow: inline ST is captured", len(execute.st_code), 4)
 check("flow: inline ST reaches the ST output", any("Status.Faulted := FALSE;" in line for line in flow_st))
 # The EN pin genuinely guards the box, so it has to show up as a condition

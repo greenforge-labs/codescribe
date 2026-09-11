@@ -462,6 +462,41 @@ check_equal("an empty one says it is empty", aligned[2].note, native_networks.NO
 check_equal("and carries its label", aligned[2].label, "RETRY")
 
 
+# --- a label on a network that has logic -------------------------------------
+
+# CODESYS keeps a jump label on its network; PLCopen writes it as a loose
+# element just before the network's body. The header wrote the label from the
+# native list, and the parsed element was still in the body, so the label
+# came out twice: under the header, and again as a rung. The committed
+# GraphicalTesting files never showed it, because both of their labels sit
+# on empty networks, whose label element parses into a network of its own.
+LABELLED = os.path.join(HERE, "fixtures", "r2-4-ld-label-on-wired-network.plcopen.xml")
+LABELLED_NATIVE = os.path.join(HERE, "fixtures", "r2-4-ld-label-on-wired-network.native.xml")
+graphical_export.reset_stats()
+labelled = graphical_export.render_plcopen(LABELLED, None, None, LABELLED_NATIVE)
+check("labelled: the networks line up with the native list", graphical_export.ALIGNMENT_WARNING not in labelled)
+check_equal("labelled: one header per editor network", len([line for line in labelled if line.startswith("(* Network ")]), 5)
+second = labelled.index("(* Network 2 *)")
+check_equal("labelled: the label is under its header", labelled[second + 1], "LATER:")
+check("labelled: the rung follows it", "xA" in labelled[second + 2] and "oA" in labelled[second + 2])
+check_equal("labelled: the label appears once", len([line for line in labelled if "LATER:" in line]), 1)
+third = labelled.index("(* Network 3 *)")
+check_equal(
+    "labelled: a label on an empty network stays with it",
+    labelled[third + 1 : third + 3],
+    ["LONELY:", "(* " + native_networks.NOTE_EMPTY + " *)"],
+)
+check_equal("labelled: that label appears once too", len([line for line in labelled if "LONELY:" in line]), 1)
+check("labelled: the jump still names its target", any(">>LATER" in line for line in labelled))
+
+# The same file without the native list, as the dev CLI renders it: the label
+# is the network's own either way, so it is written once, under the header.
+unlabelled = graphical_export.render_plcopen(LABELLED, None, None, None)
+check_equal("labelled: without the native list the label still appears once", len([line for line in unlabelled if "LATER:" in line]), 1)
+check_equal("labelled: and under its header", unlabelled[unlabelled.index("(* Network 2 *)") + 1], "LATER:")
+graphical_export.reset_stats()
+
+
 # --- read-only service exports: library list and visualisation manager ------
 
 # Library behaviour is not exportable, but which exact versions the project

@@ -147,11 +147,43 @@ def component_finder(nodes):
     return find
 
 
+def label_name(tree):
+    """The jump target a parsed label carries, or None for anything else.
+
+    FBD parses a label into a Label; LD parses it into an Element whose kind
+    says label. The two are different classes, and treating only one of them
+    as a label leaves the other in the network's body.
+    """
+    if isinstance(tree, Label):
+        return tree.name
+    if isinstance(tree, Element) and tree.kind == LABEL:
+        return tree.label
+    return None
+
+
+def _network(header, trees):
+    """(comment, title, label, outputs) - the label lifted out of the trees.
+
+    CODESYS keeps one label per network, so a second one cannot come from an
+    export; should one arrive it stays in the body, visible, rather than
+    being dropped.
+    """
+    label = ""
+    outputs = []
+    for tree in trees:
+        name = label_name(tree)
+        if name is not None and not label:
+            label = name
+        else:
+            outputs.append(tree)
+    return (header[0] or "", header[1] or "", label, outputs)
+
+
 def assemble_networks(nodes, root_of, outputs_by_root, label_roots=()):
     """Order the components of a body into networks, in editor order.
 
-    Returns [(comment, title, [outputs])]. Three things decide where a
-    network begins and what it is called:
+    Returns [(comment, title, label, [outputs])]. Three things decide where
+    a network begins and what it is called:
 
     * A comment or a title element is a header, and heads the network whose
       elements follow it. A second one of either means the header before it
@@ -164,7 +196,9 @@ def assemble_networks(nodes, root_of, outputs_by_root, label_roots=()):
       separates networks; the header only names the one it precedes.
     * A jump label is stored on the network in CODESYS but exported as a
       free-standing element just before it, so it arrives as a component of
-      its own. It belongs to the network that follows it.
+      its own. It belongs to the network that follows it - as that network's
+      label, not as part of its body. Left in the body it was drawn as a
+      rung, and twice over once the native export supplied the label too.
     """
     label_roots = set(label_roots)
     networks = []
@@ -176,7 +210,7 @@ def assemble_networks(nodes, root_of, outputs_by_root, label_roots=()):
         if node.kind in (COMMENT, TITLE):
             index = 0 if node.kind == COMMENT else 1
             if header[index] is not None:
-                networks.append((header[0] or "", header[1] or "", list(carried)))
+                networks.append(_network(header, list(carried)))
                 del carried[:]
                 header = [None, None]
             header[index] = node.label or ""
@@ -190,12 +224,12 @@ def assemble_networks(nodes, root_of, outputs_by_root, label_roots=()):
             carried.extend(outputs_by_root[root])
             continue
 
-        networks.append((header[0] or "", header[1] or "", carried + outputs_by_root[root]))
+        networks.append(_network(header, carried + outputs_by_root[root]))
         del carried[:]
         header = [None, None]
 
     if header[0] is not None or header[1] is not None or carried:
-        networks.append((header[0] or "", header[1] or "", list(carried)))
+        networks.append(_network(header, list(carried)))
     return networks
 
 
@@ -393,9 +427,10 @@ class Network(object):
         # CODESYS keeps a network's title separately from its comment, and
         # draws it above one. A network can carry either, both or neither.
         self.title = title
-        # The jump-target label CODESYS keeps on the network. Only filled in
-        # when the native export has been read, which is the only place it
-        # survives as a property of the network rather than a loose element.
+        # The jump-target label CODESYS keeps on the network. PLCopen writes
+        # it as a loose element just before the network's body, and the
+        # parser lifts it back here; the native export carries it as the
+        # property it is, and that one is taken in preference.
         self.label = label
         # Why this network has no body: out-commented, or empty. Set only for
         # networks the PLCopen export left out entirely.

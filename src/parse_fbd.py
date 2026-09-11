@@ -283,8 +283,8 @@ def build_networks(nodes):
         return find(node.local_id) if node.local_id in by_id else None
 
     return [
-        Network(comment=comment, title=title, outputs=outputs)
-        for comment, title, outputs in assemble_networks(nodes, root_of, outputs_by_root, label_roots)
+        Network(comment=comment, title=title, label=label, outputs=outputs)
+        for comment, title, label, outputs in assemble_networks(nodes, root_of, outputs_by_root, label_roots)
     ]
 
 

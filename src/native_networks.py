@@ -30,7 +30,7 @@ import os
 
 import plcopen
 import xmlbackend
-from model import LABEL, Element, Label, Network
+from model import Network
 
 # Said in the file itself, under the number the network occupies. A reviewer
 # reading only the .txt has to learn that logic exists here without
@@ -47,9 +47,10 @@ class NativeNetwork(object):
         self.empty = empty
         self.comment = comment
         self.title = title
-        # The jump-target label CODESYS stores on the network itself. PLCopen
-        # exports it as a free-standing element instead, which is why the
-        # label is taken from here rather than from the parsed body.
+        # The jump-target label CODESYS stores on the network itself. The
+        # parser lifts the free-standing element PLCopen writes into the
+        # network it precedes; this one is the editor's own, and is taken
+        # in preference.
         self.label = label
 
     @property
@@ -116,31 +117,15 @@ def read_networks(path):
     return networks or None
 
 
-def _is_label(tree):
-    """True for a parsed jump label, in either language's spelling.
-
-    FBD parses one into a Label; LD parses it into an Element whose kind says
-    label. The two are different classes, and treating only one of them as a
-    label leaves the other counting as a network body.
-    """
-    if isinstance(tree, Label):
-        return True
-    return isinstance(tree, Element) and tree.kind == LABEL
-
-
 def _carries_logic(network):
     """True for a parsed network that PLCopen exported a body for.
 
     A network the parser built from a comment element alone has no outputs,
-    and one holding only a jump label has nothing but labels - CODESYS keeps
-    a label on the network, so a label standing on its own is an artefact of
-    the export rather than a network. Neither is something the native list
-    has a body for, so neither takes part in the match.
+    and neither has one built from a jump label alone: the parser lifts the
+    label onto the network, where CODESYS keeps it. Neither is something the
+    native list has a body for, so neither takes part in the match.
     """
-    outputs = getattr(network, "outputs", [])
-    if not outputs:
-        return False
-    return not all(_is_label(tree) for tree in outputs)
+    return bool(getattr(network, "outputs", []))
 
 
 def align(native, parsed):
