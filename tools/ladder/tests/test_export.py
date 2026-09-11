@@ -497,6 +497,38 @@ check_equal("labelled: and under its header", unlabelled[unlabelled.index("(* Ne
 graphical_export.reset_stats()
 
 
+# --- the label of an out-commented network -----------------------------------
+
+# Item 38-4.1. The native list has network 1 out-commented with the label
+# SKIP, and network 2 with the label RUN and a body; the PLCopen export
+# carries network 2 alone, its label element first. The old alignment asked
+# only whether the native network had a label and whether the next parsed
+# element was one, so network 1 consumed RUN: the file showed RUN under the
+# "does not execute" line and no label on network 2, and a jump to RUN
+# appeared to target dead code. The rebuilt alignment takes every label from
+# the native list, on the network that owns it; this pins that.
+DISABLED = os.path.join(HERE, "fixtures", "38-1-ld-label-of-disabled-network.plcopen.xml")
+DISABLED_NATIVE = os.path.join(HERE, "fixtures", "38-1-ld-label-of-disabled-network.native.xml")
+graphical_export.reset_stats()
+disabled = graphical_export.render_plcopen(DISABLED, None, None, DISABLED_NATIVE)
+check("disabled label: the networks line up with the native list", graphical_export.ALIGNMENT_WARNING not in disabled)
+check_equal("disabled label: one header per editor network", len([line for line in disabled if line.startswith("(* Network ")]), 3)
+first = disabled.index("(* Network 1 *)")
+second = disabled.index("(* Network 2 *)")
+third = disabled.index("(* Network 3 *)")
+check_equal(
+    "disabled label: the out-commented network keeps its own label",
+    disabled[first + 1 : first + 3],
+    ["SKIP:", "(* " + native_networks.NOTE_OUT_COMMENTED + " *)"],
+)
+check("disabled label: it does not take the next network's label", "RUN:" not in disabled[first:second])
+check_equal("disabled label: the next network keeps its label", disabled[second + 1], "RUN:")
+check("disabled label: and its body", "xA" in disabled[second + 2] and "oA" in disabled[second + 2])
+check("disabled label: the network after carries no label", "xB" in disabled[third + 1])
+check_equal("disabled label: each label appears once", [disabled.count("SKIP:"), disabled.count("RUN:")], [1, 1])
+graphical_export.reset_stats()
+
+
 # --- read-only service exports: library list and visualisation manager ------
 
 # Library behaviour is not exportable, but which exact versions the project
