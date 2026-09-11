@@ -467,6 +467,36 @@ check("fidelity: no double bubble on a wired negated output", not any("Q oo" in 
 check("fidelity: rail-fed negated power pin is stated", any("tmrD(IN := NOT TRUE);" in line for line in fidelity_st))
 
 
+# --- an EXECUTE box's EN pin bubble and edge in ST ---------------------------
+
+# The EXECUTE branch of the LD walker used the rung condition raw, skipping
+# the bubble and the P or N that every other block's power pin gets. A negated
+# EN then read as an unguarded run, and a bare rail with a negated EN as an
+# unconditional one - the exact inverse of when the program runs the code.
+import st_render  # noqa: E402
+
+
+def _execute(power_negated=False, power_edge=None):
+    return Element(
+        kind="block", type_name="EXECUTE", input_pins=[("EN", None)],
+        output_pins=[("ENO", None)], st_code=["a := 1;"],
+        power_negated=power_negated, power_edge=power_edge, active_output="ENO",
+    )
+
+
+def _contact(name):
+    return Element(kind=CONTACT, label=name)
+
+
+neg = st_render.rung_to_statements(Series([_contact("xRun"), _execute(power_negated=True)]))
+check("execute EN: a negated EN inverts the guard", "IF NOT xRun THEN" in neg)
+edge = st_render.rung_to_statements(Series([_contact("xRun2"), _execute(power_edge="rising")]))
+check("execute EN: an edge EN triggers on the change", "IF R(xRun2) THEN" in edge)
+bare = st_render.rung_to_statements(_execute(power_negated=True))
+check("execute EN: a bare rail with a negated EN never runs it", "IF NOT TRUE THEN" in bare)
+check("execute EN: a bare negated EN is not emitted unconditionally", bare[0] != "a := 1;")
+
+
 # --- byte order mark -------------------------------------------------------
 
 # CODESYS writes a BOM on every export_xml file, and the ElementTree it ships

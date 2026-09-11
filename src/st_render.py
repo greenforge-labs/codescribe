@@ -76,9 +76,15 @@ def rung_to_statements(rung):
             if item.st_code:
                 # An EXECUTE box is inline ST already, and the rung condition
                 # is what decides whether it runs. Emitting a call to a box
-                # that has no body loses the whole of it.
-                if condition:
-                    statements.append("IF %s THEN" % condition)
+                # that has no body loses the whole of it. The bubble and the
+                # P or N on the EN pin gate it just as they gate any other
+                # block, so a negated EN inverts the guard and a bare rail
+                # with a negated EN never runs it.
+                guard = condition
+                if item.power_negated or item.power_edge:
+                    guard = pin_value(condition or "TRUE", item.power_negated, item.power_edge)
+                if guard:
+                    statements.append("IF %s THEN" % guard)
                     statements.extend("    " + line for line in item.st_code)
                     statements.append("END_IF")
                 else:
@@ -214,14 +220,24 @@ def _fbd_value(node, statements, emitted=None):
         # value differs per reader, so it is computed here rather than
         # memoised with the call.
         value = _fbd_value(node.call, statements, emitted)
-        if node.call.is_operator and node.pin == ENO_PIN:
-            # ENO says the box ran, which is what its EN said. It is not the
-            # result: reading it as the expression made "xSumOk := iA + iB +
-            # iC;" out of a boolean that only ever says whether the add ran.
-            return _enable(node.call, statements, emitted) or "TRUE"
-        if node.call.is_operator or not node.pin:
-            # An operator has no instance to take a pin from; it inlines as
-            # the one expression whichever pin reads it.
+        if node.call.is_operator:
+            if node.pin == ENO_PIN:
+                # ENO says the box ran, which is what its EN said. It is not
+                # the result: reading it as the expression made "xSumOk := iA
+                # + iB + iC;" out of a boolean that only says whether the add
+                # ran.
+                result = _enable(node.call, statements, emitted) or "TRUE"
+            else:
+                # An operator has no instance to take a pin from; it inlines
+                # as the one expression whichever pin reads it.
+                result = value
+            # The bubble is on the pin being read, not on whichever pin the
+            # box calls its active output - a box that lists ENO first still
+            # inverts a negated Out1.
+            if node.pin in node.call.negated_outputs:
+                result = "NOT " + _operand(result)
+            return result
+        if not node.pin:
             return value
         text = "%s.%s" % (node.call.instance_name, node.pin)
         if node.pin in node.call.negated_outputs:
@@ -280,6 +296,14 @@ def _fbd_value(node, statements, emitted=None):
                 statements.append("END_IF")
             else:
                 statements.extend(node.st_code)
+            # A store written on the ENO pin records that the box ran, which
+            # is what its EN said. Dropping it lost the assignment entirely.
+            for pin, assigned in node.outputs:
+                if assigned and pin == ENO_PIN:
+                    reported = guard or "TRUE"
+                    if pin in node.negated_outputs:
+                        reported = "NOT " + _operand(reported)
+                    statements.append(store_statement(assigned, reported, node.stored_outputs.get(pin)))
             return remember("")
 
         if node.is_operator:
@@ -288,8 +312,25 @@ def _fbd_value(node, statements, emitted=None):
             # operands: folding it in made "iSum := xEn + iA + iB + iC;" out
             # of a three-way addition that runs only while xEn.
             expression = _operator_expression(node, [value for pin, value in pairs if pin != EN_PIN])
-            if node.active_output in node.negated_outputs:
-                expression = "NOT " + _operand(expression)
+            # A store written straight onto an output pin - the MOVE-with-EN
+            # shape - executes while EN holds. It was dropped: the operator
+            # returned before this loop, so the assignment never appeared.
+            guard = _enable(node, statements, emitted)
+            for pin, assigned in node.outputs:
+                if not assigned:
+                    continue
+                if pin == ENO_PIN:
+                    stored = _enable(node, statements, emitted) or "TRUE"
+                else:
+                    stored = expression
+                if pin in node.negated_outputs:
+                    stored = "NOT " + _operand(stored)
+                statement = store_statement(assigned, stored, node.stored_outputs.get(pin))
+                if guard and guard != "TRUE" and pin != ENO_PIN:
+                    statement = "IF %s THEN %s END_IF" % (guard, statement)
+                statements.append(statement)
+            # The bubble on whichever pin a reader takes is applied there, in
+            # the OutputRef branch, so the shared expression stays un-negated.
             return remember(expression)
 
         name = node.instance_name

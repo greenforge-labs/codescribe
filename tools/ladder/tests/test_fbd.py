@@ -721,6 +721,41 @@ check("two-pin fanout: ET turns down its own column", any("ET" + U["PIN_R"] in l
 check("two-pin fanout: every store is reached", all(any(name in l for l in tpf_art) for name in ("xA", "xB", "tC")))
 
 
+# --- a store written on an operator's output pin -----------------------------
+
+# The MOVE-with-EN shape: an operator gated by EN, its result written straight
+# onto an output pin. The operator branch returned its expression before the
+# output-pin loop, so the store was dropped from the ST - the diagram drew the
+# wire, the ST said nothing. The store now appears, guarded by EN.
+move = Call("MOVE", inputs=[("EN", Signal("xCond")), ("In", Signal("iSrc"))], outputs=[("ENO", None), ("Out", "iDst")])
+move_st = st_render.network_to_statements(Network("", [move]))
+check("operator store: the guarded store is emitted", "IF xCond THEN iDst := MOVE(iSrc); END_IF" in move_st)
+
+add = Call("ADD", inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))], outputs=[("ENO", None), ("Out1", "iSum")])
+add_st = st_render.network_to_statements(Network("", [add]))
+check("operator store: the sum is stored under its guard", "IF xEn THEN iSum := iA + iB; END_IF" in add_st)
+
+# A bubble on Out1 while ENO is listed first: the box's active output is ENO,
+# so the negation used to be looked for on the wrong pin and lost. The bubble
+# is on the pin the reader takes.
+neg_out = Call("ADD", inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))],
+               outputs=[("ENO", None), ("Out1", None)], negated_outputs=set(["Out1"]), wired_outputs=["Out1"])
+neg_out_st = st_render.network_to_statements(Network("", [Assign("iSum", OutputRef(neg_out, "Out1"))]))
+check("operator negate: a negated Out1 inverts though ENO is first", "IF xEn THEN iSum := NOT (iA + iB); END_IF" in neg_out_st)
+
+# A negated ENO reports the inverse of the enable.
+neg_eno = Call("ADD", inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))],
+               outputs=[("ENO", None), ("Out1", None)], negated_outputs=set(["ENO"]), wired_outputs=["ENO"])
+neg_eno_st = st_render.network_to_statements(Network("", [Assign("ok", OutputRef(neg_eno, "ENO"))]))
+check("operator negate: a negated ENO inverts the enable", "ok := NOT xEn;" in neg_eno_st)
+
+# An EXECUTE box whose ENO is stored: the store records that it ran.
+exec_eno = Call("EXECUTE", inputs=[("EN", Signal("xRun"))], outputs=[("ENO", "xDid")], st_code=["a := 1;"])
+exec_eno_st = st_render.network_to_statements(Network("", [exec_eno]))
+check("execute store: the body is guarded", "IF xRun THEN" in exec_eno_st and "    a := 1;" in exec_eno_st)
+check("execute store: the ENO store records the run", "xDid := xRun;" in exec_eno_st)
+
+
 # --- language dispatch -----------------------------------------------------
 
 check_equal("LD parser ignores FBD bodies", parse_ld.parse_pous(FBD_SOURCE), [])
