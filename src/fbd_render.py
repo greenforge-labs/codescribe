@@ -414,7 +414,17 @@ def _shared_source(outputs):
     if sources[0] is None:
         return None
     boxes = [source.call if isinstance(source, OutputRef) else source for source in sources]
-    return sources[0] if all(box is boxes[0] for box in boxes) else None
+    if not all(box is boxes[0] for box in boxes):
+        return None
+    # Readers spread across more than one pin of one instance box need a
+    # column per pin: _render_joined draws that. _render_fanout stacks every
+    # reader in a single column and pushes a lower pin's wire onto whatever
+    # row is free, which for a timer read on Q and ET lands the ET store on
+    # the box's bottom border. Hand those to _render_joined instead.
+    pins = set(source.pin for source in sources if isinstance(source, OutputRef))
+    if len(pins) > 1 and getattr(boxes[0], "instance_name", None):
+        return None
+    return sources[0]
 
 
 def _shared_call(outputs):

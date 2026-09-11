@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars><variable name="tmr"><type><derived name="TON"/></type></variable></localVars></interface><body><FBD>
+<inVariable localId="1"><connectionPointOut/><expression>xRun</expression></inVariable>
+<inVariable localId="2"><connectionPointOut/><expression>T#5S</expression></inVariable>
+<block localId="3" typeName="TON" instanceName="tmr"><inputVariables><variable formalParameter="IN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="PT"><connectionPointIn><connection refLocalId="2"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Q"><connectionPointOut/></variable><variable formalParameter="ET"><connectionPointOut/></variable></outputVariables></block>
+<outVariable localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn><expression>xA</expression></outVariable>
+<outVariable localId="5"><connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn><expression>xB</expression></outVariable>
+<outVariable localId="6"><connectionPointIn><connection refLocalId="3" formalParameter="ET"/></connectionPointIn><expression>tC</expression></outVariable>
+</FBD></body></pou></pous></types></project>

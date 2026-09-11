@@ -696,6 +696,31 @@ check("crossing reads: the second read is named", any("ctr.Q" + U["H"] * 2 in li
 check("crossing reads: no wire runs from Q", not any("Q" + U["PIN_R"] + U["H"] in line for line in crossing_art))
 
 
+# --- a fan-out spread across two pins ----------------------------------------
+
+# A timer whose Q feeds two stores and whose ET feeds a third. Every reader
+# hangs straight off the box, so _shared_source claimed it and _render_fanout
+# stacked all three in one column: ET, pushed past Q's second reader, landed
+# on the box's bottom border and its wire ran out of the "corner". A shared
+# instance read across more than one pin now goes through the joined
+# renderer, which gives each pin a column of its own.
+TWO_PIN_FANOUT = os.path.join(HERE, "fixtures", "fbd-fanout-two-pins.xml")
+tpf = parse_fbd.parse_pous(TWO_PIN_FANOUT)[0]
+tpf_st = st_render.render_pou(tpf)
+tpf_art = fbd_render.render_network(tpf.networks[0])
+
+check_equal("two-pin fanout: one box is drawn", len([l for l in tpf_art if "tmr : TON" in l]), 1)
+check_equal("two-pin fanout: the timer is called once", len([l for l in tpf_st if l.startswith("tmr(")]), 1)
+check("two-pin fanout: Q reaches both stores", "xA := tmr.Q;" in tpf_st and "xB := tmr.Q;" in tpf_st)
+check("two-pin fanout: ET reaches its store", "tC := tmr.ET;" in tpf_st)
+# The defect: a wire running straight out of the box's bottom-right corner.
+check("two-pin fanout: no wire leaves the bottom border", not any(U["BR"] + U["H"] in l for l in tpf_art))
+# Q teed to two readers, ET on its own row to its store.
+check("two-pin fanout: Q branches to two readers", any("Q" + U["PIN_R"] in l and U["T_DOWN"] in l for l in tpf_art))
+check("two-pin fanout: ET turns down its own column", any("ET" + U["PIN_R"] in l and U["TR"] in l for l in tpf_art))
+check("two-pin fanout: every store is reached", all(any(name in l for l in tpf_art) for name in ("xA", "xB", "tC")))
+
+
 # --- language dispatch -----------------------------------------------------
 
 check_equal("LD parser ignores FBD bodies", parse_ld.parse_pous(FBD_SOURCE), [])
