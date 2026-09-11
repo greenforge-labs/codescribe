@@ -648,13 +648,45 @@ def _render_joined(readers, call, drawn):
     return out
 
 
-def render_network(network):
-    """Render one network, which may drive several outputs from one source."""
-    outputs = getattr(network, "outputs", [network])
-    # Per network: a box drawn for one output must not be drawn again for the
-    # next, but a box shared between two networks is two boxes on the page.
-    drawn = set()
+def _execute_bodies(outputs):
+    """The inline ST of every EXECUTE box in a network, laid out for the page.
 
+    Each body once, in the order the boxes are met - a box behind another
+    runs first, so its body comes first.
+    """
+    seen = set()
+    found = []
+
+    def walk(node):
+        call = node.call if isinstance(node, OutputRef) else node
+        if isinstance(call, Call):
+            if id(call) in seen:
+                return
+            seen.add(id(call))
+            for _pin, source in call.inputs:
+                if source is not None:
+                    walk(source)
+            if call.st_code:
+                found.append(call)
+        elif isinstance(node, Assign):
+            if node.source is not None:
+                walk(node.source)
+        elif isinstance(node, Jump):
+            if node.condition is not None:
+                walk(node.condition)
+
+    for tree in outputs:
+        walk(tree)
+
+    lines = []
+    for call in found:
+        lines.append("")
+        lines.extend("    " + line for line in call.st_code)
+    return lines
+
+
+def _render_outputs(outputs, drawn):
+    """The diagram of one network's outputs, joined or branched as they share."""
     if _shared_source(outputs) is not None:
         return _render_fanout(outputs, drawn).lines
 
@@ -671,11 +703,20 @@ def render_network(network):
     lines = []
     for tree in outputs:
         lines.extend(_render(tree, drawn).lines)
-        # An EXECUTE box's body is the logic; drawing the box without it would
-        # be an empty rectangle where a dozen lines of ST should be.
-        if isinstance(tree, Call) and tree.st_code:
-            lines = lines + [""] + ["    " + line for line in tree.st_code]
     return lines
+
+
+def render_network(network):
+    """Render one network, which may drive several outputs from one source."""
+    outputs = getattr(network, "outputs", [network])
+    # Per network: a box drawn for one output must not be drawn again for the
+    # next, but a box shared between two networks is two boxes on the page.
+    drawn = set()
+    # An EXECUTE box's body is the logic; drawing the box without it would be
+    # an empty rectangle where a dozen lines of ST should be. The box is found
+    # wherever it sits - behind the store its ENO feeds, or behind another
+    # box - and not only when it is the network's own output.
+    return _render_outputs(outputs, drawn) + _execute_bodies(outputs)
 
 
 def render_pou(pou):
