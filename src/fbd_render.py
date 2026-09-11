@@ -588,6 +588,45 @@ def _junction(row, position, columns, reader_rows, row_of):
     return " "
 
 
+def _compose_branches(readers, call, drawn, every_pin):
+    """[(block, entries)] - each reader drawn on its own, its wires marked.
+
+    With ``every_pin`` each read of the shared box becomes a wire; without
+    it only the first pin a reader takes is wired and the rest are named in
+    text, the way a box already drawn is named.
+    """
+    branches = []
+    for tree, pins in readers:
+        shared = _Shared(call, None if every_pin else pins[:1])
+        block = _render(tree, drawn, shared)
+        branches.append((block, _entry_rows(block, shared)))
+    return branches
+
+
+def _wires_cross(branches, tops, pin_rows, default_row):
+    """True when the placed branches cannot be wired without a crossing.
+
+    A pin's column runs from the pin's row down to the last reader of it,
+    and a lower pin's column sits inside a higher pin's. Every wire is then
+    clear of every column it passes only if each pin's readers all sit below
+    every reader of the pins above it, and none sits above its own pin.
+    """
+
+    def row_of(pin):
+        return pin_rows.get(pin, default_row)
+
+    reader_rows = _reader_rows(branches, tops)
+    last = None
+    for pin in sorted(reader_rows, key=row_of):
+        rows = reader_rows[pin]
+        if rows[0] < row_of(pin):
+            return True
+        if last is not None and rows[0] <= last:
+            return True
+        last = rows[-1]
+    return False
+
+
 def _render_joined(readers, call, drawn):
     """Draw a shared box once and branch its readers off the pins they read.
 
@@ -596,21 +635,25 @@ def _render_joined(readers, call, drawn):
     the box on. Readers of one pin share a column, which is what the editor
     draws; readers of different pins get a column each, because joining two
     pins into one column draws two signals as one.
+
+    A reader that takes two pins from the box gets two wires, unless the
+    wires would then have to cross: then it keeps the wire from the first
+    pin it reads and names the other in text, which is wrong-looking but
+    never wrong.
     """
     chars = charset.active()
     drawn.add(id(call))
     source = _render_call(call, None, set())
     default_row = source.connect_row
 
-    branches = []
-    for tree, pins in readers:
-        # One wire per reader, from the first pin it reads. Any other pin the
-        # same reader takes from the box is named in text.
-        shared = _Shared(call, pins[:1])
-        block = _render(tree, drawn, shared)
-        branches.append((block, _entry_rows(block, shared)))
+    for every_pin in (True, False):
+        shown = set(drawn)
+        branches = _compose_branches(readers, call, shown, every_pin)
+        tops = _place_branches(branches, source.pin_rows, default_row)
+        if not every_pin or not _wires_cross(branches, tops, source.pin_rows, default_row):
+            break
+    drawn.update(shown)
 
-    tops = _place_branches(branches, source.pin_rows, default_row)
     shift = -min([top for top in tops.values()] + [0])
     for index in tops:
         tops[index] += shift

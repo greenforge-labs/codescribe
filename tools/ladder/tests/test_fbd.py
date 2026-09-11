@@ -646,6 +646,53 @@ check_equal("execute deep: the body of a nested box is printed once", len([line 
 check_equal("execute deep: it follows the diagram", deep_art[-1], "    c := 3;")
 
 
+# --- one expression reading two pins of a shared box -------------------------
+
+# xAlarm := ctr.Q AND (ctr.CV > 5). Each read of the shared box was replaced
+# by a marker byte while the branch was composed, and only the first marker
+# was resolved: the second stayed in the file as a control character, and
+# the CV pin had no wire. Every read is a wire from its own pin now, and the
+# file holds no byte below a space.
+CONTROL_CHARACTERS = [chr(code) for code in range(1, 32)]
+
+
+def control_free(lines):
+    return not any(character in line for line in lines for character in CONTROL_CHARACTERS)
+
+
+TWO_PINS_ONE_READER = os.path.join(HERE, "fixtures", "r2-3-fbd-counter-q-and-cv-in-one-expression.xml")
+two_reads = parse_fbd.parse_pous(TWO_PINS_ONE_READER)[0]
+two_reads_st = st_render.render_pou(two_reads)
+two_reads_art = fbd_render.render_network(two_reads.networks[0])
+
+check("two reads: no control character in the output", control_free(two_reads_art))
+check("two reads: the ST reads both pins", "xAlarm := ctr.Q AND (ctr.CV > 5);" in two_reads_st)
+check_equal("two reads: one box is drawn", len([line for line in two_reads_art if "ctr : CTU" in line]), 1)
+check("two reads: the box is not named in text", not any("ctr." in line for line in two_reads_art))
+q_line = [line for line in two_reads_art if "Q" + U["PIN_R"] in line][0]
+cv_line = [line for line in two_reads_art if "CV" + U["PIN_R"] in line][0]
+check("two reads: Q is wired straight into the AND box", U["PIN_L"] + "In1   Out1" + U["PIN_R"] + U["H"] * 3 + "> xAlarm" in q_line)
+check("two reads: CV is wired, down a column of its own", "CV" + U["PIN_R"] + U["H"] * 2 + U["TR"] in cv_line)
+gt_lines = [line for line in two_reads_art if line.lstrip().startswith(U["BL"]) and U["PIN_L"] + "In1   Out1" in line]
+check_equal("two reads: the CV column feeds the GT box", len(gt_lines), 1)
+check("two reads: the GT box feeds In2 of the AND box", gt_lines and U["PIN_L"] + "In2" in gt_lines[0])
+
+# The same two reads the other way up: (ctr.CV > 5) AND ctr.Q puts the CV
+# read above the Q read, where a wire from CV would have to cross the wire
+# from Q. Then the first read keeps its wire and the second is named.
+crossing_counter = Call("CTU", "ctr", inputs=[("CU", Signal("xPulse")), ("PV", Signal("10"))], outputs=[("Q", None), ("CV", None)])
+crossing_counter.wired_outputs.update(["Q", "CV"])
+crossing_gt = Call("GT", inputs=[("In1", OutputRef(crossing_counter, "CV")), ("In2", Signal("5"))], outputs=[("Out1", None)], wired_outputs=["Out1"])
+crossing_and = Call("AND", inputs=[("In1", crossing_gt), ("In2", OutputRef(crossing_counter, "Q"))], outputs=[("Out1", None)], wired_outputs=["Out1"])
+crossing = Network("", [Assign("xAlarm", crossing_and)])
+crossing_art = fbd_render.render_network(crossing)
+check("crossing reads: no control character in the output", control_free(crossing_art))
+check_equal("crossing reads: one box is drawn", len([line for line in crossing_art if "ctr : CTU" in line]), 1)
+check("crossing reads: the first read is wired", any("CV" + U["PIN_R"] + U["H"] in line and U["PIN_L"] + "In1   Out1" in line for line in crossing_art))
+check("crossing reads: the second read is named", any("ctr.Q" + U["H"] * 2 in line and U["PIN_L"] + "In2" in line for line in crossing_art))
+check("crossing reads: no wire runs from Q", not any("Q" + U["PIN_R"] + U["H"] in line for line in crossing_art))
+
+
 # --- language dispatch -----------------------------------------------------
 
 check_equal("LD parser ignores FBD bodies", parse_ld.parse_pous(FBD_SOURCE), [])
