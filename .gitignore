@@ -22,6 +22,13 @@ review/
 GraphicalTesting/*/devices/
 GraphicalTesting/*/communication/
 
+# The staging and backup copies util.py writes beside an export. A locked
+# target leaves one behind, and a stray "git add -A" would sweep the whole
+# export into the repo under it - which is how the device xml got committed
+# once already.
+*.codescribe_staging/
+*.codescribe_backup/
+
 .vscode/
 
 # Claude Code's per-developer tool permissions. Machine-specific paths, and
@@ -188,3 +195,14 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# The exported source tree is tracked in full, so none of the generic Python
+# and tooling patterns above may reach into it: a POU or a folder a developer
+# names "lib", "build", "var" or "target" would otherwise be dropped from the
+# export with no warning. Re-include the directories first and then their
+# files - git will not descend into a directory a bare pattern excluded - and
+# re-exclude only the two heavy subtrees that are deliberately left out.
+!GraphicalTesting/**/
+!GraphicalTesting/**
+GraphicalTesting/*/devices/
+GraphicalTesting/*/communication/

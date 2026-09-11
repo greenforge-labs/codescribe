@@ -529,6 +529,19 @@ check_equal("disabled label: each label appears once", [disabled.count("SKIP:"),
 graphical_export.reset_stats()
 
 
+# A native list beside a file with nothing renderable in it - a member export
+# that carried no body of its own, or an SFC-only file - must not be counted
+# as a failure to line up, nor warn about numbering for a POU never drawn.
+graphical_export.reset_stats()
+SFC_ONLY = os.path.join(HERE, "fixtures", "codesys", "SFCTesting.xml")
+NATIVE_LIST = os.path.join(HERE, "fixtures", "native_networks.xml")
+no_pou_lines = graphical_export.render_plcopen(SFC_ONLY, None, None, NATIVE_LIST)
+check_equal("no renderable POU: nothing is drawn", no_pou_lines, [])
+check_equal("no renderable POU: no alignment failure is counted", graphical_export.STATS["alignment_failures"], 0)
+check("no renderable POU: no numbering warning is emitted", graphical_export.ALIGNMENT_WARNING not in no_pou_lines)
+graphical_export.reset_stats()
+
+
 # --- read-only service exports: library list and visualisation manager ------
 
 # Library behaviour is not exportable, but which exact versions the project

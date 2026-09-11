@@ -212,7 +212,11 @@ def render_plcopen(plcopen_path, declaration_text=None, member_name=None, native
     # up rather than as a reason to say nothing.
     warnings = []
     native = native_networks.read_networks(native_path) if native_path is not None else None
-    if native:
+    if native and pous:
+        # No POU means nothing to number - a member export that carried no
+        # renderable body of its own, say. Running the alignment on it counted
+        # a spurious failure and printed a "could not line up" note for a POU
+        # that was never drawn.
         aligned = native_networks.align(native, pous[0][0].networks) if len(pous) == 1 else None
         if aligned is None:
             STATS["alignment_failures"] += 1
