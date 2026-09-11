@@ -229,7 +229,10 @@ def render_plcopen(plcopen_path, declaration_text=None, member_name=None, native
     notes = []
     for pou, _art_renderer in pous:
         head = list(warnings)
-        if getattr(pou, "member_of_parent", False):
+        # The note is true only when the rendering opens with the parent's
+        # declaration. A graphical method carries its own, passed in as
+        # declaration_text, so there the note would misdescribe what follows.
+        if getattr(pou, "member_of_parent", False) and declaration_text is None:
             head.append(u"(* " + pou.name + u" - the declaration below is the parent POU's *)")
         notes.append(head + [u""] if head else [])
 

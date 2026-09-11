@@ -338,6 +338,22 @@ try:
     check("the method's own body is drawn", "Status.Method" in method_content)
     check("the method does not draw the parent", "Status.Parent" not in method_content)
 
+    # A method carries its own declaration, so the rendering must not claim
+    # the declaration below is the parent's - the note is only for members
+    # that open with the parent's declaration, like an action.
+    method_decl_base = os.path.join(workspace, "FB_TEST.ComputeDecl")
+    method_decl = FakePou("Compute", METHOD_FIXTURE, declaration="METHOD Compute : INT\nVAR_INPUT\nEND_VAR")
+    check(
+        "a method with its own declaration renders",
+        graphical_export.write_rendered_text(method_decl, method_decl_base, member_name="Compute") is True,
+    )
+    method_decl_content = read(method_decl_base + ".txt")
+    check("the method shows its own declaration", "METHOD Compute : INT" in method_decl_content)
+    check(
+        "the method rendering does not claim the parent's declaration",
+        "the declaration below is the parent POU's" not in method_decl_content,
+    )
+
     # The parent's own rendering must still be the parent body, members
     # excluded - iter_bodies only ever took the pou's direct <body>.
     parent_base = os.path.join(workspace, "PLC_TEST")
