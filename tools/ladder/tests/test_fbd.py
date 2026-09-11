@@ -25,7 +25,7 @@ import fbd_render  # noqa: E402
 import parse_ld  # noqa: E402
 import parse_fbd  # noqa: E402
 import st_render  # noqa: E402
-from model import Call, Label, Network, OutputRef, Pou, Signal  # noqa: E402
+from model import Assign, Call, Label, Network, OutputRef, Pou, Signal  # noqa: E402
 from render import write  # noqa: E402
 
 # Referenced through the charset table rather than as literal glyphs: this
@@ -538,6 +538,78 @@ check_equal(
     comment_only_art[comment_only_art.index("(* Network 1: Title of network one *)") + 1],
     "(* Section header: E-STOP CHAIN (documentation-only network) *)",
 )
+
+
+# --- a shared box read through two different pins ----------------------------
+
+# A timer whose ET feeds a store and whose Q feeds an OR box. The readers were
+# stacked in the order the export listed them and hung off one junction
+# column, so the second reader took whatever row the first left free: the OR
+# box was wired from the ET row while the ST said tmr.Q, and with the readers
+# the other way round ET was drawn into the Q column. A reader sits level with
+# the pin it reads, and readers of different pins get a column each.
+TWO_READERS = os.path.join(HERE, "fixtures", "r2-1-fbd-shared-box-q-and-et.xml")
+TWO_READERS_SWAPPED = os.path.join(HERE, "fixtures", "r2-1-fbd-shared-box-et-and-q.xml")
+
+
+def wire_rows(art):
+    """The row of each wire: Q into the OR box, and ET out to its store."""
+    q_rows = [row for row, line in enumerate(art) if "Q" + U["PIN_R"] in line]
+    et_rows = [row for row, line in enumerate(art) if "ET" + U["PIN_R"] in line]
+    or_rows = [row for row, line in enumerate(art) if U["PIN_L"] + "In1   Out1" in line]
+    store_rows = [row for row, line in enumerate(art) if line.rstrip().endswith("> tElapsed")]
+    return q_rows, et_rows, or_rows, store_rows
+
+
+for order, path in (("Q and ET", TWO_READERS), ("ET and Q", TWO_READERS_SWAPPED)):
+    pou_two = parse_fbd.parse_pous(path)[0]
+    st_two = st_render.render_pou(pou_two)
+    art_two = fbd_render.render_network(pou_two.networks[0])
+    q_rows, et_rows, or_rows, store_rows = wire_rows(art_two)
+
+    check_equal(order + ": one box is drawn", len([line for line in art_two if "tmr : TON" in line]), 1)
+    check("st " + order + ": the OR reads Q", "xAny := tmr.Q OR xManual;" in st_two)
+    check("st " + order + ": the store reads ET", "tElapsed := tmr.ET;" in st_two)
+    check_equal(order + ": Q leaves the box on one row", len(q_rows), 1)
+    check_equal(order + ": ET leaves the box on one row", len(et_rows), 1)
+    # The wire into the OR box is the one leaving Q: the same row, unbroken.
+    check_equal(order + ": the OR box is wired from the Q row", or_rows, q_rows)
+    check(
+        order + ": the Q wire runs straight into the OR box",
+        "Q" + U["PIN_R"] in art_two[q_rows[0]]
+        and set(art_two[q_rows[0]].split("Q" + U["PIN_R"])[1].split(U["PIN_L"] + "In1")[0]) == set([U["H"]]),
+    )
+    # The store cannot sit level with ET, because the OR box is in the way; so
+    # ET's wire turns down a column of its own and the store hangs off that.
+    check(order + ": the ET wire turns down its own column", "ET" + U["PIN_R"] + U["H"] * 2 + U["TR"] in art_two[et_rows[0]])
+    check_equal(order + ": the store hangs below the ET row", len(store_rows) == 1 and store_rows[0] > et_rows[0], True)
+    check(order + ": the store is fed from the ET column", art_two[store_rows[0]].lstrip().startswith(U["BL"]))
+    check(order + ": the ET row does not feed the OR box", U["PIN_L"] + "In1" not in art_two[et_rows[0]])
+    check(order + ": no junction between the two pins", not any(U["T_DOWN"] in line for line in art_two))
+
+check_equal(
+    "shared pins: the drawing does not depend on the order of the readers",
+    fbd_render.render_network(parse_fbd.parse_pous(TWO_READERS)[0].networks[0]),
+    fbd_render.render_network(parse_fbd.parse_pous(TWO_READERS_SWAPPED)[0].networks[0]),
+)
+
+# An output that reads nothing from the shared box was stacked with the
+# readers, and being first it was placed at row 0 - beside the title. It is a
+# drawing of its own, and goes below the joined one.
+aside_timer = Call("TON", "tmr", inputs=[("IN", Signal("xStart"))], outputs=[("Q", None), ("ET", None)])
+aside_timer.wired_outputs.add("Q")
+aside = Network(
+    "",
+    [
+        Assign("xOther", Signal("xIn")),
+        Assign("xDone", OutputRef(aside_timer, "Q")),
+        Assign("xAny", Call("OR", inputs=[("In1", OutputRef(aside_timer, "Q")), ("In2", Signal("xManual"))], outputs=[("Out1", None)])),
+    ],
+)
+aside_art = fbd_render.render_network(aside)
+check_equal("aside: the title row holds the title alone", aside_art[0].strip(), "tmr : TON")
+check("aside: the plain store goes below the joined drawing", aside_art[-1].rstrip().endswith("> xOther"))
+check("aside: the joined drawing is still branched", any(U["T_DOWN"] in line and "xDone" in line for line in aside_art))
 
 
 # --- language dispatch -----------------------------------------------------

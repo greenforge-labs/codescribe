@@ -244,8 +244,35 @@ def _reference(call, pin):
 # Stands in for a shared box while the branch that reads it is drawn, so the
 # row the wire arrives on can be found once the branch has been composed.
 # Composition is text, so a marker in the text is the cheapest way to carry a
-# position through it, and it never survives into the output.
-MARKER = chr(1)
+# position through it, and it never survives into the output. One marker per
+# pin, so a branch that reads two pins can say which wire arrives where. They
+# are control characters, skipping the ones str.strip and str.split treat as
+# whitespace, because a line ending in one is stripped like any other.
+MARKERS = [chr(code) for code in list(range(1, 9)) + list(range(14, 28))]
+
+
+class _Shared(object):
+    """The box a network is joined around, while its readers are composed.
+
+    ``pins`` names the pins a reader may take a wire from; None allows any.
+    A read of any other pin falls back to naming the box in text, the way a
+    box already drawn is named, and so does a read once the markers run out.
+    """
+
+    def __init__(self, call, pins=None):
+        self.call = call
+        self.pins = pins
+        self.markers = {}
+
+    def marker(self, pin):
+        """The stand-in for a wire from ``pin``, or None to name it instead."""
+        if self.pins is not None and pin not in self.pins:
+            return None
+        if pin not in self.markers:
+            if len(self.markers) >= len(MARKERS):
+                return None
+            self.markers[pin] = MARKERS[len(self.markers)]
+        return self.markers[pin]
 
 
 def _render(node, drawn, subs=None):
@@ -261,11 +288,13 @@ def _render(node, drawn, subs=None):
     """
     call = node.call if isinstance(node, OutputRef) else node
     if isinstance(call, Call):
-        if subs is not None and id(call) in subs:
+        pin = node.pin if isinstance(node, OutputRef) else call.active_output
+        if subs is not None and subs.call is call:
             # Drawn once already, on the left of this branch; the wire into it
             # comes from the junction rather than from another copy of the box.
-            return Block([MARKER], 0)
-        pin = node.pin if isinstance(node, OutputRef) else call.active_output
+            marker = subs.marker(pin)
+            if marker is not None:
+                return Block([marker], 0)
         if id(call) in drawn:
             reference = _reference(call, pin)
             if reference is not None:
@@ -428,25 +457,35 @@ def _shared_call(outputs):
     return shared[0] if len(shared) == 1 else None
 
 
-def _entry_row(block):
-    """The row a substituted box's wire arrives on, with the marker removed."""
+def _entry_rows(block, shared):
+    """[(row, pin)] for every wire into the shared box, in row order.
+
+    Each marker is replaced by a piece of wire, so the branch's own lead-in
+    joins up with the junction it is placed against.
+    """
     chars = charset.active()
+    entries = []
     for row, line in enumerate(block.lines):
-        if MARKER in line:
-            block.lines[row] = line.replace(MARKER, chars["H"])
-            return row
-    return None
+        for pin, marker in shared.markers.items():
+            if marker in line:
+                line = line.replace(marker, chars["H"])
+                entries.append((row, pin))
+        block.lines[row] = line
+    entries.sort(key=lambda entry: entry[0])
+    return entries
 
 
-def _reads_pin(tree, call):
-    """The pin a tree reads ``call`` through, or None if it does not read it."""
+def _reads_pins(tree, call):
+    """The pins a tree reads ``call`` through, in the order it meets them."""
     found = []
 
     def walk(node):
-        if isinstance(node, OutputRef) and node.call is call:
-            found.append(node.pin)
-            return
         inner = node.call if isinstance(node, OutputRef) else node
+        if inner is call:
+            pin = node.pin if isinstance(node, OutputRef) else call.active_output
+            if pin not in found:
+                found.append(pin)
+            return
         if isinstance(inner, Call):
             for _pin, source in inner.inputs:
                 if source is not None:
@@ -459,95 +498,154 @@ def _reads_pin(tree, call):
                 walk(node.condition)
 
     walk(tree)
-    return found[0] if found else None
+    return found
 
 
-def _render_joined(network, call):
-    """Draw a shared box once and branch its readers off the pin they read.
+def _split_readers(outputs, call):
+    """([(tree, pins)], [tree]) - the outputs that read the shared box, and the rest."""
+    readers = []
+    others = []
+    for tree in outputs:
+        pins = _reads_pins(tree, call)
+        if pins:
+            readers.append((tree, pins))
+        else:
+            others.append(tree)
+    return readers, others
+
+
+def _place_branches(branches, pin_rows, default_row):
+    """{index: top row} for each composed branch.
+
+    Branches are taken pin by pin down the box, and stacked so no two overlap:
+    the first reader of a pin sits level with the pin, and each later one goes
+    under whatever came before it. A branch that reads several pins is placed
+    by its topmost pin, and last among that pin's readers - the one position
+    from which its other wires can arrive without crossing anything.
+    """
+
+    def row_of(pin):
+        return pin_rows.get(pin, default_row)
+
+    top_pin = []
+    for _block, entries in branches:
+        top_pin.append(min(entries, key=lambda entry: (row_of(entry[1]), entry[0]))[1])
+
+    order = []
+    for pin in sorted(set(top_pin), key=row_of):
+        group = [index for index, read in enumerate(top_pin) if read == pin]
+        group.sort(key=lambda index: len(set(read for _row, read in branches[index][1])) > 1)
+        order.extend(group)
+
+    tops = {}
+    next_top = None
+    for index in order:
+        block, entries = branches[index]
+        entry = min([row for row, read in entries if read == top_pin[index]])
+        wanted = row_of(top_pin[index]) - entry
+        tops[index] = wanted if next_top is None else max(wanted, next_top)
+        next_top = tops[index] + len(block.lines)
+    return tops
+
+
+def _reader_rows(branches, tops):
+    """{pin: [row]} - the rows the wires from each pin arrive on, in order."""
+    rows = {}
+    for index, block_and_entries in enumerate(branches):
+        for row, pin in block_and_entries[1]:
+            rows.setdefault(pin, []).append(tops[index] + row)
+    for pin in rows:
+        rows[pin].sort()
+    return rows
+
+
+def _junction(row, position, columns, reader_rows, row_of):
+    """One cell of the junction columns between a shared box and its readers.
+
+    Each pin that is read has a column of its own, the lowest pin's nearest
+    the box. A column carries the pin's wire down from the pin's row to the
+    last reader of it, breaking out to each reader on the way. Every other
+    cell is a wire passing through - on its way out to a column further from
+    the box, or in from one nearer it to a reader - or nothing.
+    """
+    chars = charset.active()
+    pin = columns[position]
+    pin_row = row_of(pin)
+    rows = reader_rows[pin]
+    if row == pin_row:
+        if rows[0] != pin_row:
+            return chars["TR"]
+        return chars["T_DOWN"] if len(rows) > 1 else chars["H"]
+    if row in rows:
+        return chars["BL"] if row == rows[-1] else chars["T_RIGHT"]
+    if pin_row < row < rows[-1]:
+        return chars["V"]
+    for other, other_pin in enumerate(columns):
+        if other > position and row == row_of(other_pin):
+            return chars["H"]
+        if other < position and row in reader_rows[other_pin]:
+            return chars["H"]
+    return " "
+
+
+def _render_joined(readers, call, drawn):
+    """Draw a shared box once and branch its readers off the pins they read.
 
     The box goes on the left; each reader is composed on its own to the right
     of it and hangs off a junction column, level with the row its wire leaves
-    the box on. Readers of the same pin share the column, which is what the
-    editor draws.
+    the box on. Readers of one pin share a column, which is what the editor
+    draws; readers of different pins get a column each, because joining two
+    pins into one column draws two signals as one.
     """
     chars = charset.active()
-    outputs = list(network.outputs)
-
-    drawn = set([id(call)])
-    subs = {id(call): call}
+    drawn.add(id(call))
+    source = _render_call(call, None, set())
+    default_row = source.connect_row
 
     branches = []
-    for tree in outputs:
-        pin = _reads_pin(tree, call)
-        block = _render(tree, drawn, subs if pin is not None else None)
-        branches.append((block, _entry_row(block) if pin is not None else None, pin))
+    for tree, pins in readers:
+        # One wire per reader, from the first pin it reads. Any other pin the
+        # same reader takes from the box is named in text.
+        shared = _Shared(call, pins[:1])
+        block = _render(tree, drawn, shared)
+        branches.append((block, _entry_rows(block, shared)))
 
-    source = _render_call(call, None, set())
-    pin_rows = source.pin_rows
+    tops = _place_branches(branches, source.pin_rows, default_row)
+    shift = -min([top for top in tops.values()] + [0])
+    for index in tops:
+        tops[index] += shift
 
-    # Place each branch: the first at the row of the pin it reads, the rest
-    # stacked below whatever came before, so no two branches overlap.
-    placed = []
-    next_top = None
-    for block, entry, pin in branches:
-        if entry is None:
-            # Reads nothing from the shared box - it is its own drawing, and
-            # goes below everything rather than joining the column.
-            top = 0 if next_top is None else next_top
-        elif next_top is None:
-            top = pin_rows.get(pin, source.connect_row) - entry
-        else:
-            top = next_top
-        placed.append((block, entry, top))
-        next_top = top + len(block.lines)
+    def row_of(pin):
+        return source.pin_rows.get(pin, default_row) + shift
 
-    shift = -min([top for _block, _entry, top in placed] + [0])
+    reader_rows = _reader_rows(branches, tops)
+    # Inner to outer: the lowest pin nearest the box, so that no column has
+    # to be crossed by a wire leaving the box above it.
+    columns = sorted(reader_rows, key=row_of, reverse=True)
+    leaves = set(row_of(pin) for pin in columns)
+
     lines = [" " * source.width] * shift + list(source.lines)
-    placed = [(block, entry, top + shift) for block, entry, top in placed]
+    height = max([len(lines)] + [tops[index] + len(block.lines) for index, (block, _entries) in enumerate(branches)])
 
-    joins = sorted(top + entry for _block, entry, top in placed if entry is not None)
     # The wire leaves the box once per pin that is read; everything below that
     # is carried by the junction column, so only a pin's own row is filled
-    # across to it. Filling every join row drew a wire out of the box's
+    # across to it. Filling every reader row drew a wire out of the box's
     # bottom border.
-    leaves = set()
-    for index, entry_and_top in enumerate(placed):
-        _block, entry, top = entry_and_top
-        if entry is None:
-            continue
-        pin = branches[index][2]
-        leaves.add(pin_rows.get(pin, source.connect_row) + shift)
-
-    height = max([len(lines)] + [top + len(block.lines) for block, _entry, top in placed])
-
     width = source.width + 2
-    body = []
-    for row in range(height):
-        line = lines[row] if row < len(lines) else ""
-        fill = chars["H"] if row in leaves else " "
-        body.append(line + fill * (width - len(line)))
-
-    # The junction column, and then each branch on its own rows.
     out = []
     for row in range(height):
-        if joins and row == joins[0] and len(joins) > 1:
-            joint = chars["T_DOWN"]
-        elif joins and row == joins[-1] and len(joins) > 1:
-            joint = chars["BL"]
-        elif row in joins:
-            joint = chars["T_RIGHT"] if len(joins) > 1 else chars["H"]
-        elif joins and joins[0] < row < joins[-1]:
-            joint = chars["V"]
-        else:
-            joint = " "
+        line = lines[row] if row < len(lines) else ""
+        line += (chars["H"] if row in leaves else " ") * (width - len(line))
+        for position in range(len(columns)):
+            line += _junction(row, position, columns, reader_rows, row_of)
         tail = ""
-        for block, _entry, top in placed:
-            if top <= row < top + len(block.lines):
-                tail = block.lines[row - top]
+        for index, block_and_entries in enumerate(branches):
+            block = block_and_entries[0]
+            if tops[index] <= row < tops[index] + len(block.lines):
+                tail = block.lines[row - tops[index]]
                 break
-        out.append((body[row] + joint + tail).rstrip())
-
-    return Block(out, joins[0] if joins else 0)
+        out.append((line + tail).rstrip())
+    return out
 
 
 def render_network(network):
@@ -562,7 +660,13 @@ def render_network(network):
 
     shared = _shared_call(outputs)
     if shared is not None:
-        return _render_joined(network, shared).lines
+        readers, others = _split_readers(outputs, shared)
+        lines = _render_joined(readers, shared, drawn)
+        # An output that reads nothing from the shared box is a drawing of its
+        # own, and goes below the joined one rather than into its columns.
+        for tree in others:
+            lines.extend(_render(tree, drawn).lines)
+        return lines
 
     lines = []
     for tree in outputs:
