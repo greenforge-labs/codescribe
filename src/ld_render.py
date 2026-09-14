@@ -306,8 +306,25 @@ def _render_series(items):
     return Block(joined, connect_row)
 
 
+def _branch_has_block(expr):
+    """True when a parallel branch carries a function block somewhere in it."""
+    if isinstance(expr, Element):
+        return expr.kind == BLOCK
+    if isinstance(expr, Series):
+        return any(_branch_has_block(item) for item in expr.items)
+    if isinstance(expr, Parallel):
+        return any(_branch_has_block(branch) for branch in expr.branches)
+    return False
+
+
 def _render_parallel(branches):
     chars = charset.active()
+    # The main line - the one drawn straight through, with the rest branching
+    # off it - should carry the substance, so a branch holding a block goes
+    # first and the plain contacts hang below it, the way the editor draws it.
+    # A block buried in a lower branch reads as an indented afterthought. The
+    # sort is stable, so branches keep their order otherwise.
+    branches = sorted(branches, key=lambda branch: not _branch_has_block(branch))
     blocks = [_render(branch) for branch in branches]
     width = max(block.width for block in blocks)
 
