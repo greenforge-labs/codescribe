@@ -9,6 +9,7 @@ VAR
 	PowerOff: BOOL;
 	edgetrigger: BOOL;
 	answer: UINT;
+	BLINK_0: BLINK;
 END_VAR
 
 (* Network 1: Try me Codesys I swear *)
@@ -52,3 +53,11 @@ TestJump:
 │                      1──┤In2   Out2├───> answer
 │                      2──┤In3       │
 │                         └──────────┘
+
+(* Network 6 *)
+│                          BLINK_0 : BLINK
+│   edgetrigger           ┌───────────────┐  PowerOn
+├───────┤ ├───────────────┤ENABLE      OUT├────( )─────┤
+│                T#500ms──┤TIMELOW        │
+│                T#500ms──┤TIMEHIGH       │
+│                         └───────────────┘

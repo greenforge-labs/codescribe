@@ -1099,6 +1099,164 @@
               <List2 Name="Connectors" />
               <Single Name="Id" Type="long">54</Single>
             </Single>
+            <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+              <Single Name="ILActive" Type="bool">False</Single>
+              <Single Name="FBDValid" Type="bool">False</Single>
+              <Single Name="ILValid" Type="bool">False</Single>
+              <List2 Name="ILLines" />
+              <Single Name="Comment" Type="string"></Single>
+              <Single Name="Title" Type="string"></Single>
+              <Single Name="Label" Type="string"></Single>
+              <Single Name="OutCommented" Type="bool">False</Single>
+              <List2 Name="NetworkItems">
+                <Single Type="{9873c309-1f09-4ebf-9078-42d8057ef11b}" Method="IArchivable">
+                  <Single Name="OutputItems" Type="{f40d3e09-c02c-4522-a88c-dac23558cfc4}" Method="IArchivable">
+                    <List2 Name="OutputItems">
+                      <Single Type="{c9b2f165-48a2-4a45-8326-3952d8a3d708}" Method="IArchivable">
+                        <Single Name="Operand" Type="string">PowerOn</Single>
+                        <Single Name="Type" Type="string">BOOL</Single>
+                        <Single Name="Comment" Type="string"></Single>
+                        <Single Name="SymbolComment" Type="string"></Single>
+                        <Single Name="Address" Type="string"></Single>
+                        <Single Name="Flags" Type="{668066f2-6069-46b3-8962-8db8d13d7db2}" Method="IArchivable">
+                          <Single Name="Flags" Type="int">0</Single>
+                          <Single Name="Fixed" Type="bool">False</Single>
+                          <Single Name="Extensible" Type="bool">False</Single>
+                        </Single>
+                        <Single Name="LValue" Type="bool">True</Single>
+                        <Single Name="Boolean" Type="bool">True</Single>
+                        <Single Name="IsInstance" Type="bool">False</Single>
+                        <Single Name="Id" Type="long">142</Single>
+                      </Single>
+                    </List2>
+                  </Single>
+                  <Single Name="Flags" Type="{668066f2-6069-46b3-8962-8db8d13d7db2}" Method="IArchivable">
+                    <Single Name="Flags" Type="int">0</Single>
+                    <Single Name="Fixed" Type="bool">False</Single>
+                    <Single Name="Extensible" Type="bool">False</Single>
+                  </Single>
+                  <Single Name="RValue" Type="{acfc6f68-8e3a-4af5-bf81-3dd512095a46}" Method="IArchivable">
+                    <Single Name="BoxType" Type="string">BLINK</Single>
+                    <Single Name="Instance" Type="{c9b2f165-48a2-4a45-8326-3952d8a3d708}" Method="IArchivable">
+                      <Single Name="Operand" Type="string">BLINK_0</Single>
+                      <Single Name="Type" Type="string">BLINK</Single>
+                      <Single Name="Comment" Type="string"></Single>
+                      <Single Name="SymbolComment" Type="string"></Single>
+                      <Single Name="Address" Type="string"></Single>
+                      <Single Name="Flags" Type="{668066f2-6069-46b3-8962-8db8d13d7db2}" Method="IArchivable">
+                        <Single Name="Flags" Type="int">0</Single>
+                        <Single Name="Fixed" Type="bool">False</Single>
+                        <Single Name="Extensible" Type="bool">False</Single>
+                      </Single>
+                      <Single Name="LValue" Type="bool">False</Single>
+                      <Single Name="Boolean" Type="bool">False</Single>
+                      <Single Name="IsInstance" Type="bool">True</Single>
+                      <Single Name="Id" Type="long">137</Single>
+                    </Single>
+                    <Single Name="OutputItems" Type="{f40d3e09-c02c-4522-a88c-dac23558cfc4}" Method="IArchivable">
+                      <List2 Name="OutputItems">
+                        <Null />
+                      </List2>
+                    </Single>
+                    <Single Name="Flags" Type="{668066f2-6069-46b3-8962-8db8d13d7db2}" Method="IArchivable">
+                      <Single Name="Flags" Type="int">0</Single>
+                      <Single Name="Fixed" Type="bool">True</Single>
+                      <Single Name="Extensible" Type="bool">False</Single>
+                    </Single>
+                    <Null Name="InputFlags" />
+                    <List2 Name="InputItems">
+                      <Single Type="{9de7f100-1b87-424c-a62e-45b0cfc85ed2}" Method="IArchivable">
+                        <Single Name="Operand" Type="{c9b2f165-48a2-4a45-8326-3952d8a3d708}" Method="IArchivable">
+                          <Single Name="Operand" Type="string">edgetrigger</Single>
+                          <Single Name="Type" Type="string">BOOL</Single>
+                          <Single Name="Comment" Type="string"></Single>
+                          <Single Name="SymbolComment" Type="string"></Single>
+                          <Single Name="Address" Type="string"></Single>
+                          <Single Name="Flags" Type="{668066f2-6069-46b3-8962-8db8d13d7db2}" Method="IArchivable">
+                            <Single Name="Flags" Type="int">0</Single>
+                            <Single Name="Fixed" Type="bool">False</Single>
+                            <Single Name="Extensible" Type="bool">False</Single>
+                          </Single>
+                          <Single Name="LValue" Type="bool">False</Single>
+                          <Single Name="Boolean" Type="bool">False</Single>
+                          <Single Name="IsInstance" Type="bool">False</Single>
+                          <Single Name="Id" Type="long">134</Single>
+                        </Single>
+                        <Single Name="Id" Type="long">133</Single>
+                      </Single>
+                      <Single Type="{9de7f100-1b87-424c-a62e-45b0cfc85ed2}" Method="IArchivable">
+                        <Single Name="Operand" Type="{c9b2f165-48a2-4a45-8326-3952d8a3d708}" Method="IArchivable">
+                          <Single Name="Operand" Type="string">T#500ms</Single>
+                          <Single Name="Type" Type="string">TIME</Single>
+                          <Single Name="Comment" Type="string"></Single>
+                          <Single Name="SymbolComment" Type="string"></Single>
+                          <Single Name="Address" Type="string"></Single>
+                          <Single Name="Flags" Type="{668066f2-6069-46b3-8962-8db8d13d7db2}" Method="IArchivable">
+                            <Single Name="Flags" Type="int">0</Single>
+                            <Single Name="Fixed" Type="bool">False</Single>
+                            <Single Name="Extensible" Type="bool">False</Single>
+                          </Single>
+                          <Single Name="LValue" Type="bool">False</Single>
+                          <Single Name="Boolean" Type="bool">False</Single>
+                          <Single Name="IsInstance" Type="bool">False</Single>
+                          <Single Name="Id" Type="long">136</Single>
+                        </Single>
+                        <Single Name="Id" Type="long">135</Single>
+                      </Single>
+                      <Single Type="{9de7f100-1b87-424c-a62e-45b0cfc85ed2}" Method="IArchivable">
+                        <Single Name="Operand" Type="{c9b2f165-48a2-4a45-8326-3952d8a3d708}" Method="IArchivable">
+                          <Single Name="Operand" Type="string">T#500ms</Single>
+                          <Single Name="Type" Type="string">TIME</Single>
+                          <Single Name="Comment" Type="string"></Single>
+                          <Single Name="SymbolComment" Type="string"></Single>
+                          <Single Name="Address" Type="string"></Single>
+                          <Single Name="Flags" Type="{668066f2-6069-46b3-8962-8db8d13d7db2}" Method="IArchivable">
+                            <Single Name="Flags" Type="int">0</Single>
+                            <Single Name="Fixed" Type="bool">False</Single>
+                            <Single Name="Extensible" Type="bool">False</Single>
+                          </Single>
+                          <Single Name="LValue" Type="bool">False</Single>
+                          <Single Name="Boolean" Type="bool">False</Single>
+                          <Single Name="IsInstance" Type="bool">False</Single>
+                          <Single Name="Id" Type="long">140</Single>
+                        </Single>
+                        <Single Name="Id" Type="long">139</Single>
+                      </Single>
+                    </List2>
+                    <Single Name="InputParam" Type="{71496971-9e0c-4677-a832-b9583b571130}" Method="IArchivable">
+                      <List2 Name="Names">
+                        <Single Type="string">ENABLE</Single>
+                        <Single Type="string">TIMELOW</Single>
+                        <Single Type="string">TIMEHIGH</Single>
+                      </List2>
+                      <List2 Name="Types">
+                        <Single Type="string">BOOL</Single>
+                        <Single Type="string">TIME</Single>
+                        <Single Type="string">TIME</Single>
+                      </List2>
+                    </Single>
+                    <Single Name="OutputParam" Type="{71496971-9e0c-4677-a832-b9583b571130}" Method="IArchivable">
+                      <List2 Name="Names">
+                        <Single Type="string">OUT</Single>
+                      </List2>
+                      <List2 Name="Types">
+                        <Single Type="string">BOOL</Single>
+                      </List2>
+                    </Single>
+                    <Single Name="CallType" Type="{bffb3c53-f105-4e85-aba2-e30df579d75f}">FunctionBlock</Single>
+                    <Single Name="EN" Type="bool">False</Single>
+                    <Single Name="ENO" Type="bool">False</Single>
+                    <Null Name="STSnippet" />
+                    <Single Name="ContainsExtensibleInputs" Type="bool">False</Single>
+                    <Single Name="ProvidesSTSnippet" Type="bool">False</Single>
+                    <Single Name="Id" Type="long">138</Single>
+                  </Single>
+                  <Single Name="Id" Type="long">143</Single>
+                </Single>
+              </List2>
+              <List2 Name="Connectors" />
+              <Single Name="Id" Type="long">130</Single>
+            </Single>
           </List2>
           <Single Name="BranchCounter" Type="int">14</Single>
           <Single Name="ValidIds" Type="bool">True</Single>
@@ -1162,6 +1320,11 @@
                 <Single Name="Text" Type="string">	answer: UINT;</Single>
               </Single>
               <Single Type="{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}" Method="IArchivable">
+                <Single Name="Id" Type="long">141</Single>
+                <Null Name="Tag" />
+                <Single Name="Text" Type="string">	BLINK_0: BLINK;</Single>
+              </Single>
+              <Single Type="{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}" Method="IArchivable">
                 <Single Name="Id" Type="long">4</Single>
                 <Null Name="Tag" />
                 <Single Name="Text" Type="string">END_VAR</Single>
@@ -1174,7 +1337,7 @@
             </Array>
           </Single>
         </Single>
-        <Single Name="UniqueIdGenerator" Type="string">129</Single>
+        <Single Name="UniqueIdGenerator" Type="string">143</Single>
         <Single Name="POULevel" Type="{8e575c5b-1d37-49c6-941b-5c0ec7874787}">Standard</Single>
         <List Name="ChildObjectGuids" Type="System.Collections.ArrayList" />
         <Single Name="AddAttributeSubsequent" Type="bool">False</Single>
