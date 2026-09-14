@@ -497,6 +497,23 @@ check("execute EN: a bare rail with a negated EN never runs it", "IF NOT TRUE TH
 check("execute EN: a bare negated EN is not emitted unconditionally", bare[0] != "a := 1;")
 
 
+# --- a stateless operator read by more than one rung -------------------------
+
+# A function block read a second time in a network is named by the pin it
+# takes ([tmr.Q]) - one box that runs once. A stateless operator has no
+# instance to name: "OR.Out1" points at no variable and would be ambiguous
+# with a second OR, so it is redrawn instead, the same rule the FBD renderer
+# follows. The ladder path used to name it too.
+OPERATOR_ACROSS = os.path.join(FIXTURES, "ld-operator-across-rungs.xml")
+opr_pou = parse_pous(OPERATOR_ACROSS)[0]
+opr_art = render_pou(opr_pou)
+
+check("operator reuse: the operator is not named as an instance", not any("OR.Out1" in line for line in opr_art))
+check("operator reuse: the operator is not referenced in brackets", not any("[OR" in line for line in opr_art))
+check_equal("operator reuse: the OR box is drawn in both rungs", len([l for l in opr_art if "In1   Out1" in l]), 2)
+check("operator reuse: both coils are still driven", any("xA" in l for l in opr_art) and any("xB" in l for l in opr_art))
+
+
 # --- byte order mark -------------------------------------------------------
 
 # CODESYS writes a BOM on every export_xml file, and the ElementTree it ships

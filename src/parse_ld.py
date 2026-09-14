@@ -195,7 +195,8 @@ def _block_reference(node, via_pin):
     A block driving three outputs is one box that runs once. Rebuilding it for
     every output drew it three times and called it three times, which reads as
     three timers where the program has one; every reader after the first names
-    the pin it takes instead.
+    the pin it takes instead. Only an instance can be named this way - an
+    operator has no name, so its caller redraws it rather than reach here.
     """
     pin = via_pin
     if pin is None and node.outputs:
@@ -215,7 +216,12 @@ def _build_block(node, by_id, visiting, via_pin, drawn):
     an inVariable are parameters, not power, so the first genuinely wired pin
     wins and the rest become captions inside the box.
     """
-    if node.local_id in drawn:
+    if node.local_id in drawn and node.instance_name:
+        # Drawn once already. A stateful function block is one box that runs
+        # once, so the next reader names the pin it takes. A stateless
+        # operator has no instance to name - "OR.Out1" points at no variable,
+        # and would be ambiguous with a second OR - so it is redrawn instead,
+        # the rule the FBD renderer already follows.
         return _block_reference(node, via_pin)
     drawn.add(node.local_id)
 
