@@ -559,6 +559,26 @@ coil_row = [i for i, l in enumerate(shared_box_art) if "( )" in l][0]
 check("shared box sinks: RETURN and the coil are on different rows", return_row != coil_row)
 
 
+# --- a contact reads a block output without naming the pin -------------------
+
+# CODESYS often wires a contact to a block's output without naming the pin, so
+# the connection carries no formalParameter. That read still consumes the
+# block, so its output must tee - and the box must build the same whether the
+# reader named the pin or not, or two rungs that share the box (a RETURN and a
+# coil off one ENO) would not line up and would not merge. This is the shape a
+# real Network 5 makes.
+UNNAMED = os.path.join(FIXTURES, "ld-contact-reads-block-unnamed-pin.xml")
+unnamed_pou = parse_pous(UNNAMED)[0]
+unnamed_art = render_pou(unnamed_pou)
+
+check_equal("unnamed pin: the box is drawn once", len([l for l in unnamed_art if "In2   Out2" in l]), 1)
+check_equal("unnamed pin: one network, one header", len([l for l in unnamed_art if l.startswith("(* Network")]), 1)
+check("unnamed pin: the box output branches", any(U["T_DOWN"] in l for l in unnamed_art))
+check("unnamed pin: the consumed output is teed", any("ENO" + U["PIN_R"] in l for l in unnamed_art))
+check("unnamed pin: no untee'd wire runs from the box", not any("ENO" + U["V"] + U["H"] in l for l in unnamed_art))
+check("unnamed pin: RETURN and the coil are both drawn", any("<RETURN>" in l for l in unnamed_art) and any("( )" in l for l in unnamed_art))
+
+
 # --- byte order mark -------------------------------------------------------
 
 # CODESYS writes a BOM on every export_xml file, and the ElementTree it ships

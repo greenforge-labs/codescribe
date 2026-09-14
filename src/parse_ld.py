@@ -209,7 +209,7 @@ def _block_reference(node, via_pin):
     )
 
 
-def _build_block(node, by_id, visiting, via_pin, drawn):
+def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
     """Build a block call, separating power flow from parameter inputs.
 
     Exactly one input carries the rung's power flow. Pins fed by a literal or
@@ -256,7 +256,7 @@ def _build_block(node, by_id, visiting, via_pin, drawn):
                 continue
             if upstream.kind != IN_VARIABLE:
                 all_from_variables = False
-            branches.append(_build_expr(upstream, by_id, visiting, connection.source_pin, drawn))
+            branches.append(_build_expr(upstream, by_id, visiting, connection.source_pin, drawn, consumed))
         # The bubble and the P or N ride on the pin, so every connection to it
         # carries the same pair; the first speaks for the group.
         negated = connections[0].negated
@@ -304,7 +304,10 @@ def _build_block(node, by_id, visiting, via_pin, drawn):
         active_output=active,
         # via_pin is set by whatever consumed this block; a block terminating
         # the rung has none.
-        output_wired=via_pin is not None,
+        # Wired when a pin was named, or when anything downstream reads the
+        # block at all - a contact reading a block output does not always
+        # name the pin, and the box must still tee where it is consumed.
+        output_wired=via_pin is not None or (consumed is not None and node.local_id in consumed),
         st_code=list(node.st_code),
         power_negated=power_negated,
         power_edge=power_edge,
@@ -371,7 +374,7 @@ def _pin_text(sub_expr, connection, hoisted):
     return pin_value(_pin_expr_text(sub_expr, hoisted), connection.negated, connection.edge)
 
 
-def _build_expr(node, by_id, visiting, via_pin=None, drawn=None):
+def _build_expr(node, by_id, visiting, via_pin=None, drawn=None, consumed=None):
     """Walk backwards from a node to the power rail, building series/parallel.
 
     A node's expression is everything feeding it (OR'd together if there is
@@ -389,14 +392,14 @@ def _build_expr(node, by_id, visiting, via_pin=None, drawn=None):
     visiting = visiting | set([node.local_id])
 
     if node.kind == BLOCK:
-        return _build_block(node, by_id, visiting, via_pin, drawn)
+        return _build_block(node, by_id, visiting, via_pin, drawn, consumed)
 
     branches = []
     for connection in node.inputs:
         upstream = by_id.get(connection.ref_id)
         if upstream is None:
             continue
-        branches.append(_build_expr(upstream, by_id, visiting, connection.source_pin, drawn))
+        branches.append(_build_expr(upstream, by_id, visiting, connection.source_pin, drawn, consumed))
 
     incoming = parallel(branches) if branches else Empty()
 
@@ -459,7 +462,7 @@ def build_networks(nodes):
         if node.local_id in consumed or node.kind in (LEFT_RAIL, COMMENT, TITLE):
             # An unconnected left rail is an empty rung, not a terminal.
             continue
-        expr = _build_expr(node, by_id, set(), None, drawn)
+        expr = _build_expr(node, by_id, set(), None, drawn, consumed)
         if isinstance(expr, Empty):
             # An unconnected rail or a stray element with nothing on it.
             continue
