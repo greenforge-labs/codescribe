@@ -173,8 +173,10 @@ def _render_call(call, read_pin, drawn, subs=None):
     for row in range(box_first, box_last + 1):
         widths.append(len(in_at.get(row, "")) + 3 + len(out_at.get(row, "")))
     # An EXECUTE box carries its inline ST as its body: the lines sit inside
-    # the box, below the pins, and widen it to the longest of them.
-    code = call.st_code
+    # the box, below the pins, and widen it to the longest of them. Tabs are
+    # expanded to spaces so the box's right wall stays straight - a tab counts
+    # as one character but draws as several.
+    code = [line.expandtabs(4) for line in call.st_code]
     widths += [len(line) + 2 for line in code]
     inner = max(widths)
 

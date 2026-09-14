@@ -206,8 +206,10 @@ def _render_block(element):
 
     title = element.title
     # An EXECUTE box carries its inline ST as its body: the lines sit inside
-    # the box, below the pins, and widen it to the longest of them.
-    code = element.st_code
+    # the box, below the pins, and widen it to the longest of them. Tabs are
+    # expanded to spaces so the box's right wall stays straight - a tab counts
+    # as one character but draws as several.
+    code = [line.expandtabs(4) for line in element.st_code]
     inner = max([len(title)] + [len(left[i]) + 3 + len(right[i]) for i in range(rows)] + [len(line) + 2 for line in code])
 
     # Two columns to the left of the box: the widest value, then a short wire

@@ -753,6 +753,19 @@ check("execute store: the body is guarded", "IF xRun THEN" in exec_eno_st and " 
 check("execute store: the ENO store records the run", "xDid := xRun;" in exec_eno_st)
 
 
+# A body line indented with a tab: the tab draws as several columns but counts
+# as one character, so it left the box's right wall ragged. Tabs are expanded
+# to spaces, and every body row ends its wall in the same column.
+tab_box = Call("EXECUTE", inputs=[("EN", Signal("xRun"))], outputs=[("ENO", "dude")],
+               st_code=["IF dude THEN", "\twhereismycar := TRUE;", "END_IF"])
+tab_art = fbd_render.render_network(Network("", [tab_box]))
+check("execute tab: no tab survives into the box", not any("\t" in line for line in tab_art))
+check("execute tab: the tabbed line is inside the box", any(U["V"] + "     whereismycar := TRUE;" in line for line in tab_art))
+body_rows = [line for line in tab_art if (U["V"] + " ") in line and line.rstrip().endswith(U["V"])]
+check("execute tab: the box has body rows", len(body_rows) >= 3)
+check_equal("execute tab: every body row's wall ends in one column", len(set(len(line.rstrip()) for line in body_rows)), 1)
+
+
 # --- language dispatch -----------------------------------------------------
 
 check_equal("LD parser ignores FBD bodies", parse_ld.parse_pous(FBD_SOURCE), [])
