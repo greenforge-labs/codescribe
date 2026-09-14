@@ -515,6 +515,27 @@ check_equal("operator reuse: the OR box is drawn in both rungs", len([l for l in
 check("operator reuse: both coils are still driven", any("xA" in l for l in opr_art) and any("xB" in l for l in opr_art))
 
 
+# --- a head shared by several branches is drawn once -------------------------
+
+# The parser builds one branch per sink, so a contact chain or a block that
+# feeds several sinks was repeated down every branch - drawn again and again,
+# which read as separate rungs rather than one wire that branches after a
+# shared head. The diagram now pulls the common prefix out in front, the way
+# the editor draws it.
+SHARED_PREFIX = os.path.join(FIXTURES, "ld-shared-prefix-branches.xml")
+shared_pou = parse_pous(SHARED_PREFIX)[0]
+shared_art = render_pou(shared_pou)
+
+# xGo feeds two coils. It is drawn once, then the wire branches to each coil.
+check_equal("shared prefix: the shared contact is drawn once", len([l for l in shared_art if "xGo" in l]), 1)
+check("shared prefix: both coils are still drawn", any("xA" in l for l in shared_art) and any("xB" in l for l in shared_art))
+check("shared prefix: the wire branches after the contact", any(U["T_DOWN"] in l for l in shared_art))
+# The two coils sit on their own rows, one per branch.
+xa_row = [i for i, l in enumerate(shared_art) if "xA" in l][0]
+xb_row = [i for i, l in enumerate(shared_art) if "xB" in l][0]
+check("shared prefix: the coils are on different rows", xa_row != xb_row)
+
+
 # --- byte order mark -------------------------------------------------------
 
 # CODESYS writes a BOM on every export_xml file, and the ElementTree it ships

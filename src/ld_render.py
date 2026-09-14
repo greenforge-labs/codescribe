@@ -17,7 +17,7 @@ from __future__ import unicode_literals
 
 import charset
 from layout import Block, centred
-from model import BLOCK, COIL, CONTACT, Element, Empty, Parallel, Series
+from model import BLOCK, COIL, CONTACT, Element, Empty, Parallel, Series, parallel, series
 
 # The letter a contact carries for edge detection, reused on a block's power
 # pin so both read the same.
@@ -353,6 +353,61 @@ def _render(expr):
     raise TypeError("cannot render %r" % (expr,))
 
 
+def _signature(expr):
+    """A hashable structural fingerprint, so equal drawn elements can be spotted.
+
+    Two elements with the same fingerprint render identically, which is what
+    lets a shared prefix be pulled out of parallel branches without changing
+    what any branch draws.
+    """
+    if isinstance(expr, Series):
+        return ("series",) + tuple(_signature(item) for item in expr.items)
+    if isinstance(expr, Parallel):
+        return ("parallel",) + tuple(_signature(branch) for branch in expr.branches)
+    if isinstance(expr, Element):
+        return (
+            "element", expr.kind, expr.label, expr.negated, expr.edge, expr.storage,
+            expr.type_name, expr.instance_name, tuple(expr.input_pins), tuple(expr.output_pins),
+            expr.active_output, expr.output_wired, expr.power_negated, expr.power_edge,
+            tuple(sorted(expr.negated_outputs)), tuple(sorted(expr.stored_outputs.items())),
+            tuple(expr.st_code), tuple(_signature(block) for block in expr.pin_blocks),
+        )
+    return ("empty",)
+
+
+def _factor(expr):
+    """Pull the leading elements shared by every parallel branch out in front.
+
+    The parser builds one branch per sink, so a contact chain or a block that
+    feeds several sinks is repeated in each branch - drawn again and again,
+    which reads as separate rungs rather than one wire that branches. CODESYS
+    draws the shared part once and splits after it; factoring the common
+    prefix of the branches produces exactly that. Power flow is unchanged:
+    "(P AND a) OR (P AND b)" and "P AND (a OR b)" drive the same rung.
+    """
+    if isinstance(expr, Series):
+        return series([_factor(item) for item in expr.items])
+    if isinstance(expr, Parallel):
+        branches = [_factor(branch) for branch in expr.branches]
+
+        def items_of(branch):
+            return list(branch.items) if isinstance(branch, Series) else [branch]
+
+        parts = [items_of(branch) for branch in branches]
+        prefix = []
+        while all(part for part in parts):
+            first = parts[0][0]
+            signature = _signature(first)
+            if any(_signature(part[0]) != signature for part in parts):
+                break
+            prefix.append(first)
+            parts = [part[1:] for part in parts]
+        if not prefix:
+            return parallel(branches)
+        return series(prefix + [parallel([series(part) for part in parts])])
+    return expr
+
+
 def _pin_block_rungs(expr, found):
     """Collect the sub-rungs feeding side pins, in the order they execute.
 
@@ -397,7 +452,9 @@ def render_rung(expr):
     lines = []
     for pin_block in _pin_block_rungs(expr, []):
         lines.extend(_render_wire(pin_block))
-    lines.extend(_render_wire(expr))
+    # Draw the shared head of parallel branches once, then the split - the way
+    # the editor draws it - instead of repeating it down every branch.
+    lines.extend(_render_wire(_factor(expr)))
     return lines
 
 
