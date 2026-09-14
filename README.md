@@ -87,7 +87,7 @@ This file is **derived and read-only**. The native xml remains the only thing `I
 
 An equivalent-Structured-Text rendering of the same networks is available but not written by the export. The ST states the logic exactly where the diagram can only approximate it - a block read through two of its output pins is one call, and no single-wire diagram can say so - but it is a rendering, not a translation, and must never be fed back into CODESYS. `tools/ladder/write_st.py` writes one from a PLCopen export when it is wanted, and its docstring says how to put it back on the export path.
 
-An EXECUTE box has no body of its own - the whole of it is inline ST carried alongside the box - so the rendering shows that text under the box rather than an empty rectangle, and the equivalent ST guards it with the rung or pin condition that decides whether it runs.
+An EXECUTE box has no body of its own - the whole of it is inline ST carried alongside the box - so the rendering shows that text inside the box, below its pins, rather than an empty rectangle, and the equivalent ST guards it with the rung or pin condition that decides whether it runs.
 
 SFC and CFC POUs are not yet rendered; they export as native xml alone.
 

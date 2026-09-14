@@ -205,7 +205,10 @@ def _render_block(element):
     tails += [""] * (rows - len(tails))
 
     title = element.title
-    inner = max([len(title)] + [len(left[i]) + 3 + len(right[i]) for i in range(rows)])
+    # An EXECUTE box carries its inline ST as its body: the lines sit inside
+    # the box, below the pins, and widen it to the longest of them.
+    code = element.st_code
+    inner = max([len(title)] + [len(left[i]) + 3 + len(right[i]) for i in range(rows)] + [len(line) + 2 for line in code])
 
     # Two columns to the left of the box: the widest value, then a short wire
     # into the pin. The power pin's row is all wire - the rung feeds that one.
@@ -243,6 +246,9 @@ def _render_block(element):
         if onward and element.active_output in element.negated_outputs:
             right_edge = "o"
         lines.append(feed(index) + left_edge + left[index] + " " * gap + right[index] + right_edge + tails[index])
+    for line in code:
+        # A body line of an EXECUTE box, inside the box below the pins.
+        lines.append(" " * lead + chars["V"] + " " + line + " " * (inner - len(line) - 1) + chars["V"])
     lines.append(" " * lead + chars["BL"] + chars["H"] * inner + chars["BR"])
 
     # Row 0 is the title and row 1 the top border, so the first pin is row 2.
@@ -380,38 +386,18 @@ def _render_wire(expr):
     return lines
 
 
-def _inline_st(expr, found):
-    """Collect the inline ST of any EXECUTE box on this rung."""
-    if isinstance(expr, Series):
-        for item in expr.items:
-            _inline_st(item, found)
-    elif isinstance(expr, Parallel):
-        for branch in expr.branches:
-            _inline_st(branch, found)
-    elif isinstance(expr, Element):
-        for pin_block in expr.pin_blocks:
-            _inline_st(pin_block, found)
-        if expr.st_code:
-            found.append(expr)
-    return found
-
-
 def render_rung(expr):
     """Render one rung, bounded by the power rails.
 
     Boxes feeding side pins are drawn first, on wires of their own: the
     caption that reads one names only its output, so without the box the
-    diagram would not say what feeds it.
+    diagram would not say what feeds it. An EXECUTE box's inline ST is drawn
+    inside the box, below its pins, by _render_block.
     """
     lines = []
     for pin_block in _pin_block_rungs(expr, []):
         lines.extend(_render_wire(pin_block))
     lines.extend(_render_wire(expr))
-    # An EXECUTE box is nothing but inline ST; the box on its own is an empty
-    # rectangle where the logic should be.
-    for element in _inline_st(expr, []):
-        lines.append("")
-        lines.extend("    " + line for line in element.st_code)
     return lines
 
 

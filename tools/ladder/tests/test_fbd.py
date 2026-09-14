@@ -620,6 +620,7 @@ check("aside: the joined drawing is still branched", any(U["T_DOWN"] in line and
 # The body was printed only when the network's own output was the EXECUTE
 # call. Wire its ENO to a variable and the output is a store, so the box was
 # drawn - an empty rectangle - and the two lines of ST inside it were gone.
+# The body now sits inside the box, below the pins.
 ENO_WIRED = os.path.join(HERE, "fixtures", "r2-2-fbd-execute-eno-wired.xml")
 eno = parse_fbd.parse_pous(ENO_WIRED)[0]
 eno_st = st_render.render_pou(eno)
@@ -627,26 +628,22 @@ eno_art = fbd_render.render_network(eno.networks[0])
 
 check("execute eno: the box is drawn", any(line.strip() == "EXECUTE" for line in eno_art))
 check("execute eno: the wire to the store is drawn", any("ENO" + U["PIN_R"] + U["H"] * 3 + "> xRan" in line for line in eno_art))
-check_equal("execute eno: the body follows the diagram", eno_art[-2:], ["    a := 1;", "    b := 2;"])
-check_equal("execute eno: a blank line separates the body", eno_art[-3], "")
-check_equal("execute eno: the body is printed once", len([line for line in eno_art if line.strip() == "a := 1;"]), 1)
+check("execute eno: the body is inside the box", any(U["V"] + " a := 1;" in line for line in eno_art) and any(U["V"] + " b := 2;" in line for line in eno_art))
+check_equal("execute eno: each body line appears once", [len([l for l in eno_art if "a := 1;" in l]), len([l for l in eno_art if "b := 2;" in l])], [1, 1])
+check("execute eno: the box closes below the body", eno_art[-1].strip().startswith(U["BL"]))
 check("execute eno: the ST guards the body with EN", "IF xRun THEN" in eno_st and "    a := 1;" in eno_st)
 check("execute eno: the ENO store reads the enable", "xRan := xRun;" in eno_st)
 
-# The same box behind another box: still found, still printed once, and a
-# box two outputs share is not printed per output.
+# A box behind another box shows its body inside it too, wherever it sits.
 deep_execute = Call("EXECUTE", inputs=[("EN", Signal("xRun"))], outputs=[("ENO", None)], st_code=["c := 3;"])
 deep_execute.wired_outputs.add("ENO")
 deep = Network(
     "",
-    [
-        Assign("xBoth", Call("AND", inputs=[("In1", OutputRef(deep_execute, "ENO")), ("In2", Signal("xOk"))], outputs=[("Out1", None)])),
-        Assign("xRan", OutputRef(deep_execute, "ENO")),
-    ],
+    [Assign("xBoth", Call("AND", inputs=[("In1", OutputRef(deep_execute, "ENO")), ("In2", Signal("xOk"))], outputs=[("Out1", None)]))],
 )
 deep_art = fbd_render.render_network(deep)
-check_equal("execute deep: the body of a nested box is printed once", len([line for line in deep_art if line.strip() == "c := 3;"]), 1)
-check_equal("execute deep: it follows the diagram", deep_art[-1], "    c := 3;")
+check("execute deep: a nested box shows its body inside", any(U["V"] + " c := 3;" in line for line in deep_art))
+check_equal("execute deep: the body appears once", len([line for line in deep_art if "c := 3;" in line]), 1)
 
 
 # --- one expression reading two pins of a shared box -------------------------

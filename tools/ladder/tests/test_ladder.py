@@ -381,6 +381,7 @@ execute_art = render_pou(execute_pou)
 
 check_equal("execute: the inline ST is read", len(execute_pou.networks[0].outputs[0].items[-1].st_code), 4)
 check("execute: the diagram shows the body", any("iCount := iCount + 1;" in line for line in execute_art))
+check("execute: the body is inside the box", any(U["V"] + " iCount := iCount + 1;" in line for line in execute_art))
 check("execute: the box is still drawn", any("EXECUTE" in line for line in execute_art))
 # The rung condition is what decides whether the box runs, so it guards the
 # body rather than being dropped for looking redundant.

@@ -172,9 +172,14 @@ def _render_call(call, read_pin, drawn, subs=None):
     widths = [len(title)]
     for row in range(box_first, box_last + 1):
         widths.append(len(in_at.get(row, "")) + 3 + len(out_at.get(row, "")))
+    # An EXECUTE box carries its inline ST as its body: the lines sit inside
+    # the box, below the pins, and widen it to the longest of them.
+    code = call.st_code
+    widths += [len(line) + 2 for line in code]
     inner = max(widths)
 
-    height = max(len(left), box_last + 2)
+    body_last = box_last + len(code)
+    height = max(len(left), body_last + 2)
     left += [" " * left_width] * (height - len(left))
 
     # handoff was computed before the shift; recompute against the final rows.
@@ -198,7 +203,7 @@ def _render_call(call, read_pin, drawn, subs=None):
             box = centred(title, inner + 2)
         elif row == box_first - 1:
             box = chars["TL"] + chars["H"] * inner + chars["TR"]
-        elif row == box_last + 1:
+        elif row == body_last + 1:
             box = chars["BL"] + chars["H"] * inner + chars["BR"]
         elif box_first <= row <= box_last:
             left_pin = in_at.get(row, "")
@@ -208,6 +213,10 @@ def _render_call(call, read_pin, drawn, subs=None):
             right_edge = chars["PIN_R"] if wired_out else chars["V"]
             gap = inner - len(left_pin) - len(right_pin)
             box = left_edge + left_pin + " " * gap + right_pin + right_edge + tail_at.get(row, "")
+        elif box_last < row <= body_last:
+            # A body line of an EXECUTE box, inside the box below the pins.
+            text = code[row - box_last - 1]
+            box = chars["V"] + " " + text + " " * (inner - len(text) - 1) + chars["V"]
         else:
             box = " " * (inner + 2)
         lines.append(left[row] + box)
@@ -701,43 +710,6 @@ def _render_joined(readers, call, drawn):
     return out
 
 
-def _execute_bodies(outputs):
-    """The inline ST of every EXECUTE box in a network, laid out for the page.
-
-    Each body once, in the order the boxes are met - a box behind another
-    runs first, so its body comes first.
-    """
-    seen = set()
-    found = []
-
-    def walk(node):
-        call = node.call if isinstance(node, OutputRef) else node
-        if isinstance(call, Call):
-            if id(call) in seen:
-                return
-            seen.add(id(call))
-            for _pin, source in call.inputs:
-                if source is not None:
-                    walk(source)
-            if call.st_code:
-                found.append(call)
-        elif isinstance(node, Assign):
-            if node.source is not None:
-                walk(node.source)
-        elif isinstance(node, Jump):
-            if node.condition is not None:
-                walk(node.condition)
-
-    for tree in outputs:
-        walk(tree)
-
-    lines = []
-    for call in found:
-        lines.append("")
-        lines.extend("    " + line for line in call.st_code)
-    return lines
-
-
 def _render_outputs(outputs, drawn):
     """The diagram of one network's outputs, joined or branched as they share."""
     if _shared_source(outputs) is not None:
@@ -760,16 +732,17 @@ def _render_outputs(outputs, drawn):
 
 
 def render_network(network):
-    """Render one network, which may drive several outputs from one source."""
+    """Render one network, which may drive several outputs from one source.
+
+    An EXECUTE box's inline ST is its body; _render_call draws it inside the
+    box, below the pins, wherever the box sits - as the network's own output,
+    behind the store its ENO feeds, or behind another box.
+    """
     outputs = getattr(network, "outputs", [network])
     # Per network: a box drawn for one output must not be drawn again for the
     # next, but a box shared between two networks is two boxes on the page.
     drawn = set()
-    # An EXECUTE box's body is the logic; drawing the box without it would be
-    # an empty rectangle where a dozen lines of ST should be. The box is found
-    # wherever it sits - behind the store its ENO feeds, or behind another
-    # box - and not only when it is the network's own output.
-    return _render_outputs(outputs, drawn) + _execute_bodies(outputs)
+    return _render_outputs(outputs, drawn)
 
 
 def render_pou(pou):
