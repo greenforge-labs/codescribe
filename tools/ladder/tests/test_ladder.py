@@ -579,6 +579,28 @@ check("unnamed pin: no untee'd wire runs from the box", not any("ENO" + U["V"] +
 check("unnamed pin: RETURN and the coil are both drawn", any("<RETURN>" in l for l in unnamed_art) and any("( )" in l for l in unnamed_art))
 
 
+# --- a side pin fed by a contact is drawn as that contact --------------------
+
+# A reset or enable read off the rail by a contact was flattened into the pin
+# caption as text ("R(xClear)"). It is now drawn as the contact it is, its
+# label and symbol wired into the pin, the way the editor draws it. The ST,
+# which cannot draw a second wire, keeps the flattened form.
+SIDE_PIN = os.path.join(FIXTURES, "ld-contact-feeds-a-side-pin.xml")
+side_pin_pou = parse_pous(SIDE_PIN)[0]
+side_pin_art = render_pou(side_pin_pou)
+side_pin_st = st_render.render_pou(side_pin_pou)
+
+reset_row = [l for l in side_pin_art if "RESET" in l][0]
+check("side pin: the reset contact is drawn with its symbol", "xClear " + U["CONTACT_L"] + "P" + U["CONTACT_R"] in reset_row)
+check("side pin: the reset is not flattened to text", not any("R(xClear)" in l for l in side_pin_art))
+check("side pin: the contact is wired into the pin", "xClear " + U["CONTACT_L"] + "P" + U["CONTACT_R"] + U["H"] * 2 + U["PIN_L"] + "RESET" in reset_row)
+# A literal side pin (PV := 10) is untouched.
+pv_row = [l for l in side_pin_art if "PV" in l][0]
+check("side pin: a literal side pin stays a value", "10" in pv_row and U["PIN_L"] + "PV" in pv_row)
+# The ST is unaffected - it still flattens.
+check("side pin: the ST keeps the flattened form", any("RESET := R(xClear)" in l for l in side_pin_st))
+
+
 # --- byte order mark -------------------------------------------------------
 
 # CODESYS writes a BOM on every export_xml file, and the ElementTree it ships

@@ -502,6 +502,7 @@ class Element(object):
         stored_outputs=None,
         pin_blocks=None,
         st_code=None,
+        pin_feeds=None,
     ):
         self.kind = kind
         self.label = label
@@ -536,6 +537,10 @@ class Element(object):
         # An EXECUTE box carries inline ST as its whole body. Drawing the box
         # without it leaves an empty rectangle where the logic should be.
         self.st_code = st_code if st_code is not None else []
+        # Blocks only: {pin: expression} for a side pin fed by a contact chain.
+        # A contact reset or enable is drawn as the contact it is, wired into
+        # the pin, rather than flattened into the pin caption as text.
+        self.pin_feeds = pin_feeds if pin_feeds is not None else {}
 
     @property
     def title(self):

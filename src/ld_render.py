@@ -151,6 +151,34 @@ def _pin_head(box, pin):
     return "o> " if pin in box.negated_outputs else "> "
 
 
+def _pin_feed_symbols(expr):
+    """A side pin's contact feed as drawn contacts, e.g. "PowerOff |P|".
+
+    The contact a reset or enable reads is shown as the contact it is - its
+    label and its symbol - wired into the pin, rather than flattened into a
+    caption like "R(PowerOff)".
+    """
+    chars = charset.active()
+    if isinstance(expr, Element) and expr.kind == CONTACT:
+        if expr.edge == "rising":
+            middle = "P"
+        elif expr.edge == "falling":
+            middle = "N"
+        elif expr.negated:
+            middle = "/"
+        else:
+            middle = " "
+        symbol = chars["CONTACT_L"] + middle + chars["CONTACT_R"]
+        label = expr.label or ""
+        return (label + " " + symbol) if label else symbol
+    if isinstance(expr, Series):
+        parts = [_pin_feed_symbols(item) for item in expr.items if not isinstance(item, Empty)]
+        return " ".join(part for part in parts if part)
+    if isinstance(expr, Parallel):
+        return "(" + " / ".join(_pin_feed_symbols(branch) for branch in expr.branches) + ")"
+    return ""
+
+
 def _render_block(element):
     """Draw a function block as a pin box.
 
@@ -171,7 +199,11 @@ def _render_block(element):
         left.append(pin or "?")
         # A label of None is the power pin - it is wired, not parameterised.
         wired.append(label is None)
-        values.append("" if label is None else (label or ""))
+        if pin in element.pin_feeds:
+            # A contact reset or enable, drawn as the contact it is.
+            values.append(_pin_feed_symbols(element.pin_feeds[pin]))
+        else:
+            values.append("" if label is None else (label or ""))
 
     # A store written on an output pin hangs off that pin on a wire of its
     # own, as CODESYS draws it. Writing it inside the box put the target

@@ -209,6 +209,22 @@ def _block_reference(node, via_pin):
     )
 
 
+def _is_contact_chain(expr):
+    """True when an expression is nothing but contacts (and bare wire).
+
+    A side pin fed by one is drawn as those contacts, wired into the pin; a
+    pin fed by a literal, a box or anything else keeps its flattened caption.
+    """
+    if isinstance(expr, Element):
+        return expr.kind == CONTACT
+    if isinstance(expr, Series):
+        parts = [item for item in expr.items if not isinstance(item, Empty)]
+        return bool(parts) and all(_is_contact_chain(item) for item in parts)
+    if isinstance(expr, Parallel):
+        return bool(expr.branches) and all(_is_contact_chain(branch) for branch in expr.branches)
+    return False
+
+
 def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
     """Build a block call, separating power flow from parameter inputs.
 
@@ -231,6 +247,7 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
     power_edge = None
     side_pins = []
     pin_blocks = []
+    pin_feeds = {}
 
     # Several connections landing on one pin are a wired OR into that pin -
     # the same several-<connection>-under-one-connectionPointIn shape a coil
@@ -279,6 +296,11 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
             power_negated = negated
             power_edge = edge
         else:
+            # A side pin fed by contacts - a reset or enable off the rail - is
+            # drawn as the contacts it is, wired into the pin, rather than
+            # flattened into the caption. The text form stays for the ST.
+            if _is_contact_chain(feed):
+                pin_feeds[pin] = feed
             side_pins.append((pin, _pin_text(feed, connections[0], pin_blocks)))
 
     input_pins = []
@@ -308,6 +330,7 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
         # block at all - a contact reading a block output does not always
         # name the pin, and the box must still tee where it is consumed.
         output_wired=via_pin is not None or (consumed is not None and node.local_id in consumed),
+        pin_feeds=pin_feeds,
         st_code=list(node.st_code),
         power_negated=power_negated,
         power_edge=power_edge,
