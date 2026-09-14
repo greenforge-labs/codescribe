@@ -17,6 +17,7 @@ from util import *
 SKIP_NAMES = [
     "Library Manager",
     "Project Information",
+    "Library Information",
     "Project Settings",
     "Task Configuration",
     "Symbol Configuration",
