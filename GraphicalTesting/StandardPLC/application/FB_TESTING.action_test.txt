@@ -1,12 +1,8 @@
-(* FB_TESTING.PleaseIhaveKids - the declaration below is the parent POU's *)
+(* FB_TESTING.action_test - the declaration below is the parent POU's *)
 
 PROGRAM FB_TESTING
 (***********************************************************************************************
-Object Name	: PLC_SUPPLY
-Descrition	: Program to control the System Supply Switch to ensure the PLC turns OFF when the ignition turns OFF.
-Author		: KP
-Date		: 17/06/25
-Rev			: P1
+FULLY SICK FUNCTION BLOCK DIAGRAM FOR TESTING. Do not worry about what the logic is doing.
 ***********************************************************************************************)
 VAR CONSTANT
 	uiMinVoltage 		: UINT := 5000;    // Minimum Voltage in mV
@@ -22,6 +18,7 @@ VAR
 	xResult : BOOL;
 	xTimerDone : BOOL;
 	TON_0: TON;
+	whereismycar : BOOL;
 END_VAR
 
 (* Network 1 *)

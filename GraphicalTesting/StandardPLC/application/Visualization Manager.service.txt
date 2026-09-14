@@ -6,7 +6,7 @@
     <Single Type="{6198ad31-4b98-445c-927f-3258a0e82fe3}" Method="IArchivable">
       <Single Name="IsRoot" Type="bool">True</Single>
       <Single Name="MetaObject" Type="{81297157-7ec9-45ce-845e-84cab2b88ade}" Method="IArchivable">
-        <Single Name="Guid" Type="System.Guid">a886129e-88da-4a4d-9079-d46f717679fc</Single>
+        <Single Name="Guid" Type="System.Guid">346833a2-b8bb-4a1d-be12-49edf9cc55c3</Single>
         <Single Name="ParentGuid" Type="System.Guid">f9c00bdb-2f18-4e80-863e-6da977e8f304</Single>
         <Single Name="Name" Type="string">Visualization Manager</Single>
         <Dictionary Type="{2c41fa04-1834-41c1-816e-303c7aa2c05b}" Name="Properties" />
@@ -57,15 +57,7 @@
                 <Single Type="string">FB_Init</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">c89279aa-6da4-434e-bb9d-7a1092342960</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">FB_Reinit</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">3f5c1fdc-c478-403e-9db6-413c44798b62</Single>
+                <Single Type="System.Guid">c7e2166b-97dd-4993-bada-4bbfb66ec8ac</Single>
               </Value>
             </Entry>
             <Entry>
@@ -73,12 +65,20 @@
                 <Single Type="string">FB_Exit</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">473dd5fb-9ac9-4528-b9ae-4443fbf833b6</Single>
+                <Single Type="System.Guid">c5608289-c5cc-4147-aaa8-fad5eaf1a2af</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">FB_Reinit</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">ce81c39a-7582-4df2-8d4d-908c63dae772</Single>
               </Value>
             </Entry>
           </Dictionary>
           <Single Name="FbName" Type="string">NotImportant</Single>
-          <Single Name="FbGuid" Type="System.Guid">34d06ee6-3348-4ff4-88e5-5d0e892de8fc</Single>
+          <Single Name="FbGuid" Type="System.Guid">c0519247-ee79-46c5-b44d-e337bed2ed1f</Single>
         </Single>
         <Single Name="TargetProperties" Type="{997fedbb-1888-4256-b61c-2933d8056bfd}" Method="IArchivable">
           <Null Name="AvailableKeys" />
@@ -98,15 +98,7 @@
                 <Single Type="string">ExecuteLooseCapture</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">a5b292af-c5c5-4060-8b91-55007f1acae4</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">ExecuteMouseUp</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">cacb2953-9ffc-4db1-8545-ebd1aa76f7bc</Single>
+                <Single Type="System.Guid">db44e2e9-251e-4e32-865b-6ad832956598</Single>
               </Value>
             </Entry>
             <Entry>
@@ -114,7 +106,7 @@
                 <Single Type="string">Init</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">d686395d-362c-41a0-812d-1e9432b49cdc</Single>
+                <Single Type="System.Guid">c006e9d8-a2d0-49eb-8e96-b36e8bfec712</Single>
               </Value>
             </Entry>
             <Entry>
@@ -122,7 +114,7 @@
                 <Single Type="string">FB_Exit</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">c0ad1bc8-35bf-45cc-9b5d-b2bbe2ada465</Single>
+                <Single Type="System.Guid">1df4a714-e6f5-4fbf-a7c1-55931a0b9ad9</Single>
               </Value>
             </Entry>
             <Entry>
@@ -130,15 +122,7 @@
                 <Single Type="string">ExecuteMouseDblClick</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">dc5bfb38-a1eb-4464-b07f-2081ea939424</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">GetElementInfo</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">66c67735-498e-45a5-804c-6370fbb97df7</Single>
+                <Single Type="System.Guid">a124a2b6-3427-4528-ba94-a9a3e51ef24e</Single>
               </Value>
             </Entry>
             <Entry>
@@ -146,63 +130,15 @@
                 <Single Type="string">ExecuteMouseDown</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">d21b7523-2711-423b-af01-519e8c0e9c82</Single>
+                <Single Type="System.Guid">4bfa1c8c-98e7-430d-b134-affcadc6cf9e</Single>
               </Value>
             </Entry>
             <Entry>
               <Key>
-                <Single Type="string">FB_Reinit</Single>
+                <Single Type="string">ExecuteMouseUp</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">e3f2b997-e1ae-4245-8288-03b5f90ef558</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">Initialize</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">32672985-f837-4b28-9cce-7bcf785362df</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">ExecuteMouseMove</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">8d88349c-03f3-4f94-927b-2ea19bfe683d</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">ExecuteDialogClosed</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">21fa2514-fea5-47d6-8aea-20e66b1d3a8e</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">ExecuteKeyUp</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">476c673a-06e6-47c2-9cc7-3a989d50ede0</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">ExecuteKeyDown</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">b56c83d3-4073-419e-81ed-82392f9b80ff</Single>
-              </Value>
-            </Entry>
-            <Entry>
-              <Key>
-                <Single Type="string">abstrGetDefaultCursor</Single>
-              </Key>
-              <Value>
-                <Single Type="System.Guid">b6adce04-2762-4ad9-8d50-d50300042633</Single>
+                <Single Type="System.Guid">a9199d8b-ef44-41c5-8658-b65d688170f9</Single>
               </Value>
             </Entry>
             <Entry>
@@ -210,7 +146,71 @@
                 <Single Type="string">ExecuteMouseEnter</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">a4213275-eb0f-4188-83b2-c6fdda524913</Single>
+                <Single Type="System.Guid">70fd46c1-8141-4c7e-91c8-820053991829</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">FB_Reinit</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">6239d873-3a40-4be9-b8dc-4b1df397757d</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">GetElementInfo</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">a3b59e56-e7f3-467f-b68d-4d4deb1bfedc</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">abstrGetDefaultCursor</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">895a8e24-d2e8-47a2-8ef4-ab8c1adde1b2</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">ExecuteDialogClosed</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">3dd02592-c0d6-4327-807f-5e09d6918b76</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">ExecuteKeyUp</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">803c64ff-2010-4b2d-a723-8da71f8ad696</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">ExecuteKeyDown</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">202e88a4-d10d-4bbb-9284-50e5a5ca4be2</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">ExecuteMouseMove</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">fc65267b-d612-4fed-a0e1-982e05bfba9a</Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="string">Initialize</Single>
+              </Key>
+              <Value>
+                <Single Type="System.Guid">6cbdcd7f-d922-418a-99ef-3679359317bd</Single>
               </Value>
             </Entry>
             <Entry>
@@ -218,7 +218,7 @@
                 <Single Type="string">ExecuteMouseLeave</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">7cf492e6-63d3-492e-8375-daa4b229e8ea</Single>
+                <Single Type="System.Guid">478f1b09-6f9e-4e81-8dde-ea1b9739df4e</Single>
               </Value>
             </Entry>
             <Entry>
@@ -226,7 +226,7 @@
                 <Single Type="string">FB_Init</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">ad4d0bb3-8301-46bf-90a8-9fd3be6d3486</Single>
+                <Single Type="System.Guid">6b1b99e3-6280-48a4-859a-c97e58e472ed</Single>
               </Value>
             </Entry>
             <Entry>
@@ -234,12 +234,12 @@
                 <Single Type="string">ExecuteMouseClick</Single>
               </Key>
               <Value>
-                <Single Type="System.Guid">b1cde74f-4c3e-4bd1-9ef9-b08fff5373e3</Single>
+                <Single Type="System.Guid">a6ff1a7a-47d1-4c19-86e4-76589c360358</Single>
               </Value>
             </Entry>
           </Dictionary>
           <Single Name="FbName" Type="string">NotImportant</Single>
-          <Single Name="FbGuid" Type="System.Guid">f733e3bc-0de7-42ac-9a38-e978eae9a278</Single>
+          <Single Name="FbGuid" Type="System.Guid">2de30ff1-b3ea-4c1e-9bc5-344ef440e3db</Single>
         </Single>
         <Null Name="InstantiationStorage" />
         <Null Name="VisuUserManagement" />
@@ -249,38 +249,38 @@
         <Null Name="FontsConfig" />
         <Null Name="FontDownloadConfig" />
         <Null Name="VisuInitializationCode" />
-        <Single Name="GuidVisuSettingsPou" Type="System.Guid">4a73f210-3b62-411c-a12e-01ca6c70bb64</Single>
-        <Single Name="GuidVisuSettingsPouInit" Type="System.Guid">cb582427-5c68-4f2a-9ad8-278e904201bb</Single>
-        <Single Name="GuidVisuSettingsPouReInit" Type="System.Guid">cd7582e6-5424-47ff-a03a-2b2c8113abd4</Single>
-        <Single Name="GuidVisuSettingsPouBoolMethod" Type="System.Guid">6309a3e8-c4cd-493a-bc2f-edc2e9e090ac</Single>
-        <Single Name="GuidVisuSettingsPouDIntMethod" Type="System.Guid">d290ad05-e9d3-4d2e-8f2e-5c393bca5dcb</Single>
-        <Single Name="GuidVisuSettingsPouStringMethod" Type="System.Guid">b5697eb8-8905-477d-8847-48edc0063cc0</Single>
-        <Single Name="GuidVisuSettingsPouReservedMethod" Type="System.Guid">8a2cc8a4-cfd6-4a92-a746-f413bcef536c</Single>
-        <Single Name="GuidMemManInitPou" Type="System.Guid">8349fd54-39ac-4876-b445-55e350a2b9cc</Single>
-        <Single Name="GuidMemManInitPouInit" Type="System.Guid">adba28ee-64e6-42b2-82c0-577039a7fbc5</Single>
-        <Single Name="GuidMemManInitPouReInit" Type="System.Guid">c167b3d6-5c9d-4e6f-8792-4fe5561ee1d5</Single>
-        <Single Name="GuidStartVisuInitPou" Type="System.Guid">491c67c7-6d3c-492a-a8f8-bc42f8350037</Single>
-        <Single Name="GuidStartVisuInitPouInit" Type="System.Guid">88d39fae-1bbb-45b7-8f89-497d7c9de4bf</Single>
-        <Single Name="GuidStartVisuInitPouReInit" Type="System.Guid">b9cf0740-6815-45a4-ba08-f825c260efdd</Single>
-        <Single Name="GuidVisuGVL0" Type="System.Guid">da6282b1-7718-4c8d-a00b-a1153f155420</Single>
-        <Single Name="GuidVisuGVL1" Type="System.Guid">ccb8b043-0d9a-4cbd-a524-46662e408e7a</Single>
-        <Single Name="GuidVisuGVL2" Type="System.Guid">6f28000e-952a-4cdd-8be3-70a5bb859a05</Single>
-        <Single Name="GuidVisuGVL_3" Type="System.Guid">274bcba4-c093-40ab-88b9-15948f72e347</Single>
-        <Single Name="GuidReservedPou" Type="System.Guid">40558d42-983b-4ff9-ae21-8fde60b37876</Single>
-        <Single Name="GuidVisuGVL3" Type="System.Guid">56bc93a2-20b9-4a9d-854a-45ea1aa97029</Single>
-        <Single Name="GuidReservedPouInit" Type="System.Guid">40600fba-3e82-4fb2-9f37-8254acce03be</Single>
-        <Single Name="GuidVisuGVL4" Type="System.Guid">1122f9d0-98c6-4432-9876-e24388506d8d</Single>
-        <Single Name="GuidVisuGVL5" Type="System.Guid">5830d667-6647-4129-8046-ab02cf5da887</Single>
-        <Single Name="GuidLicenseGVL" Type="System.Guid">be2b76ba-157b-4700-98b5-d65323109648</Single>
-        <Single Name="GuidGlobalClientManagerGVL" Type="System.Guid">6fad6608-7a0a-47aa-8e12-096ca38a5405</Single>
-        <Single Name="GuidVisuUserMgmtInitPou" Type="System.Guid">116afd95-a448-4dc4-b154-bfd2f74c707a</Single>
-        <Single Name="GuidVisuUserMgmtInitPouInit" Type="System.Guid">ad33a782-a45b-4370-9725-4681b035576d</Single>
-        <Single Name="GuidBeforeCompileCommonGVL" Type="System.Guid">4267b596-eb10-40ba-b2ee-4e017b6895d8</Single>
-        <Single Name="GuidVisuGVL6" Type="System.Guid">6df6d20d-06e6-42ac-afe2-687eaf9bf0d6</Single>
-        <Single Name="GuidReservedPouMethod1" Type="System.Guid">f61b50de-3f14-435c-89a1-960e68f41871</Single>
-        <Single Name="GuidReservedPouReInit" Type="System.Guid">93cbf699-fca2-4a89-9c92-0a38e7a62574</Single>
-        <Single Name="GuidReservedPouMethod0" Type="System.Guid">626c52a8-7ee6-4fb9-83dc-a61583aafbf0</Single>
-        <Single Name="GuidReservedPouMethod2" Type="System.Guid">6ab928be-8493-47ea-9fa1-72508a7297b8</Single>
+        <Single Name="GuidVisuSettingsPou" Type="System.Guid">64d50120-051d-4bbe-ace6-e97984314aa8</Single>
+        <Single Name="GuidVisuSettingsPouInit" Type="System.Guid">44870d62-e28b-43f9-b98f-0473a3b132c8</Single>
+        <Single Name="GuidVisuSettingsPouReInit" Type="System.Guid">9fae56b9-b14c-41c6-8cc7-8e40c4e249bf</Single>
+        <Single Name="GuidVisuSettingsPouBoolMethod" Type="System.Guid">0c9f6a20-5848-419d-957b-31931d01c14b</Single>
+        <Single Name="GuidVisuSettingsPouDIntMethod" Type="System.Guid">22fcdeb3-2b7e-417c-b2a5-afeae62350aa</Single>
+        <Single Name="GuidVisuSettingsPouStringMethod" Type="System.Guid">4313d649-c656-4f94-ae7d-0404c247540f</Single>
+        <Single Name="GuidVisuSettingsPouReservedMethod" Type="System.Guid">c30af6cf-89a0-46de-a616-bea3c710b716</Single>
+        <Single Name="GuidMemManInitPou" Type="System.Guid">c5706b17-fd15-4ef8-91b6-5213fb5836e5</Single>
+        <Single Name="GuidMemManInitPouInit" Type="System.Guid">ea23f4db-9316-4883-895a-ebf90c19d811</Single>
+        <Single Name="GuidMemManInitPouReInit" Type="System.Guid">51bcf610-d5e6-4339-ab58-5a8e2010bb6b</Single>
+        <Single Name="GuidStartVisuInitPou" Type="System.Guid">d69a4065-30d5-4f6a-8d7c-5a91da761b6e</Single>
+        <Single Name="GuidStartVisuInitPouInit" Type="System.Guid">22ff94e4-c92f-45ff-806d-39662fb8eed9</Single>
+        <Single Name="GuidStartVisuInitPouReInit" Type="System.Guid">c038b976-267a-40e2-a701-1d71b647f576</Single>
+        <Single Name="GuidVisuGVL0" Type="System.Guid">8f95026c-2442-4f17-be57-3bef3c8281e1</Single>
+        <Single Name="GuidVisuGVL1" Type="System.Guid">67d059b5-88ba-4d83-b87a-a7e239c9f2b7</Single>
+        <Single Name="GuidVisuGVL2" Type="System.Guid">9fe503c5-c6ac-4a5c-9564-38354c97acde</Single>
+        <Single Name="GuidVisuGVL_3" Type="System.Guid">708f4a82-e851-41bf-9466-211f4b4ec15f</Single>
+        <Single Name="GuidReservedPou" Type="System.Guid">546ec7a1-f2d9-4adb-aa20-b98353538eef</Single>
+        <Single Name="GuidVisuGVL3" Type="System.Guid">c70c9e80-1f7a-43cf-bc9d-c574e69f8acd</Single>
+        <Single Name="GuidReservedPouInit" Type="System.Guid">c71dd610-1c28-4e3a-aca8-6e884990fcb8</Single>
+        <Single Name="GuidVisuGVL4" Type="System.Guid">2a8cfd92-0884-4c23-857e-64e89bb1dbda</Single>
+        <Single Name="GuidVisuGVL5" Type="System.Guid">6014fccd-47e6-44ee-b4db-cd6ff3649eaa</Single>
+        <Single Name="GuidLicenseGVL" Type="System.Guid">b01ac028-20b6-456c-97ca-30313bf4bc58</Single>
+        <Single Name="GuidGlobalClientManagerGVL" Type="System.Guid">e61eac95-acfc-4a1d-afff-533f7b742008</Single>
+        <Single Name="GuidVisuUserMgmtInitPou" Type="System.Guid">e9235d3e-5580-40f1-b8ce-06360bdaa802</Single>
+        <Single Name="GuidVisuUserMgmtInitPouInit" Type="System.Guid">ac1a51dd-19bb-49fc-bc83-a9351de7ee3e</Single>
+        <Single Name="GuidBeforeCompileCommonGVL" Type="System.Guid">1aacb564-6e44-44bf-94c7-d1b8fc9564c5</Single>
+        <Single Name="GuidVisuGVL6" Type="System.Guid">40c4786e-6c3a-4fc0-9e83-69ad01d756b9</Single>
+        <Single Name="GuidReservedPouMethod1" Type="System.Guid">ca873530-db0c-44cb-b134-94179c18efc0</Single>
+        <Single Name="GuidReservedPouReInit" Type="System.Guid">d80608f7-c949-4e7c-b9af-0dc70db56235</Single>
+        <Single Name="GuidReservedPouMethod0" Type="System.Guid">2288d0f3-f5b4-471e-a28b-9c785c5c16cf</Single>
+        <Single Name="GuidReservedPouMethod2" Type="System.Guid">d751f19b-9d11-437f-b1e7-b39fb4d2d343</Single>
       </Single>
       <Single Name="ParentSVNodeGuid" Type="System.Guid">f9c00bdb-2f18-4e80-863e-6da977e8f304</Single>
       <Array Name="Path" Type="string">

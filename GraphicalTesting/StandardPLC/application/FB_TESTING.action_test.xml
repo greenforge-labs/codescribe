@@ -8,7 +8,7 @@
       <Single Name="MetaObject" Type="{81297157-7ec9-45ce-845e-84cab2b88ade}" Method="IArchivable">
         <Single Name="Guid" Type="System.Guid">13dcd058-9705-4825-ae9f-af8738989171</Single>
         <Single Name="ParentGuid" Type="System.Guid">cedc2742-8922-46db-927d-5f652c9943c9</Single>
-        <Single Name="Name" Type="string">PleaseIhaveKids</Single>
+        <Single Name="Name" Type="string">action_test</Single>
         <Dictionary Type="{2c41fa04-1834-41c1-816e-303c7aa2c05b}" Name="Properties" />
         <Single Name="TypeGuid" Type="System.Guid">8ac092e5-3128-4e26-9e7e-11016c6684f2</Single>
         <Array Name="EmbeddedTypeGuids" Type="System.Guid">

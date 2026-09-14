@@ -1,10 +1,6 @@
 PROGRAM FB_TESTING
 (***********************************************************************************************
-Object Name	: PLC_SUPPLY
-Descrition	: Program to control the System Supply Switch to ensure the PLC turns OFF when the ignition turns OFF.
-Author		: KP
-Date		: 17/06/25
-Rev			: P1
+FULLY SICK FUNCTION BLOCK DIAGRAM FOR TESTING. Do not worry about what the logic is doing.
 ***********************************************************************************************)
 VAR CONSTANT
 	uiMinVoltage 		: UINT := 5000;    // Minimum Voltage in mV
@@ -20,6 +16,7 @@ VAR
 	xResult : BOOL;
 	xTimerDone : BOOL;
 	TON_0: TON;
+	whereismycar : BOOL;
 END_VAR
 
 (* Network 1: Function Block to monitor supply voltage on VBB15 (from ignition) *)
@@ -73,3 +70,12 @@ T#5s──┤PT          ET│                 │      ┌───────
                                               └──────────┘  │          │
                                         xTimerDone──────────┤In2       │
                                                             └──────────┘
+
+(* Network 10 *)
+                 EXECUTE
+      ┌───────────────────────────┐
+TRUE──┤EN                      ENO├───> dude
+      │ IF dude THEN              │
+      │     whereismycar := TRUE; │
+      │ END_IF                    │
+      └───────────────────────────┘
