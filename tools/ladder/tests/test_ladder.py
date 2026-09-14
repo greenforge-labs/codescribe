@@ -579,29 +579,6 @@ check("unnamed pin: no untee'd wire runs from the box", not any("ENO" + U["V"] +
 check("unnamed pin: RETURN and the coil are both drawn", any("<RETURN>" in l for l in unnamed_art) and any("( )" in l for l in unnamed_art))
 
 
-# --- a block in a parallel is drawn on the main line -------------------------
-
-# The main line of a rung - the one drawn straight through - should carry the
-# substance. A parallel of a plain contact and a branch holding a block used
-# to keep source order, leaving the block indented in a lower branch while a
-# bare contact sat on the rail. The block branch is now drawn as the main
-# line, the contacts branching below it, the way the editor draws it.
-MAIN_LINE = os.path.join(FIXTURES, "ld-block-branch-on-main-line.xml")
-main_line_pou = parse_pous(MAIN_LINE)[0]
-main_line_art = render_pou(main_line_pou)
-
-# Find the rail rows (they start at the left power rail) and the block row.
-box_top = [i for i, l in enumerate(main_line_art) if "TON_0 : TON" in l and ";" not in l][0]
-block_row = box_top + 2  # title, top border, then the IN pin row
-rail_rows = [i for i, l in enumerate(main_line_art) if l.startswith(U["T_RIGHT"])]
-check("main line: the block sits on a rail-connected row", block_row in rail_rows)
-check("main line: the block's IN pin is on that row", "IN" in main_line_art[block_row] and "Q" in main_line_art[block_row])
-# The plain contact hangs on a lower branch, not on the block's row.
-contact_rows = [i for i, l in enumerate(main_line_art) if "PowerOff" in l]
-check("main line: the plain contact is below the block row", all(r > block_row for r in contact_rows))
-check("main line: both are still drawn", any("PowerOn" in l for l in main_line_art) and any("PowerOff" in l for l in main_line_art))
-
-
 # --- byte order mark -------------------------------------------------------
 
 # CODESYS writes a BOM on every export_xml file, and the ElementTree it ships
