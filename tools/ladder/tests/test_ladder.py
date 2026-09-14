@@ -500,18 +500,18 @@ check("execute EN: a bare negated EN is not emitted unconditionally", bare[0] !=
 
 # --- a stateless operator read by more than one rung -------------------------
 
-# A function block read a second time in a network is named by the pin it
-# takes ([tmr.Q]) - one box that runs once. A stateless operator has no
-# instance to name: "OR.Out1" points at no variable and would be ambiguous
-# with a second OR, so it is redrawn instead, the same rule the FBD renderer
-# follows. The ladder path used to name it too.
+# An operator whose output feeds two coils is not named ("OR.Out1" points at
+# no variable) and not drawn twice: the two rungs share the box, so they are
+# merged into one wire that branches after it, the box drawn once. The ladder
+# path used to name the second read.
 OPERATOR_ACROSS = os.path.join(FIXTURES, "ld-operator-across-rungs.xml")
 opr_pou = parse_pous(OPERATOR_ACROSS)[0]
 opr_art = render_pou(opr_pou)
 
 check("operator reuse: the operator is not named as an instance", not any("OR.Out1" in line for line in opr_art))
 check("operator reuse: the operator is not referenced in brackets", not any("[OR" in line for line in opr_art))
-check_equal("operator reuse: the OR box is drawn in both rungs", len([l for l in opr_art if "In1   Out1" in l]), 2)
+check_equal("operator reuse: the shared box is drawn once", len([l for l in opr_art if "In1   Out1" in l]), 1)
+check("operator reuse: the readers branch off the box", any(U["T_DOWN"] in l for l in opr_art))
 check("operator reuse: both coils are still driven", any("xA" in l for l in opr_art) and any("xB" in l for l in opr_art))
 
 
@@ -534,6 +534,29 @@ check("shared prefix: the wire branches after the contact", any(U["T_DOWN"] in l
 xa_row = [i for i, l in enumerate(shared_art) if "xA" in l][0]
 xb_row = [i for i, l in enumerate(shared_art) if "xB" in l][0]
 check("shared prefix: the coils are on different rows", xa_row != xb_row)
+
+
+# --- separate sinks that share a box are one branched rung -------------------
+
+# A box whose output feeds two sinks reaches each through its own sink, so the
+# parser builds a rung apiece and each redraws the box. That reads as two
+# separate networks when it is one wire that splits after the box - the shape
+# a RETURN and a coil sharing a block's ENO make. The rungs are now merged:
+# the box is drawn once and the readers branch off it.
+SHARED_BOX_SINKS = os.path.join(FIXTURES, "ld-return-and-coil-share-a-box.xml")
+shared_box_pou = parse_pous(SHARED_BOX_SINKS)[0]
+shared_box_art = render_pou(shared_box_pou)
+
+check_equal("shared box sinks: the box is drawn once", len([l for l in shared_box_art if "In2   Out2" in l]), 1)
+check_equal("shared box sinks: one rung header, one network", len([l for l in shared_box_art if l.startswith("(* Network")]), 1)
+check("shared box sinks: the box output branches", any(U["T_DOWN"] in l for l in shared_box_art))
+check("shared box sinks: the RETURN is drawn", any("<RETURN>" in l for l in shared_box_art))
+check("shared box sinks: the coil branch is drawn", any("( )" in l for l in shared_box_art))
+check("shared box sinks: the edge contact is on the coil branch", any(U["CONTACT_L"] + "P" + U["CONTACT_R"] in l for l in shared_box_art))
+# The two sinks are on their own rows, not stacked into one.
+return_row = [i for i, l in enumerate(shared_box_art) if "<RETURN>" in l][0]
+coil_row = [i for i, l in enumerate(shared_box_art) if "( )" in l][0]
+check("shared box sinks: RETURN and the coil are on different rows", return_row != coil_row)
 
 
 # --- byte order mark -------------------------------------------------------

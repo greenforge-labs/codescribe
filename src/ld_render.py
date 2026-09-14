@@ -441,6 +441,50 @@ def _render_wire(expr):
     return lines
 
 
+def _block_prefix_key(rung):
+    """The signature of a rung's head up to and including its first block.
+
+    Two rungs with the same key begin with the same chain into the same box.
+    A box read by several sinks is one box that runs once, so those rungs are
+    the branches of one wire that splits after it; grouping them by this key
+    lets the split be drawn once. A rung with no block returns None and is
+    never merged - rungs that share only leading contacts may be separate
+    rungs the editor keeps apart, and fusing them would misread the program.
+    """
+    items = rung.items if isinstance(rung, Series) else [rung]
+    prefix = []
+    for item in items:
+        prefix.append(item)
+        if isinstance(item, Element) and item.kind == BLOCK:
+            return tuple(_signature(part) for part in prefix)
+    return None
+
+
+def _merge_rungs(rungs):
+    """Combine rungs that split after a shared box into one branched rung.
+
+    Rungs sharing a block are gathered into a Parallel, in the order they
+    first appear; _factor then pulls the common head (the chain and the box)
+    out in front so the box is drawn once and the readers branch off it.
+    Everything else is left exactly as it was.
+    """
+    order = []
+    groups = {}
+    for rung in rungs:
+        key = _block_prefix_key(rung)
+        marker = key if key is not None else object()
+        if marker not in groups:
+            groups[marker] = []
+            order.append(marker)
+        groups[marker].append(rung)
+
+    merged = []
+    for marker in order:
+        group = groups[marker]
+        merged.append(group[0] if len(group) == 1 else parallel(group))
+    return merged
+
+
 def render_rung(expr):
     """Render one rung, bounded by the power rails.
 
@@ -513,7 +557,7 @@ def render_pou(pou):
 
     for index, network in enumerate(pou.networks):
         lines.extend(network_headers(index + 1, network))
-        for rung in network.outputs:
+        for rung in _merge_rungs(network.outputs):
             lines.extend(render_rung(rung))
         lines.append("")
 
