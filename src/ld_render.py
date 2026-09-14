@@ -315,12 +315,32 @@ def _render_element(element):
     return Block([label_line, symbol_line], 1)
 
 
+_SINK_KINDS = (COIL, "jump", "return", "outVariable")
+
+
+def _ends_in_sink(expr):
+    """True when a rung path ends in a coil, a return or another output.
+
+    Such a path runs to the right power rail on its own. A parallel of them -
+    two coils off one contact, or a return beside a coil - is a set of rung
+    ends, not one wire that rejoins and carries on.
+    """
+    if isinstance(expr, Series):
+        return bool(expr.items) and _ends_in_sink(expr.items[-1])
+    if isinstance(expr, Parallel):
+        return bool(expr.branches) and all(_ends_in_sink(branch) for branch in expr.branches)
+    if isinstance(expr, Element):
+        return expr.kind in _SINK_KINDS
+    return False
+
+
 def _render_series(items):
     blocks = [_render(item) for item in items]
     connect_row = max(block.connect_row for block in blocks)
     height = max(connect_row - block.connect_row + len(block.lines) for block in blocks)
 
     columns = []
+    sink_rows = set()
     for block in blocks:
         width = block.width
         above = connect_row - block.connect_row
@@ -331,11 +351,15 @@ def _render_series(items):
         lines += block.padded(width)
         lines += [" " * width] * (height - len(lines))
         columns.append(lines)
+        # A block that ends in sinks running to the rail keeps those rows -
+        # shifted to where it now sits - so the rung can rail each of them.
+        for row in block.sink_rows:
+            sink_rows.add(above + row)
 
     joined = []
     for row in range(height):
         joined.append("".join(column[row] for column in columns))
-    return Block(joined, connect_row)
+    return Block(joined, connect_row, sink_rows=sink_rows)
 
 
 def _render_parallel(branches):
@@ -356,11 +380,15 @@ def _render_parallel(branches):
     junctions = set(connect_rows)
     first, last = connect_rows[0], connect_rows[-1]
 
+    # When every branch ends in a sink, each runs to the right rail on its own;
+    # the branch splits on the left but never rejoins on the right.
+    terminal = all(_ends_in_sink(branch) for branch in branches)
+
     lines = []
     for row, line in enumerate(stacked):
         if row == first:
             # The main line carries straight on and drops a branch downward.
-            left, right = chars["T_DOWN"], chars["T_DOWN"]
+            left = right = chars["T_DOWN"]
         elif row == last:
             left, right = chars["BL"], chars["BR"]
         elif row in junctions:
@@ -369,9 +397,10 @@ def _render_parallel(branches):
             left = right = chars["V"]
         else:
             left = right = " "
-        lines.append(left + line + right)
+        lines.append((left + line) if terminal else (left + line + right))
 
-    return Block(lines, first)
+    sink_rows = set(connect_rows) if terminal else set()
+    return Block(lines, first, sink_rows=sink_rows)
 
 
 def _render(expr):
@@ -470,6 +499,10 @@ def _render_wire(expr):
     for row, line in enumerate(block.lines):
         if row == block.connect_row:
             lines.append(chars["T_RIGHT"] + chars["H"] * 2 + line + chars["H"] * 2 + chars["T_LEFT"])
+        elif row in block.sink_rows:
+            # A lower branch that ends in a coil or a return: the left rail runs
+            # past it, and it reaches the right rail on its own.
+            lines.append(chars["V"] + "  " + line + chars["H"] * 2 + chars["T_LEFT"])
         else:
             lines.append(chars["V"] + "  " + line)
     return lines

@@ -534,6 +534,14 @@ check("shared prefix: the wire branches after the contact", any(U["T_DOWN"] in l
 xa_row = [i for i, l in enumerate(shared_art) if "xA" in l][0]
 xb_row = [i for i, l in enumerate(shared_art) if "xB" in l][0]
 check("shared prefix: the coils are on different rows", xa_row != xb_row)
+# Each coil is a rung end that reaches the right rail on its own; the branch
+# splits on the left and never rejoins on the right.
+check("shared prefix: neither coil rejoins the other", not any(U["BR"] in l for l in shared_art))
+check_equal(
+    "shared prefix: each coil reaches the right rail",
+    len([l for l in shared_art if "( )" in l and l.rstrip().endswith(U["T_LEFT"])]),
+    2,
+)
 
 
 # --- separate sinks that share a box are one branched rung -------------------
@@ -557,6 +565,10 @@ check("shared box sinks: the edge contact is on the coil branch", any(U["CONTACT
 return_row = [i for i, l in enumerate(shared_box_art) if "<RETURN>" in l][0]
 coil_row = [i for i, l in enumerate(shared_box_art) if "( )" in l][0]
 check("shared box sinks: RETURN and the coil are on different rows", return_row != coil_row)
+# The return and the coil are two rung ends: each reaches the right rail on
+# its own row (the box's own corner aside, nothing rejoins into one wire).
+check("shared box sinks: the return reaches the right rail", shared_box_art[return_row].rstrip().endswith(U["T_LEFT"]))
+check("shared box sinks: the coil reaches the right rail", shared_box_art[coil_row].rstrip().endswith(U["T_LEFT"]))
 
 
 # --- a contact reads a block output without naming the pin -------------------

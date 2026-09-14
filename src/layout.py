@@ -12,13 +12,17 @@ import charset
 
 
 class Block(object):
-    def __init__(self, lines, connect_row, pin_rows=None):
+    def __init__(self, lines, connect_row, pin_rows=None, sink_rows=None):
         self.lines = lines
         self.connect_row = connect_row
         # For a box: the row each output pin sits on, so a caller branching
         # several wires off it can leave each one level with the pin it
         # reads instead of guessing.
         self.pin_rows = pin_rows if pin_rows is not None else {}
+        # Rows that end in a coil, a return or another sink and so run to the
+        # right power rail on their own, rather than merging back into one
+        # wire. Two coils off one contact are two rung ends, not a loop.
+        self.sink_rows = set(sink_rows) if sink_rows is not None else set()
 
     @property
     def width(self):
