@@ -73,12 +73,12 @@ Ladder and Function Block Diagram POUs have no textual implementation, so they e
 ```
 (* Network 2: header text *)
 (* Comment *)
-│                   TON_0 : TON              CTU_0 : CTU
-│   PowerOn        ┌───────────┐            ┌───────────┐  PowerOff
-├─────┤ ├──────────┤IN        Q├────────────┤CU        Q├────(R)──────┤
-│            T#5S──┤PT       ET│  PowerOff──┤RESET    CV│
-│                  └───────────┘  10────────┤PV         │
-│                                           └───────────┘
+│                   TON_0 : TON                  CTU_0 : CTU
+│   PowerOn        ┌───────────┐                ┌───────────┐  PowerOff
+├─────┤ ├──────────┤IN        Q├────────────────┤CU        Q├────(R)──────┤
+│            T#5S──┤PT       ET│  PowerOff ┤ ├──┤RESET    CV│
+│                  └───────────┘  10────────────┤PV         │
+│                                               └───────────┘
 ```
 
 The declaration is copied from the original CODESYS declaration source, preserving comments, pragmas, safety-qualified types, and literal spelling. The diagram is derived from PLCopen XML. On older CODESYS versions where the plaintext declaration is unavailable, the declaration is rebuilt from the structured interface. That form cannot carry comments, pragmas or attributes, so the rendering says on its first line that it is a rebuilt one, and the export summary counts how many POUs it happened to. A variable whose type the export does not carry reads `UNKNOWN` rather than being assumed to be a `BOOL`.
