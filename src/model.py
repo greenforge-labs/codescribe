@@ -503,6 +503,7 @@ class Element(object):
         pin_blocks=None,
         st_code=None,
         pin_feeds=None,
+        pin_marks=None,
     ):
         self.kind = kind
         self.label = label
@@ -541,6 +542,10 @@ class Element(object):
         # A contact reset or enable is drawn as the contact it is, wired into
         # the pin, rather than flattened into the pin caption as text.
         self.pin_feeds = pin_feeds if pin_feeds is not None else {}
+        # Blocks only: {pin: (negated, edge)} for a drawn-contact side pin that
+        # carries a bubble or a P/N of its own. The caption form spells those
+        # out in its text; a drawn contact needs them put on the box wall.
+        self.pin_marks = pin_marks if pin_marks is not None else {}
 
     @property
     def title(self):

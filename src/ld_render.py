@@ -158,18 +158,8 @@ def _pin_feed_symbols(expr):
     label and its symbol - wired into the pin, rather than flattened into a
     caption like "R(PowerOff)".
     """
-    chars = charset.active()
     if isinstance(expr, Element) and expr.kind == CONTACT:
-        if expr.edge == "rising":
-            middle = "P"
-        elif expr.edge == "falling":
-            middle = "N"
-        elif expr.negated:
-            middle = "/"
-        else:
-            middle = " "
-        symbol = chars["CONTACT_L"] + middle + chars["CONTACT_R"]
-        label = expr.label or ""
+        symbol, label = _symbol_and_label(expr)
         return (label + " " + symbol) if label else symbol
     if isinstance(expr, Series):
         parts = [_pin_feed_symbols(item) for item in expr.items if not isinstance(item, Empty)]
@@ -273,6 +263,11 @@ def _render_block(element):
         elif wired[index] and element.power_negated:
             # The negation bubble on the power pin, drawn on the box wall.
             left_edge = "o"
+        elif left[index] in element.pin_marks:
+            # The bubble or P/N a side pin carries itself, on the wall after
+            # the contact that feeds it - the same place the power pin's goes.
+            negated, edge = element.pin_marks[left[index]]
+            left_edge = EDGE_MARKER[edge] if edge in EDGE_MARKER else "o"
         # Only the active output continues onward, and only if consumed - but
         # a pin with a store on it breaks the wall for that wire too.
         onward = index == 0 and element.output_wired

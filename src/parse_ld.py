@@ -248,6 +248,7 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
     side_pins = []
     pin_blocks = []
     pin_feeds = {}
+    pin_marks = {}
 
     # Several connections landing on one pin are a wired OR into that pin -
     # the same several-<connection>-under-one-connectionPointIn shape a coil
@@ -298,9 +299,14 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
         else:
             # A side pin fed by contacts - a reset or enable off the rail - is
             # drawn as the contacts it is, wired into the pin, rather than
-            # flattened into the caption. The text form stays for the ST.
-            if _is_contact_chain(feed):
+            # flattened into the caption. The text form stays for the ST. The
+            # pin's own bubble or P/N goes on the box wall, as the power pin's
+            # does; a pin carrying both keeps the caption, which spells out
+            # the two where the wall has room for one.
+            if _is_contact_chain(feed) and not (negated and edge):
                 pin_feeds[pin] = feed
+                if negated or edge:
+                    pin_marks[pin] = (negated, edge)
             side_pins.append((pin, _pin_text(feed, connections[0], pin_blocks)))
 
     input_pins = []
@@ -331,6 +337,7 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
         # name the pin, and the box must still tee where it is consumed.
         output_wired=via_pin is not None or (consumed is not None and node.local_id in consumed),
         pin_feeds=pin_feeds,
+        pin_marks=pin_marks,
         st_code=list(node.st_code),
         power_negated=power_negated,
         power_edge=power_edge,

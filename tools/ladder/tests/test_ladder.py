@@ -611,6 +611,20 @@ pv_row = [l for l in side_pin_art if "PV" in l][0]
 check("side pin: a literal side pin stays a value", "10" in pv_row and U["PIN_L"] + "PV" in pv_row)
 # The ST is unaffected - it still flattens.
 check("side pin: the ST keeps the flattened form", any("RESET := R(xClear)" in l for l in side_pin_st))
+# A bubble or a P/N on the pin itself goes on the box wall, where the power
+# pin's goes; dropping it would draw a reset that fires on the opposite value.
+# A pin carrying both keeps its caption, which has room to spell out the two.
+MARKED_PIN = os.path.join(FIXTURES, "ld-contact-feeds-a-marked-side-pin.xml")
+marked_pin_pou = parse_pous(MARKED_PIN)[0]
+marked_pin_art = render_pou(marked_pin_pou)
+marked_pin_st = st_render.render_pou(marked_pin_pou)
+reset_row = [l for l in marked_pin_art if "RESET" in l][0]
+load_row = [l for l in marked_pin_art if "LOAD" in l][0]
+cd_row = [l for l in marked_pin_art if "CD" in l][0]
+check("marked pin: a negated pin draws its bubble on the wall", "xClear " + U["CONTACT_L"] + " " + U["CONTACT_R"] + U["H"] in reset_row and U["H"] + "oRESET" in reset_row)
+check("marked pin: an edge pin draws its P on the wall", "xLoad " + U["CONTACT_L"] + " " + U["CONTACT_R"] + U["H"] in load_row and U["H"] + "PLOAD" in load_row)
+check("marked pin: a pin with both keeps the caption", "R(NOT xDown)" + U["H"] * 2 + U["PIN_L"] + "CD" in cd_row)
+check("marked pin: the ST keeps every mark", any("RESET := NOT xClear, LOAD := R(xLoad), CD := R(NOT xDown)" in l for l in marked_pin_st))
 
 
 # --- byte order mark -------------------------------------------------------
