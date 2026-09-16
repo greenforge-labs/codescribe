@@ -124,14 +124,31 @@ def _render_call(call, read_pin, drawn, subs=None):
         left.append(line + fill * (left_width - len(line)))
 
     input_rows = list(pin_rows)
+
+    # A VAR_IN_OUT pin arrives among the inputs, and a wire can still leave it
+    # on the right. It runs through the box and leaves level with where it
+    # enters, so that row is its own, and no output pin is placed on it.
+    names = [pin for pin, _assigned in call.outputs]
+    through_rows = {}
+    for index, pin_and_source in enumerate(call.inputs):
+        pin = pin_and_source[0]
+        if pin is not None and pin in call.wired_outputs and pin not in names:
+            through_rows[pin] = input_rows[index]
+    reserved = set(through_rows.values())
+
     output_rows = []
     for index in range(len(call.outputs)):
         if index < len(input_rows):
-            output_rows.append(input_rows[index])
+            row = input_rows[index]
         else:
             # More outputs than inputs: the surplus hangs below the last pin.
             base = input_rows[-1] if input_rows else -1
-            output_rows.append(base + index - len(input_rows) + 1)
+            row = base + index - len(input_rows) + 1
+        if output_rows:
+            row = max(row, output_rows[-1] + 1)
+        while row in reserved:
+            row += 1
+        output_rows.append(row)
 
     all_rows = (input_rows + output_rows) or [0]
     box_first, box_last = min(all_rows), max(all_rows)
@@ -143,6 +160,8 @@ def _render_call(call, read_pin, drawn, subs=None):
         left = [" " * left_width] * shift + left
         input_rows = [row + shift for row in input_rows]
         output_rows = [row + shift for row in output_rows]
+        for pin in through_rows:
+            through_rows[pin] += shift
         box_first += shift
         box_last += shift
 
@@ -192,12 +211,16 @@ def _render_call(call, read_pin, drawn, subs=None):
 
     # An output pin only breaks the box wall with a tee if a consumer is
     # actually there to receive it - and a box read through two pins breaks
-    # it twice.
+    # it twice. The tee stays where every reader names the pin in text: it is
+    # the one mark that a reader takes the box's pin and not a variable of the
+    # same name, and that a copy of an operator is the same box.
     pins = [pin for pin, _assigned in call.outputs]
     live_output_rows = set()
     for pin in call.wired_outputs:
         if pin in pins:
             live_output_rows.add(output_rows[pins.index(pin)])
+    live_output_rows.update(through_rows.values())
+    through = set(through_rows.values())
 
     lines = []
     for row in range(height):
@@ -214,7 +237,8 @@ def _render_call(call, read_pin, drawn, subs=None):
             wired_out = row in live_output_rows or row in tail_at
             right_edge = chars["PIN_R"] if wired_out else chars["V"]
             gap = inner - len(left_pin) - len(right_pin)
-            box = left_edge + left_pin + " " * gap + right_pin + right_edge + tail_at.get(row, "")
+            fill = chars["H"] if row in through else " "
+            box = left_edge + left_pin + fill * gap + right_pin + right_edge + tail_at.get(row, "")
         elif box_last < row <= body_last:
             # A body line of an EXECUTE box, inside the box below the pins.
             text = code[row - box_last - 1]
@@ -227,6 +251,7 @@ def _render_call(call, read_pin, drawn, subs=None):
     pin_rows = {}
     for index, pin in enumerate(pins):
         pin_rows[pin] = output_rows[index]
+    pin_rows.update(through_rows)
 
     wanted = read_pin if read_pin is not None else call.active_output
     connect_row = box_first
@@ -448,9 +473,13 @@ def _shared_source(outputs):
     # reader in a single column and pushes a lower pin's wire onto whatever
     # row is free, which for a timer read on Q and ET lands the ET store on
     # the box's bottom border. Hand those to _render_joined instead.
-    pins = set(source.pin for source in sources if isinstance(source, OutputRef))
-    if len(pins) > 1 and getattr(boxes[0], "instance_name", None):
-        return None
+    # The same holds for a box with no instance once a pin has two readers:
+    # those take consecutive rows, and a lower pin's reader is pushed below them.
+    read = [source.pin for source in sources if isinstance(source, OutputRef)]
+    pins = set(read)
+    if len(pins) > 1:
+        if getattr(boxes[0], "instance_name", None) or len(read) > len(pins):
+            return None
     return sources[0]
 
 
@@ -458,9 +487,12 @@ def _shared_call(outputs):
     """The one box this network reads from more than one place, or None.
 
     A box read twice is one box that runs once, and the second reader is a
-    branch off its pin - not a second copy, and not a name in text. Only an
+    branch off its pin - not a second copy, and not a name in text. An
     instance qualifies: an operator has no name, no state, and nothing is
-    gained by joining two copies of it.
+    gained by joining two copies of it read on one pin. An operator read on two
+    different pins is the exception - no single wire can carry both, and the
+    fan-out that took it put the second pin's reader on the box's bottom
+    border - so where no instance is shared, it qualifies too.
 
     More than one shared box in a network needs a real two-dimensional
     layout, which this renderer does not have; those fall back to naming the
@@ -468,10 +500,13 @@ def _shared_call(outputs):
     """
     counts = {}
     order = []
+    pins_read = {}
 
     def walk(node):
         call = node.call if isinstance(node, OutputRef) else node
         if isinstance(call, Call):
+            pin = node.pin if isinstance(node, OutputRef) else call.active_output
+            pins_read.setdefault(id(call), set()).add(pin)
             if id(call) in counts:
                 counts[id(call)] += 1
                 return
@@ -491,6 +526,8 @@ def _shared_call(outputs):
         walk(tree)
 
     shared = [call for call in order if counts[id(call)] > 1 and call.instance_name]
+    if not shared:
+        shared = [call for call in order if counts[id(call)] > 1 and len(pins_read[id(call)]) > 1]
     return shared[0] if len(shared) == 1 else None
 
 
@@ -551,6 +588,16 @@ def _split_readers(outputs, call):
     return readers, others
 
 
+def _pin_order(pin):
+    """A tie-breaker for pins that share a row, so a layout never follows set order.
+
+    Two pins share a row only when one has no row of its own on the box. Set and
+    dict order then decided the layout, and that order differs between runs and
+    between interpreters.
+    """
+    return "" if pin is None else pin
+
+
 def _place_branches(branches, pin_rows, default_row):
     """{index: top row} for each composed branch.
 
@@ -569,7 +616,7 @@ def _place_branches(branches, pin_rows, default_row):
         top_pin.append(min(entries, key=lambda entry: (row_of(entry[1]), entry[0]))[1])
 
     order = []
-    for pin in sorted(set(top_pin), key=row_of):
+    for pin in sorted(set(top_pin), key=lambda pin: (row_of(pin), _pin_order(pin))):
         group = [index for index, read in enumerate(top_pin) if read == pin]
         group.sort(key=lambda index: len(set(read for _row, read in branches[index][1])) > 1)
         order.extend(group)
@@ -654,7 +701,7 @@ def _wires_cross(branches, tops, pin_rows, default_row):
 
     reader_rows = _reader_rows(branches, tops)
     last = None
-    for pin in sorted(reader_rows, key=row_of):
+    for pin in sorted(reader_rows, key=lambda pin: (row_of(pin), _pin_order(pin))):
         rows = reader_rows[pin]
         if rows[0] < row_of(pin):
             return True
@@ -704,7 +751,7 @@ def _render_joined(readers, call, drawn):
     reader_rows = _reader_rows(branches, tops)
     # Inner to outer: the lowest pin nearest the box, so that no column has
     # to be crossed by a wire leaving the box above it.
-    columns = sorted(reader_rows, key=row_of, reverse=True)
+    columns = sorted(reader_rows, key=lambda pin: (row_of(pin), _pin_order(pin)), reverse=True)
     leaves = set(row_of(pin) for pin in columns)
 
     lines = [" " * source.width] * shift + list(source.lines)

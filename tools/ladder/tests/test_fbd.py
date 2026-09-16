@@ -703,6 +703,72 @@ check_equal("numbered execute boxes: each body is drawn once", len([l for l in s
 check("numbered execute boxes: a lone box is not numbered", not any("#" in l for l in execute_two_art))
 
 
+# --- a VAR_IN_OUT pin read downstream ----------------------------------------
+
+# An in-out pin arrives among the inputs and not the outputs, so a wire read
+# from it had no row on the right of the box: it was hung off the first output
+# pin's row, and which reader took which row followed set iteration order, so
+# one project exported differently from one run to the next. The pin now runs
+# through the box to its own row on the right, where its readers attach.
+IN_OUT = os.path.join(HERE, "fixtures", "fbd-in-out-pin-read-downstream.xml")
+in_out_art = fbd_render.render_network(parse_fbd.parse_pous(IN_OUT)[0].networks[0])
+check(
+    "in-out pin: its reader leaves on the pin's own row",
+    any(U["PIN_L"] + "pBuf" in l and l.rstrip().endswith("> arrCopy") for l in in_out_art),
+)
+check("in-out pin: the output's reader stays on the output's row", any("Q" + U["PIN_R"] in l and l.rstrip().endswith("> xDone") for l in in_out_art))
+check("in-out pin: the pin runs through the box", any("pBuf" + U["H"] in l and U["PIN_R"] in l for l in in_out_art))
+
+
+# --- a box with no instance read on two output pins --------------------------
+
+# Only an instance box read on two pins went to the joined layout, which gives
+# each pin a column. A function read on Q and R went to the single-column
+# fan-out, which pushed the R store onto the next free row: the box's bottom
+# border, with no tee on R. Any box read through two pins is joined now.
+SPLIT = os.path.join(HERE, "fixtures", "fbd-function-read-on-two-output-pins.xml")
+split_art = fbd_render.render_network(parse_fbd.parse_pous(SPLIT)[0].networks[0])
+check_equal("two pins, no instance: the box is drawn once", len([l for l in split_art if l.strip() == "F_SPLIT"]), 1)
+check("two pins, no instance: R is teed", any("R" + U["PIN_R"] in l for l in split_art))
+check("two pins, no instance: R's wire leaves the box on R's row", any("R" + U["PIN_R"] + U["H"] in l for l in split_art))
+check("two pins, no instance: nC is drawn below the Q readers", [l.rstrip().endswith("> nC") for l in split_art].index(True) > [l.rstrip().endswith("> xB") for l in split_art].index(True))
+check("two pins, no instance: no wire leaves the bottom border", not any(U["BR"] + U["H"] in l for l in split_art))
+check_equal("two pins, no instance: both Q readers are drawn", [any(l.rstrip().endswith("> xA") for l in split_art), any(l.rstrip().endswith("> xB") for l in split_art)], [True, True])
+
+
+# --- a box tees every pin something reads ------------------------------------
+
+# Here ET is read by two AND boxes whose wires would cross, so both name it in
+# text. The pin keeps its tee all the same: it is the one mark that the readers
+# take the box's pin, not a variable of the same name. Dropping it made a wired
+# ET and an ET read from an input variable export alike.
+tee_ctr = Call("CTU", "ctr", inputs=[("CU", Signal("xPulse")), ("PV", Signal("10"))], outputs=[("Q", None), ("ET", None), ("CV", None)], active_output="Q")
+tee_ctr.wired_outputs.update(["Q", "ET"])
+tee_and1 = Call("AND", inputs=[("In1", OutputRef(tee_ctr, "Q")), ("In2", OutputRef(tee_ctr, "ET"))], outputs=[("Out1", None)], active_output="Out1", wired_outputs=["Out1"])
+tee_and2 = Call("AND", inputs=[("In1", Signal("v8")), ("In2", Signal("v9"))], outputs=[("Out1", None)], active_output="Out1", wired_outputs=["Out1"])
+tee_or = Call("OR", inputs=[("In1", tee_and1), ("In2", tee_and2)], outputs=[("Out1", None)], active_output="Out1", wired_outputs=["Out1"])
+tee_and3 = Call("AND", inputs=[("In1", OutputRef(tee_ctr, "Q")), ("In2", OutputRef(tee_ctr, "ET"))], outputs=[("Out1", None)], active_output="Out1", wired_outputs=["Out1"])
+tee_art = fbd_render.render_network(Network("", [Assign("s0", Signal("v7")), Assign("s1", tee_or), Assign("s2", tee_and3)]))
+check("pin tee: ET is named in text", any("ctr.ET" in l for l in tee_art))
+check("pin tee: ET keeps its connection", any("ET" + U["PIN_R"] in l for l in tee_art))
+check("pin tee: Q shows its connection", any("Q" + U["PIN_R"] in l for l in tee_art))
+wired_twice = fbd_render.render_pou(parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-timer-pin-wired-to-two-readers.xml"))[0])
+variable_twice = fbd_render.render_pou(parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-timer-pin-read-from-a-variable-twice.xml"))[0])
+check("pin tee: a wired pin and a variable of its name export differently", wired_twice != variable_twice)
+
+# Outside the joined layout a box keeps a tee on every pin something reads. A
+# fan-out draws each of those wires; and where an operator is drawn again, the
+# tee on a pin the copy does not use is the one sign that it is the same box
+# and not a second one with the same inputs.
+two_output_pins = parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "36-2-fbd-two-output-pins.xml"))[0]
+fanout_art = fbd_render.render_network(two_output_pins.networks[2])
+check("pin tee: a fan-out tees ENO", any("ENO" + U["PIN_R"] + U["H"] in l and l.rstrip().endswith("> xSumOk") for l in fanout_art))
+check("pin tee: a fan-out tees Out1", any("Out1" + U["PIN_R"] + U["H"] in l and l.rstrip().endswith("> iSum") for l in fanout_art))
+one_node = fbd_render.render_pou(parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-function-read-on-two-pins-one-node.xml"))[0])
+two_nodes = fbd_render.render_pou(parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-function-read-on-two-pins-two-nodes.xml"))[0])
+check("pin tee: one box read on two pins and two boxes export differently", one_node != two_nodes)
+
+
 # --- one expression reading two pins of a shared box -------------------------
 
 # xAlarm := ctr.Q AND (ctr.CV > 5). Each read of the shared box was replaced
