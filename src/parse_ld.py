@@ -8,7 +8,9 @@ expression tree per rung.
 
 from model import (
     BLOCK,
+    COIL,
     COMMENT,
+    CONTACT,
     EDGE_FUNCTION,
     IN_VARIABLE,
     JUMP,
@@ -18,8 +20,6 @@ from model import (
     RETURN,
     RIGHT_RAIL,
     TITLE,
-    CONTACT,
-    COIL,
     Element,
     Empty,
     Network,
@@ -371,7 +371,9 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
         pin_blocks=pin_blocks,
         local_id=node.local_id,
         ordinal=node.ordinal,
-        power_len=len(power_expr.items) if isinstance(power_expr, Series) else (0 if isinstance(power_expr, Empty) else 1),
+        power_len=len(power_expr.items)
+        if isinstance(power_expr, Series)
+        else (0 if isinstance(power_expr, Empty) else 1),
         copy=copy,
     )
     return series([power_expr, element])

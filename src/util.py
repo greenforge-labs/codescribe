@@ -116,7 +116,11 @@ def finalize_export_folder(target_folder, staging_folder):
                 + ". Original error: "
                 + str(rename_error)
             )
-        print("Export folder " + target_folder + " is in use; synced the staged files into it instead of swapping folders.")
+        print(
+            "Export folder "
+            + target_folder
+            + " is in use; synced the staged files into it instead of swapping folders."
+        )
         if stale:
             print(
                 "WARNING: "

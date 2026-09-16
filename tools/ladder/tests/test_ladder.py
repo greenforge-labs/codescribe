@@ -20,11 +20,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "..", "src"))
 sys.path.insert(0, os.path.join(HERE, ".."))
 
+from render import write  # noqa: E402
+
 import charset  # noqa: E402
 from ld_render import render_declaration, render_pou  # noqa: E402
 from model import COIL, CONTACT, LABEL, Element, Parallel, Series  # noqa: E402
 from parse_ld import parse_pous  # noqa: E402
-from render import write  # noqa: E402
 
 FIXTURES = os.path.join(HERE, "fixtures")
 SOURCE = os.path.join(FIXTURES, "motor_control.plcopen.xml")
@@ -178,6 +179,7 @@ check("ascii charset still draws the branch", any("+----| |----+" in line for li
 check("unicode is restored afterwards", any(U["V"] in line for line in render_pou(pou)))
 check_equal("both charsets produce the same shape", len(ascii_rendered), len(rendered))
 
+
 def check_golden(name, rendered_lines, golden_path):
     # Goldens hold box-drawing characters, so the encoding cannot be left to
     # the platform default - and neither can printing them on a mismatch.
@@ -244,11 +246,16 @@ check("fidelity: no jump is dressed as a comment", not any("(* JMP" in line for 
 # A label is the network's own, so it is written under the network's header
 # the way the export writes it - and never as a rung.
 check("fidelity: label heads its network", "SKIP:" in fidelity_art)
-check("fidelity: label is not drawn as a rung", not any("SKIP:" in line and U["T_RIGHT"] in line for line in fidelity_art))
+check(
+    "fidelity: label is not drawn as a rung", not any("SKIP:" in line and U["T_RIGHT"] in line for line in fidelity_art)
+)
 # A jump target is program structure, not documentation: it is written the
 # way ST writes it, and not inside the delimiters this file uses for comments.
 check("fidelity: label reaches ST", "SKIP:" in fidelity_st)
-check("fidelity: the label is not dressed as a comment", not any("(* label" in line for line in fidelity_st + fidelity_art))
+check(
+    "fidelity: the label is not dressed as a comment",
+    not any("(* label" in line for line in fidelity_st + fidelity_art),
+)
 
 # model.Signal's docstring warns that dropping negated inverts the logic; the
 # LD block-pin path did exactly that.
@@ -277,7 +284,9 @@ check("fidelity: negated outVariable is marked in the diagram", any("[NOT xStop]
 # The negation bubble on the block's own pins: a negated power input and a
 # negated, assigned output pin. Both inverted silently.
 check("fidelity: negated power pin inverts in ST", any("tmr2(IN := NOT xRun);" in line for line in fidelity_st))
-check("fidelity: negated output pin inverts its assignment", any("xCool := NOT tmr2.Q;" in line for line in fidelity_st))
+check(
+    "fidelity: negated output pin inverts its assignment", any("xCool := NOT tmr2.Q;" in line for line in fidelity_st)
+)
 check("fidelity: negated output pin is marked in the diagram", any("Q =o> xCool" in line for line in fidelity_art))
 
 # A negated output consumed through a SIDE PIN goes via expr_to_text, a
@@ -354,7 +363,10 @@ check("two coils: a later output names the box", any("[tmr.ET]" in line for line
 # A value feeding a side pin is drawn to the left of the box on a wire into
 # the pin, the way the editor draws it. Written inside as "PT := T#2S" it
 # reads as part of the pin name, and widens the box by every value in it.
-check("two coils: the pin value sits outside the box", any("T#2S" + U["H"] * 2 + U["PIN_L"] + "PT" in line for line in two_coils_art))
+check(
+    "two coils: the pin value sits outside the box",
+    any("T#2S" + U["H"] * 2 + U["PIN_L"] + "PT" in line for line in two_coils_art),
+)
 check("two coils: no value is left inside a box", not any(" := " in line for line in two_coils_art))
 
 # The same shape in a real SP11 export: LDTesting with one coil added to its
@@ -407,7 +419,10 @@ check("ld pin edge: an unmarked pin stays unmarked", not any("R(xRst)" in line f
 # The contact form, which already worked, must keep working: same spelling in
 # the ST, same letter in the diagram.
 check("ld pin edge: a contact still triggers", "xEdge := R(xA);" in pin_edge_st)
-check("ld pin edge: a contact still draws its P", any(U["CONTACT_L"] + "P" + U["CONTACT_R"] in line for line in pin_edge_art))
+check(
+    "ld pin edge: a contact still draws its P",
+    any(U["CONTACT_L"] + "P" + U["CONTACT_R"] in line for line in pin_edge_art),
+)
 
 
 # --- network comments, and a network that holds only one ---------------------
@@ -479,9 +494,14 @@ import st_render  # noqa: E402
 
 def _execute(power_negated=False, power_edge=None):
     return Element(
-        kind="block", type_name="EXECUTE", input_pins=[("EN", None)],
-        output_pins=[("ENO", None)], st_code=["a := 1;"],
-        power_negated=power_negated, power_edge=power_edge, active_output="ENO",
+        kind="block",
+        type_name="EXECUTE",
+        input_pins=[("EN", None)],
+        output_pins=[("ENO", None)],
+        st_code=["a := 1;"],
+        power_negated=power_negated,
+        power_edge=power_edge,
+        active_output="ENO",
     )
 
 
@@ -512,7 +532,9 @@ check("operator reuse: the operator is not named as an instance", not any("OR.Ou
 check("operator reuse: the operator is not referenced in brackets", not any("[OR" in line for line in opr_art))
 check_equal("operator reuse: the shared box is drawn once", len([l for l in opr_art if "In1   Out1" in l]), 1)
 check("operator reuse: the readers branch off the box", any(U["T_DOWN"] in l for l in opr_art))
-check("operator reuse: both coils are still driven", any("xA" in l for l in opr_art) and any("xB" in l for l in opr_art))
+check(
+    "operator reuse: both coils are still driven", any("xA" in l for l in opr_art) and any("xB" in l for l in opr_art)
+)
 
 
 # --- a head shared by several branches is drawn once -------------------------
@@ -528,7 +550,10 @@ shared_art = render_pou(shared_pou)
 
 # xGo feeds two coils. It is drawn once, then the wire branches to each coil.
 check_equal("shared prefix: the shared contact is drawn once", len([l for l in shared_art if "xGo" in l]), 1)
-check("shared prefix: both coils are still drawn", any("xA" in l for l in shared_art) and any("xB" in l for l in shared_art))
+check(
+    "shared prefix: both coils are still drawn",
+    any("xA" in l for l in shared_art) and any("xB" in l for l in shared_art),
+)
 check("shared prefix: the wire branches after the contact", any(U["T_DOWN"] in l for l in shared_art))
 # The two coils sit on their own rows, one per branch.
 xa_row = [i for i, l in enumerate(shared_art) if "xA" in l][0]
@@ -556,11 +581,16 @@ shared_box_pou = parse_pous(SHARED_BOX_SINKS)[0]
 shared_box_art = render_pou(shared_box_pou)
 
 check_equal("shared box sinks: the box is drawn once", len([l for l in shared_box_art if "In2   Out2" in l]), 1)
-check_equal("shared box sinks: one rung header, one network", len([l for l in shared_box_art if l.startswith("(* Network")]), 1)
+check_equal(
+    "shared box sinks: one rung header, one network", len([l for l in shared_box_art if l.startswith("(* Network")]), 1
+)
 check("shared box sinks: the box output branches", any(U["T_DOWN"] in l for l in shared_box_art))
 check("shared box sinks: the RETURN is drawn", any("<RETURN>" in l for l in shared_box_art))
 check("shared box sinks: the coil branch is drawn", any("( )" in l for l in shared_box_art))
-check("shared box sinks: the edge contact is on the coil branch", any(U["CONTACT_L"] + "P" + U["CONTACT_R"] in l for l in shared_box_art))
+check(
+    "shared box sinks: the edge contact is on the coil branch",
+    any(U["CONTACT_L"] + "P" + U["CONTACT_R"] in l for l in shared_box_art),
+)
 # The two sinks are on their own rows, not stacked into one.
 return_row = [i for i, l in enumerate(shared_box_art) if "<RETURN>" in l][0]
 coil_row = [i for i, l in enumerate(shared_box_art) if "( )" in l][0]
@@ -588,7 +618,10 @@ check_equal("unnamed pin: one network, one header", len([l for l in unnamed_art 
 check("unnamed pin: the box output branches", any(U["T_DOWN"] in l for l in unnamed_art))
 check("unnamed pin: the consumed output is teed", any("ENO" + U["PIN_R"] in l for l in unnamed_art))
 check("unnamed pin: no untee'd wire runs from the box", not any("ENO" + U["V"] + U["H"] in l for l in unnamed_art))
-check("unnamed pin: RETURN and the coil are both drawn", any("<RETURN>" in l for l in unnamed_art) and any("( )" in l for l in unnamed_art))
+check(
+    "unnamed pin: RETURN and the coil are both drawn",
+    any("<RETURN>" in l for l in unnamed_art) and any("( )" in l for l in unnamed_art),
+)
 
 
 # --- elements are the same only when they are the same node ------------------
@@ -610,15 +643,24 @@ check_equal(
 
 ALIKE = os.path.join(FIXTURES, "ld-two-execute-boxes-alike.xml")
 alike_art = render_pou(parse_pous(ALIKE)[0])
-check_equal("alike boxes: two EXECUTE boxes are drawn", len([l for l in alike_art if l.strip(U["V"] + " ") == "EXECUTE"]), 2)
+check_equal(
+    "alike boxes: two EXECUTE boxes are drawn", len([l for l in alike_art if l.strip(U["V"] + " ") == "EXECUTE"]), 2
+)
 check_equal("alike boxes: each body is drawn", len([l for l in alike_art if "nCount := nCount + 1;" in l]), 2)
 
 # The control: one EXECUTE box read by two coils is still one box, one body.
 EXECUTE_TWO_COILS = os.path.join(FIXTURES, "ld-execute-two-coils.xml")
 execute_two_coils_art = render_pou(parse_pous(EXECUTE_TWO_COILS)[0])
-check_equal("one execute, two coils: one box", len([l for l in execute_two_coils_art if l.strip(U["V"] + " ") == "EXECUTE"]), 1)
-check_equal("one execute, two coils: the body once", len([l for l in execute_two_coils_art if "nCount := nCount + 1;" in l]), 1)
-check("one execute, two coils: both coils", any("xA" in l for l in execute_two_coils_art) and any("xB" in l for l in execute_two_coils_art))
+check_equal(
+    "one execute, two coils: one box", len([l for l in execute_two_coils_art if l.strip(U["V"] + " ") == "EXECUTE"]), 1
+)
+check_equal(
+    "one execute, two coils: the body once", len([l for l in execute_two_coils_art if "nCount := nCount + 1;" in l]), 1
+)
+check(
+    "one execute, two coils: both coils",
+    any("xA" in l for l in execute_two_coils_art) and any("xB" in l for l in execute_two_coils_art),
+)
 
 # One box read on two different pins was redrawn for the second pin, because an
 # operator has no instance to name, and the copies differ in their active pin so
@@ -654,7 +696,10 @@ check_equal(
     [(True, False), (False, True)],
 )
 check("numbered boxes: no reference is left unnumbered", not any("[ADD.ENO]" in l for l in two_operators_art))
-check("numbered boxes: swapping the coils between the boxes changes the export", two_operators_art != two_operators_swapped_art)
+check(
+    "numbered boxes: swapping the coils between the boxes changes the export",
+    two_operators_art != two_operators_swapped_art,
+)
 # A box the text names only inside a side pin's caption - here through a
 # parallel branch into a counter's RESET - is named all the same, so it is
 # numbered too. It was not, and rewiring the reset from one AND box to the
@@ -663,9 +708,19 @@ IN_CAPTION = os.path.join(FIXTURES, "ld-operator-named-in-a-nested-pin-caption.x
 IN_CAPTION_SWAPPED = os.path.join(FIXTURES, "ld-operator-named-in-a-nested-pin-caption-swapped.xml")
 in_caption_art = render_pou(parse_pous(IN_CAPTION)[0])
 in_caption_swapped_art = render_pou(parse_pous(IN_CAPTION_SWAPPED)[0])
-check("numbered in a caption: both boxes are numbered", any(l.strip(U["V"] + " ") == "AND #1" for l in in_caption_art) and any(l.strip(U["V"] + " ") == "AND #2" for l in in_caption_art))
-check("numbered in a caption: the caption names a numbered box", any("RESET" in l and "AND#1.Out1" in l for l in in_caption_art))
-check("numbered in a caption: moving the reset to the other box changes the export", in_caption_art != in_caption_swapped_art)
+check(
+    "numbered in a caption: both boxes are numbered",
+    any(l.strip(U["V"] + " ") == "AND #1" for l in in_caption_art)
+    and any(l.strip(U["V"] + " ") == "AND #2" for l in in_caption_art),
+)
+check(
+    "numbered in a caption: the caption names a numbered box",
+    any("RESET" in l and "AND#1.Out1" in l for l in in_caption_art),
+)
+check(
+    "numbered in a caption: moving the reset to the other box changes the export",
+    in_caption_art != in_caption_swapped_art,
+)
 
 # A single box of a type is not numbered, and neither are two that the text never names.
 check("numbered boxes: a lone box keeps its plain name", not any("#" in l for l in two_pins_art))
@@ -706,7 +761,10 @@ check_equal("one box: a box hoisted by two readers is drawn once", title_rows(ho
 hoisted_then_art = box_art("ld-hoisted-operator-then-read-on-its-pin.xml")
 check_equal("one box: a box on a rung and hoisted into a pin is drawn once", title_rows(hoisted_then_art, "ADD"), 1)
 check("one box: the rung's store is still drawn", any("iSum" in l for l in hoisted_then_art))
-check("one box: the pin still reads the box", any("ADD.Out1" + U["H"] * 2 + U["PIN_L"] + "In2" in l for l in hoisted_then_art))
+check(
+    "one box: the pin still reads the box",
+    any("ADD.Out1" + U["H"] * 2 + U["PIN_L"] + "In2" in l for l in hoisted_then_art),
+)
 
 shapes_art = box_art("ld-operator-read-by-two-rung-shapes.xml")
 check_equal("one box: a box read by rungs of two shapes is drawn once", title_rows(shapes_art, "ADD"), 1)
@@ -719,10 +777,17 @@ check_equal("one box: a hoisted OR under two coils is drawn once", title_rows(or
 check_equal("one box: the box that reads it is drawn once", title_rows(or_art, "AND"), 1)
 
 exec_mixed_art = box_art("ld-execute-read-by-a-coil-and-a-contact.xml")
-check_equal("one box: two EXECUTE boxes are drawn", title_rows(exec_mixed_art, "EXECUTE #1") + title_rows(exec_mixed_art, "EXECUTE #2"), 2)
+check_equal(
+    "one box: two EXECUTE boxes are drawn",
+    title_rows(exec_mixed_art, "EXECUTE #1") + title_rows(exec_mixed_art, "EXECUTE #2"),
+    2,
+)
 check_equal("one box: the first body once", len([l for l in exec_mixed_art if "nA := nA + 1;" in l]), 1)
 check_equal("one box: the second body once", len([l for l in exec_mixed_art if "nB := nB + 1;" in l]), 1)
-check("one box: the contact's rung reads the first box by name", any("[EXECUTE#1.ENO]" in l and "xK" not in l for l in exec_mixed_art))
+check(
+    "one box: the contact's rung reads the first box by name",
+    any("[EXECUTE#1.ENO]" in l and "xK" not in l for l in exec_mixed_art),
+)
 check_equal("one box: the contact feeding both boxes is drawn once", len([l for l in exec_mixed_art if "xGo" in l]), 1)
 check_equal(
     "one box: every coil still reaches the right rail",
@@ -742,8 +807,16 @@ check("first build: the timer's contact is drawn", any("xGo" in l for l in behin
 check("first build: the timer's preset is drawn", any("T#5S" in l for l in behind_timer_art))
 check_equal("first build: the box behind it is drawn once", title_rows(behind_timer_art, "GT"), 1)
 check("first build: a different preset changes the export", behind_timer_art != behind_timer_pt10_art)
-check_equal("first build: a later rung merged forward keeps the timer", title_rows(box_art("ld-box-behind-a-timer-read-by-a-later-rung.xml"), "tmr : TON"), 1)
-check_equal("first build: a later rung's hoist keeps the timer", title_rows(box_art("ld-box-behind-a-timer-hoisted-by-a-later-rung.xml"), "tmr : TON"), 1)
+check_equal(
+    "first build: a later rung merged forward keeps the timer",
+    title_rows(box_art("ld-box-behind-a-timer-read-by-a-later-rung.xml"), "tmr : TON"),
+    1,
+)
+check_equal(
+    "first build: a later rung's hoist keeps the timer",
+    title_rows(box_art("ld-box-behind-a-timer-hoisted-by-a-later-rung.xml"), "tmr : TON"),
+    1,
+)
 
 # Naming one repeated box can break the fusion of the box after it: the copies
 # of MUL no longer shared a head once one copy of ADD was named, and MUL was
@@ -752,7 +825,10 @@ check_equal("first build: a later rung's hoist keeps the timer", title_rows(box_
 behind_repeat_art = box_art("ld-box-feeding-two-coils-behind-a-repeated-box.xml")
 check_equal("repeats: the box behind a named box is drawn once", title_rows(behind_repeat_art, "MUL"), 1)
 check_equal("repeats: the named box is drawn once", title_rows(behind_repeat_art, "ADD"), 1)
-check("repeats: one MUL and two MUL boxes export differently", behind_repeat_art != box_art("ld-box-feeding-two-coils-behind-a-repeated-box-two-nodes.xml"))
+check(
+    "repeats: one MUL and two MUL boxes export differently",
+    behind_repeat_art != box_art("ld-box-feeding-two-coils-behind-a-repeated-box-two-nodes.xml"),
+)
 
 
 def label_count(art, name):
@@ -769,12 +845,24 @@ split_art = box_art("ld-contact-feeding-a-box-read-twice-and-another-box.xml")
 check_equal("inner runs: the shared contact is drawn once", label_count(split_art, "xGo"), 1)
 check_equal("inner runs: the box read twice is drawn once", title_rows(split_art, "ADD"), 1)
 check_equal("inner runs: the other box is drawn once", title_rows(split_art, "SUB"), 1)
-check_equal("inner runs: every coil reaches the right rail", len([l for l in split_art if "( )" in l and l.rstrip().endswith(U["T_LEFT"])]), 3)
+check_equal(
+    "inner runs: every coil reaches the right rail",
+    len([l for l in split_art if "( )" in l and l.rstrip().endswith(U["T_LEFT"])]),
+    3,
+)
 chain_art = box_art("ld-contact-chain-shared-by-part-of-a-run.xml")
-check_equal("inner runs: every contact in a partly shared chain is drawn once", [label_count(chain_art, name) for name in ("c1", "c2", "c3", "c4", "c5", "c9")], [1, 1, 1, 1, 1, 1])
+check_equal(
+    "inner runs: every contact in a partly shared chain is drawn once",
+    [label_count(chain_art, name) for name in ("c1", "c2", "c3", "c4", "c5", "c9")],
+    [1, 1, 1, 1, 1, 1],
+)
 each_art = box_art("ld-two-boxes-two-coils-each.xml")
 check_equal("inner runs: two boxes with two coils each, contact once", label_count(each_art, "xGo"), 1)
-check_equal("inner runs: two boxes with two coils each, one of each box", [title_rows(each_art, "ADD"), title_rows(each_art, "SUB")], [1, 1])
+check_equal(
+    "inner runs: two boxes with two coils each, one of each box",
+    [title_rows(each_art, "ADD"), title_rows(each_art, "SUB")],
+    [1, 1],
+)
 
 # A pin can list the same source twice. Its branches are then one node sequence
 # twice, the whole of each is the shared head, and nothing is left after it.
@@ -795,8 +883,15 @@ def factors(expr):
 twin = Element(kind=CONTACT, label="xGo", local_id="1")
 check("identical branches: two empty branches factor", factors(Parallel([Empty(), Empty()])))
 check("identical branches: two copies of one contact factor", factors(Parallel([twin, twin])))
-check("identical branches: two copies of one chain factor", factors(Parallel([Series([twin, twin]), Series([twin, twin])])))
-for name in ("ld-two-connections-from-one-pin-into-a-coil.xml", "ld-two-connections-from-one-contact.xml", "ld-two-connections-into-one-box-pin.xml"):
+check(
+    "identical branches: two copies of one chain factor",
+    factors(Parallel([Series([twin, twin]), Series([twin, twin])])),
+)
+for name in (
+    "ld-two-connections-from-one-pin-into-a-coil.xml",
+    "ld-two-connections-from-one-contact.xml",
+    "ld-two-connections-into-one-box-pin.xml",
+):
     try:
         rendered = box_art(name)
     except RuntimeError:
@@ -807,7 +902,11 @@ for name in ("ld-two-connections-from-one-pin-into-a-coil.xml", "ld-two-connecti
 # branch, was named in the caption and drawn nowhere, and the caption listed the
 # box's own enable as a term of the pin's condition. It is hoisted and drawn.
 nested_only_art = box_art("ld-operator-only-in-a-nested-caption.xml")
-check_equal("nested caption: both ADD boxes are drawn", title_rows(nested_only_art, "ADD #1") + title_rows(nested_only_art, "ADD #2"), 2)
+check_equal(
+    "nested caption: both ADD boxes are drawn",
+    title_rows(nested_only_art, "ADD #1") + title_rows(nested_only_art, "ADD #2"),
+    2,
+)
 check(
     "nested caption: the caption reads the box, not its enable",
     any("(ADD#2.Out1 OR xC) AND xM" + U["H"] * 2 + U["PIN_L"] + "In1" in l for l in nested_only_art),
@@ -818,8 +917,16 @@ check(
 # no longer drew the same, so the AND box was drawn twice.
 SIDE_INSTANCE = os.path.join(FIXTURES, "ld-operator-with-instance-side-pin.xml")
 side_instance_art = render_pou(parse_pous(SIDE_INSTANCE)[0])
-check_equal("operator with an instance side pin: the box is drawn once", len([l for l in side_instance_art if "In1   Out1" in l]), 1)
-check_equal("operator with an instance side pin: the timer is drawn once", len([l for l in side_instance_art if "tmr : TON" in l]), 1)
+check_equal(
+    "operator with an instance side pin: the box is drawn once",
+    len([l for l in side_instance_art if "In1   Out1" in l]),
+    1,
+)
+check_equal(
+    "operator with an instance side pin: the timer is drawn once",
+    len([l for l in side_instance_art if "tmr : TON" in l]),
+    1,
+)
 check(
     "operator with an instance side pin: both coils",
     any("xA" in l for l in side_instance_art) and any("xB" in l for l in side_instance_art),
@@ -838,9 +945,15 @@ side_pin_art = render_pou(side_pin_pou)
 side_pin_st = st_render.render_pou(side_pin_pou)
 
 reset_row = [l for l in side_pin_art if "RESET" in l][0]
-check("side pin: the reset contact is drawn with its symbol", "xClear " + U["CONTACT_L"] + "P" + U["CONTACT_R"] in reset_row)
+check(
+    "side pin: the reset contact is drawn with its symbol",
+    "xClear " + U["CONTACT_L"] + "P" + U["CONTACT_R"] in reset_row,
+)
 check("side pin: the reset is not flattened to text", not any("R(xClear)" in l for l in side_pin_art))
-check("side pin: the contact is wired into the pin", "xClear " + U["CONTACT_L"] + "P" + U["CONTACT_R"] + U["H"] * 2 + U["PIN_L"] + "RESET" in reset_row)
+check(
+    "side pin: the contact is wired into the pin",
+    "xClear " + U["CONTACT_L"] + "P" + U["CONTACT_R"] + U["H"] * 2 + U["PIN_L"] + "RESET" in reset_row,
+)
 # A literal side pin (PV := 10) is untouched.
 pv_row = [l for l in side_pin_art if "PV" in l][0]
 check("side pin: a literal side pin stays a value", "10" in pv_row and U["PIN_L"] + "PV" in pv_row)
@@ -856,10 +969,19 @@ marked_pin_st = st_render.render_pou(marked_pin_pou)
 reset_row = [l for l in marked_pin_art if "RESET" in l][0]
 load_row = [l for l in marked_pin_art if "LOAD" in l][0]
 cd_row = [l for l in marked_pin_art if "CD" in l][0]
-check("marked pin: a negated pin draws its bubble on the wall", "xClear " + U["CONTACT_L"] + " " + U["CONTACT_R"] + U["H"] in reset_row and U["H"] + "oRESET" in reset_row)
-check("marked pin: an edge pin draws its P on the wall", "xLoad " + U["CONTACT_L"] + " " + U["CONTACT_R"] + U["H"] in load_row and U["H"] + "PLOAD" in load_row)
+check(
+    "marked pin: a negated pin draws its bubble on the wall",
+    "xClear " + U["CONTACT_L"] + " " + U["CONTACT_R"] + U["H"] in reset_row and U["H"] + "oRESET" in reset_row,
+)
+check(
+    "marked pin: an edge pin draws its P on the wall",
+    "xLoad " + U["CONTACT_L"] + " " + U["CONTACT_R"] + U["H"] in load_row and U["H"] + "PLOAD" in load_row,
+)
 check("marked pin: a pin with both keeps the caption", "R(NOT xDown)" + U["H"] * 2 + U["PIN_L"] + "CD" in cd_row)
-check("marked pin: the ST keeps every mark", any("RESET := NOT xClear, LOAD := R(xLoad), CD := R(NOT xDown)" in l for l in marked_pin_st))
+check(
+    "marked pin: the ST keeps every mark",
+    any("RESET := NOT xClear, LOAD := R(xLoad), CD := R(NOT xDown)" in l for l in marked_pin_st),
+)
 
 
 # --- byte order mark -------------------------------------------------------
@@ -907,7 +1029,7 @@ check_equal(
 # The parser CODESYS ships works byte-wise and rejects UTF-8 multi-byte
 # sequences, so one degree sign in a comment loses the whole POU. Numeric
 # character references are ASCII and every parser expands them identically.
-DEGREE = b'<a><b>Temp \xc2\xb0C</b></a>'
+DEGREE = b"<a><b>Temp \xc2\xb0C</b></a>"
 
 check_equal(
     "non-ASCII becomes a numeric character reference",
@@ -922,7 +1044,7 @@ import xml.etree.ElementTree as ET  # noqa: E402
 check_equal(
     "the character survives the round trip",
     ET.fromstring(plcopen.read_document(io.BytesIO(DEGREE)))[0].text,
-    u"Temp \u00b0C",
+    "Temp \u00b0C",
 )
 check_equal(
     "pure ASCII documents are left alone",
@@ -979,11 +1101,13 @@ def with_interface(interface):
 
 
 PLAINTEXT_INTERFACE = (
-    "<interface><localVars><variable name=\"xStart\"><type><BOOL/></type></variable></localVars>"
+    '<interface><localVars><variable name="xStart"><type><BOOL/></type></variable></localVars>'
     '<addData><data name="http://www.3s-software.com/plcopenxml/declarations" handleUnknown="implementation">'
     "<Declarations>" + DECLARATION + "</Declarations></data></addData></interface>"
 )
-STRUCTURED_INTERFACE = '<interface><localVars><variable name="xStart"><type><BOOL/></type></variable></localVars></interface>'
+STRUCTURED_INTERFACE = (
+    '<interface><localVars><variable name="xStart"><type><BOOL/></type></variable></localVars></interface>'
+)
 
 plain_pou = parse_pous(with_interface(PLAINTEXT_INTERFACE))[0]
 check_equal("the plaintext declaration is picked up", plain_pou.declaration_text, DECLARATION)
@@ -1002,7 +1126,10 @@ structured_pou = parse_pous(with_interface(STRUCTURED_INTERFACE))[0]
 check_equal("no plaintext means none is invented", structured_pou.declaration_text, None)
 check_equal("the structured interface is the fallback", render_declaration(structured_pou)[1], "PROGRAM PLAIN")
 check("the fallback says it is one", render_declaration(structured_pou)[0].startswith("(* Declaration rebuilt"))
-check("the fallback still lists the variable", any("xStart : BOOL;" in line for line in render_declaration(structured_pou)))
+check(
+    "the fallback still lists the variable",
+    any("xStart : BOOL;" in line for line in render_declaration(structured_pou)),
+)
 
 # The shape CODESYS actually writes, confirmed by diagnosing a real project:
 # a data element named ".../interfaceasplaintext", sitting at POU level rather
@@ -1010,8 +1137,8 @@ check("the fallback still lists the variable", any("xStart : BOOL;" in line for 
 # The first two attempts at this searched only inside <interface>, and then
 # only two levels down.
 REAL_SHAPE = (
-    "<interface><localVars><variable name=\"xStart\"><type><BOOL/></type></variable></localVars></interface>"
-    "<addData><data name=\"http://www.3s-software.com/plcopenxml/interfaceasplaintext\""
+    '<interface><localVars><variable name="xStart"><type><BOOL/></type></variable></localVars></interface>'
+    '<addData><data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext"'
     ' handleUnknown="implementation"><InterfaceAsPlainText><xhtml xmlns="http://www.w3.org/1999/xhtml">'
     + DECLARATION
     + "</xhtml></InterfaceAsPlainText></data></addData>"

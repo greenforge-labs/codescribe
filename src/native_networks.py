@@ -28,9 +28,9 @@ sequential numbering, saying so in the file.
 
 import os
 
+from model import Network
 import plcopen
 import xmlbackend
-from model import Network
 
 # Said in the file itself, under the number the network occupies. A reviewer
 # reading only the .txt has to learn that logic exists here without
@@ -160,7 +160,5 @@ def align(native, parsed):
             note = NOTE_OUT_COMMENTED
         else:
             note = NOTE_EMPTY
-        aligned.append(
-            Network(comment=entry.comment, outputs=outputs, title=entry.title, label=entry.label, note=note)
-        )
+        aligned.append(Network(comment=entry.comment, outputs=outputs, title=entry.title, label=entry.label, note=note))
     return aligned

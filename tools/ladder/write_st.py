@@ -41,11 +41,12 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "src"))
 
+from render import write  # noqa: E402
+
 import parse_fbd  # noqa: E402
 import parse_ld  # noqa: E402
 import plcopen  # noqa: E402
 import st_render  # noqa: E402
-from render import write  # noqa: E402
 
 # Language -> parser. Kept here rather than imported from graphical_export,
 # which needs the CODESYS scriptengine module to load at all.

@@ -232,7 +232,9 @@ def _render_block(element):
     # expanded to spaces so the box's right wall stays straight - a tab counts
     # as one character but draws as several.
     code = [line.expandtabs(4) for line in element.st_code]
-    inner = max([len(title)] + [len(left[i]) + 3 + len(right[i]) for i in range(rows)] + [len(line) + 2 for line in code])
+    inner = max(
+        [len(title)] + [len(left[i]) + 3 + len(right[i]) for i in range(rows)] + [len(line) + 2 for line in code]
+    )
 
     # Two columns to the left of the box: the widest value, then a short wire
     # into the pin. The power pin's row is all wire - the rung feeds that one.

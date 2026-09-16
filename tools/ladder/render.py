@@ -28,8 +28,8 @@ sys.path.insert(0, os.path.join(HERE, "..", "..", "src"))
 import charset  # noqa: E402
 import fbd_render  # noqa: E402
 import ld_render  # noqa: E402
-import parse_ld  # noqa: E402
 import parse_fbd  # noqa: E402
+import parse_ld  # noqa: E402
 import st_render  # noqa: E402
 
 FORMATS = ("art", "st", "both")

@@ -19,9 +19,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "..", "src"))
 sys.path.insert(0, os.path.join(HERE, ".."))
 
+from render import write  # noqa: E402
+
 import plcopen  # noqa: E402
 import xmlbackend  # noqa: E402
-from render import write  # noqa: E402
 
 FIXTURES = os.path.join(HERE, "fixtures")
 CODESYS = os.path.join(FIXTURES, "codesys")
@@ -72,7 +73,7 @@ def every_fixture():
 SAMPLE = (
     b'<?xml version="1.0" encoding="utf-8"?>'
     b'<root xmlns="http://example/ns">'
-    b"<a name=\"one\" empty=\"\">text<b/>tail</a>"
+    b'<a name="one" empty="">text<b/>tail</a>'
     b"<a/>"
     b"</root>"
 )
@@ -199,7 +200,10 @@ else:
                 rendered[backend] = lines
             finally:
                 xmlbackend.use(previous)
-        check(name + ": both backends render identically", rendered[xmlbackend.ELEMENT_TREE] == rendered[xmlbackend.SYSTEM_XML])
+        check(
+            name + ": both backends render identically",
+            rendered[xmlbackend.ELEMENT_TREE] == rendered[xmlbackend.SYSTEM_XML],
+        )
 
 print("")
 if failures:

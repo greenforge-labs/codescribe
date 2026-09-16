@@ -290,9 +290,7 @@ class Pou(object):
     editor, and numbering it as three throws every later number out.
     """
 
-    def __init__(
-        self, name, pou_type, variables=None, networks=None, language=None, declaration_text=None
-    ):
+    def __init__(self, name, pou_type, variables=None, networks=None, language=None, declaration_text=None):
         self.name = name
         self.pou_type = pou_type
         self.language = language

@@ -22,10 +22,11 @@ sys.path.insert(0, os.path.join(REPO, "src"))
 sys.path.insert(0, os.path.join(REPO, "tools", "ci"))  # stubbed scriptengine
 sys.path.insert(0, os.path.join(REPO, "tools", "ladder"))
 
+from render import write  # noqa: E402
+
 import graphical_export  # noqa: E402
 import import_export  # noqa: E402
 import import_from_files  # noqa: E402
-from render import write  # noqa: E402
 
 FIXTURES = os.path.join(HERE, "fixtures", "codesys")
 
@@ -193,7 +194,9 @@ VAR
 END_VAR"""
     source_pou = FakePou("LD_TEST", os.path.join(FIXTURES, "LDTesting.xml"), source_declaration)
     source_base = os.path.join(workspace, "SOURCE")
-    check("source declaration is rendered verbatim", graphical_export.write_rendered_text(source_pou, source_base) is True)
+    check(
+        "source declaration is rendered verbatim", graphical_export.write_rendered_text(source_pou, source_base) is True
+    )
     source_content = read(source_base + ".txt")
     check("safety type survives", "S_xSafe : SAFEBOOL;" in source_content)
     check("declaration comment survives", "OUT0200 is the hardware channel identifier." in source_content)
@@ -491,7 +494,9 @@ LABELLED_NATIVE = os.path.join(HERE, "fixtures", "r2-4-ld-label-on-wired-network
 graphical_export.reset_stats()
 labelled = graphical_export.render_plcopen(LABELLED, None, None, LABELLED_NATIVE)
 check("labelled: the networks line up with the native list", graphical_export.ALIGNMENT_WARNING not in labelled)
-check_equal("labelled: one header per editor network", len([line for line in labelled if line.startswith("(* Network ")]), 5)
+check_equal(
+    "labelled: one header per editor network", len([line for line in labelled if line.startswith("(* Network ")]), 5
+)
 second = labelled.index("(* Network 2 *)")
 check_equal("labelled: the label is under its header", labelled[second + 1], "LATER:")
 check("labelled: the rung follows it", "xA" in labelled[second + 2] and "oA" in labelled[second + 2])
@@ -508,7 +513,11 @@ check("labelled: the jump still names its target", any(">>LATER" in line for lin
 # The same file without the native list, as the dev CLI renders it: the label
 # is the network's own either way, so it is written once, under the header.
 unlabelled = graphical_export.render_plcopen(LABELLED, None, None, None)
-check_equal("labelled: without the native list the label still appears once", len([line for line in unlabelled if "LATER:" in line]), 1)
+check_equal(
+    "labelled: without the native list the label still appears once",
+    len([line for line in unlabelled if "LATER:" in line]),
+    1,
+)
 check_equal("labelled: and under its header", unlabelled[unlabelled.index("(* Network 2 *)") + 1], "LATER:")
 graphical_export.reset_stats()
 
@@ -523,13 +532,25 @@ graphical_export.reset_stats()
 two_labels = graphical_export.render_plcopen(TWO_LABELS, None, None, TWO_LABELS_NATIVE)
 check("two labels: the networks line up with the native list", graphical_export.ALIGNMENT_WARNING not in two_labels)
 check_equal("two labels: one header per editor network", len([l for l in two_labels if l.startswith("(* Network ")]), 4)
-check_equal("two labels: each label is written once", [two_labels.count("LONELY1:"), two_labels.count("LONELY2:")], [1, 1])
-check("two labels: no label is drawn as a rung", not any("LONELY" in l and ":" in l and l not in ("LONELY1:", "LONELY2:") for l in two_labels))
+check_equal(
+    "two labels: each label is written once", [two_labels.count("LONELY1:"), two_labels.count("LONELY2:")], [1, 1]
+)
+check(
+    "two labels: no label is drawn as a rung",
+    not any("LONELY" in l and ":" in l and l not in ("LONELY1:", "LONELY2:") for l in two_labels),
+)
 fourth = two_labels.index("(* Network 4 *)")
 check("two labels: the network with logic carries no label", "xA" in two_labels[fourth + 1])
 two_labels_bare = graphical_export.render_plcopen(TWO_LABELS, None, None, None)
-check_equal("two labels: without the native list each label is written once", [two_labels_bare.count("LONELY1:"), two_labels_bare.count("LONELY2:")], [1, 1])
-check("two labels: without the native list no label is drawn as a rung", not any("LONELY" in l and ":" in l and l not in ("LONELY1:", "LONELY2:") for l in two_labels_bare))
+check_equal(
+    "two labels: without the native list each label is written once",
+    [two_labels_bare.count("LONELY1:"), two_labels_bare.count("LONELY2:")],
+    [1, 1],
+)
+check(
+    "two labels: without the native list no label is drawn as a rung",
+    not any("LONELY" in l and ":" in l and l not in ("LONELY1:", "LONELY2:") for l in two_labels_bare),
+)
 graphical_export.reset_stats()
 
 # CODESYS writes a network's comment before its label. A comment arriving while
@@ -541,8 +562,15 @@ graphical_export.reset_stats()
 for native, name in ((COMMENT_BETWEEN_NATIVE, "with"), (None, "without")):
     between = graphical_export.render_plcopen(COMMENT_BETWEEN, None, None, native)
     headed = [between[i + 1] for i, l in enumerate(between) if l.startswith("(* Network ") and "second one" in l]
-    check_equal("comment between labels, " + name + " the native list: the comment heads the LB network", headed, ["LB:"])
-    check("comment between labels, " + name + " the native list: LA carries no comment", not any(l.startswith("(* Network ") and "second one" in l and between[i + 1] == "LA:" for i, l in enumerate(between)))
+    check_equal(
+        "comment between labels, " + name + " the native list: the comment heads the LB network", headed, ["LB:"]
+    )
+    check(
+        "comment between labels, " + name + " the native list: LA carries no comment",
+        not any(
+            l.startswith("(* Network ") and "second one" in l and between[i + 1] == "LA:" for i, l in enumerate(between)
+        ),
+    )
 graphical_export.reset_stats()
 
 
@@ -561,7 +589,11 @@ DISABLED_NATIVE = os.path.join(HERE, "fixtures", "38-1-ld-label-of-disabled-netw
 graphical_export.reset_stats()
 disabled = graphical_export.render_plcopen(DISABLED, None, None, DISABLED_NATIVE)
 check("disabled label: the networks line up with the native list", graphical_export.ALIGNMENT_WARNING not in disabled)
-check_equal("disabled label: one header per editor network", len([line for line in disabled if line.startswith("(* Network ")]), 3)
+check_equal(
+    "disabled label: one header per editor network",
+    len([line for line in disabled if line.startswith("(* Network ")]),
+    3,
+)
 first = disabled.index("(* Network 1 *)")
 second = disabled.index("(* Network 2 *)")
 third = disabled.index("(* Network 3 *)")
@@ -645,7 +677,7 @@ class FakeVisuManager(object):
     def export_native(self, path, recursive=False):
         self.calls.append((path, recursive))
         handle = io.open(path, "w", encoding="utf-8")
-        handle.write(u"<ExportFile />\n")
+        handle.write("<ExportFile />\n")
         handle.close()
 
 
@@ -743,7 +775,7 @@ try:
     target = os.path.join(workspace, "Project")
     os.mkdir(target)
     handle = io.open(os.path.join(target, "KEEP.st"), "w", encoding="utf-8")
-    handle.write(u"PROGRAM Keep\n")
+    handle.write("PROGRAM Keep\n")
     handle.close()
 
     staging = util.begin_export_folder(target)
@@ -759,7 +791,7 @@ try:
     # A real export must still swap in exactly as before.
     staging = util.begin_export_folder(target)
     handle = io.open(os.path.join(staging, "NEW.st"), "w", encoding="utf-8")
-    handle.write(u"PROGRAM New\n")
+    handle.write("PROGRAM New\n")
     handle.close()
     util.finalize_export_folder(target, staging)
     check("a real export still swaps in", os.path.exists(os.path.join(target, "NEW.st")))
@@ -780,13 +812,13 @@ try:
     os.makedirs(os.path.join(target, "application"))
     for name in ("application/GONE.txt", "application/GONE.xml"):
         handle = io.open(os.path.join(target, name), "w", encoding="utf-8")
-        handle.write(u"from the previous export\n")
+        handle.write("from the previous export\n")
         handle.close()
 
     staging = util.begin_export_folder(target)
     os.makedirs(os.path.join(staging, "application"))
     handle = io.open(os.path.join(staging, "application", "STAYS.xml"), "w", encoding="utf-8")
-    handle.write(u"from this export\n")
+    handle.write("from this export\n")
     handle.close()
 
     real_rename = os.rename

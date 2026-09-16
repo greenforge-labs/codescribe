@@ -5,10 +5,10 @@ import os
 
 import scriptengine  # type: ignore
 
-import graphical_export
 from communication_import_export import export_communication
 from device_tree_import_export import export_device_tree_siblings
 from entrypoint import find_application, find_communication, get_device_entrypoints, get_src_folder
+import graphical_export
 from import_export import OBJECT_TYPE_TO_EXPORT_FUNCTION, SERVICE_EXPORT_FUNCTIONS, write_native
 from object_type import ObjectType, get_object_type
 from util import *

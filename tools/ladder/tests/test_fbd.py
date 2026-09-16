@@ -19,14 +19,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "..", "src"))
 sys.path.insert(0, os.path.join(HERE, ".."))
 
-import charset  # noqa: E402
-import layout  # noqa: E402
-import fbd_render  # noqa: E402
-import parse_ld  # noqa: E402
-import parse_fbd  # noqa: E402
-import st_render  # noqa: E402
-from model import Assign, Call, Label, Network, OutputRef, Pou, Signal  # noqa: E402
 from render import write  # noqa: E402
+
+import charset  # noqa: E402
+import fbd_render  # noqa: E402
+import layout  # noqa: E402
+from model import Assign, Call, Label, Network, OutputRef, Pou, Signal  # noqa: E402
+import parse_fbd  # noqa: E402
+import parse_ld  # noqa: E402
+import st_render  # noqa: E402
 
 # Referenced through the charset table rather than as literal glyphs: this
 # source file has to stay pure ASCII for IronPython 2.7 to load it at all.
@@ -36,6 +37,7 @@ FIXTURES = os.path.join(HERE, "fixtures", "codesys")
 FBD_SOURCE = os.path.join(FIXTURES, "FbTesting.xml")
 LD_SOURCE = os.path.join(FIXTURES, "LDTesting.xml")
 SFC_SOURCE = os.path.join(FIXTURES, "SFCTesting.xml")
+
 
 def box(node):
     """The Call a wire reads, unwrapping the pin the wire names.
@@ -116,9 +118,7 @@ check_equal(
 hostile_title = "one *) two"
 check_equal(
     "network titles cannot break generated block comments",
-    fbd_render.render_pou(
-        Pou("HOSTILE", "program", networks=[Network("", [Signal("x")], title=hostile_title)])
-    )[3],
+    fbd_render.render_pou(Pou("HOSTILE", "program", networks=[Network("", [Signal("x")], title=hostile_title)]))[3],
     "(* Network 1: one * ) two *)",
 )
 
@@ -235,7 +235,10 @@ flow_art = fbd_render.render_pou(flow)
 # label under its own number and pushed every later number out by one.
 check_equal("flow: three networks survive", len(flow.networks), 3)
 check_equal("flow: the label is the network's own", flow.networks[2].label, "END")
-check("flow: the label is not in the network's body", not any(isinstance(tree, Label) for tree in flow.networks[2].outputs))
+check(
+    "flow: the label is not in the network's body",
+    not any(isinstance(tree, Label) for tree in flow.networks[2].outputs),
+)
 
 # A jump terminates a network. Leaving it out of SINK_KINDS dropped the entire
 # guard network, because nothing else consumed the OR feeding it.
@@ -298,7 +301,9 @@ check("fidelity: the connector's source reaches the diagram", any("xRun" in line
 # The negation bubble on a block's own input pin, distinct from a negated
 # inVariable element. Dropping it computes AND where the program computes
 # AND NOT.
-check("fidelity: negated input pin inverts in ST", any("xMasked := xRun2 AND (NOT xReady2);" in line for line in fid_st))
+check(
+    "fidelity: negated input pin inverts in ST", any("xMasked := xRun2 AND (NOT xReady2);" in line for line in fid_st)
+)
 check("fidelity: negated input pin reaches the diagram", any("NOT" in line and "xReady2" in line for line in fid_art))
 
 # The same bubble on an output pin carrying an inline assignment: the stored
@@ -311,7 +316,10 @@ check(
 
 # NOT binds tighter than OR in IEC 61131-3, so a negated compound expression
 # must keep its parentheses or the logic regroups.
-check("fidelity: negated compound expression keeps its grouping", any("xGuard := NOT (xA OR xB);" in line for line in fid_st))
+check(
+    "fidelity: negated compound expression keeps its grouping",
+    any("xGuard := NOT (xA OR xB);" in line for line in fid_st),
+)
 
 # Expressions are free-form ST and are routinely typed without spaces; NOT
 # still binds above the comparison, so "NOT iCount>5" states (NOT iCount)>5.
@@ -349,7 +357,9 @@ check_equal(
 # The sharper case: the block is called once in the program, so emitting the
 # call per output would misstate what runs.
 check_equal("fanout: the block is called once", len([l for l in fan_st if l.startswith("TON_0(")]), 1)
-check("fanout: both stores are still made", "Status.Done := TON_0.Q;" in fan_st and "Status.Latched := TON_0.Q;" in fan_st)
+check(
+    "fanout: both stores are still made", "Status.Done := TON_0.Q;" in fan_st and "Status.Latched := TON_0.Q;" in fan_st
+)
 
 # The shared source is drawn once and branched, not drawn per output.
 check_equal("fanout: one OR box is drawn", len([l for l in fan_art if "In1   Out1" in l]), 1)
@@ -392,8 +402,14 @@ check_equal("two pins: one box is drawn", len([l for l in two_pins_art if "tmr :
 
 # Two pins are two wires, not one branched wire: a junction column here would
 # draw ET and Q as the same signal.
-check("two pins: Q leaves on its own row", any(l.rstrip().endswith("> xQ") and "Q" + U["PIN_R"] in l for l in two_pins_art))
-check("two pins: ET leaves on its own row", any(l.rstrip().endswith("> tEt") and "ET" + U["PIN_R"] in l for l in two_pins_art))
+check(
+    "two pins: Q leaves on its own row",
+    any(l.rstrip().endswith("> xQ") and "Q" + U["PIN_R"] in l for l in two_pins_art),
+)
+check(
+    "two pins: ET leaves on its own row",
+    any(l.rstrip().endswith("> tEt") and "ET" + U["PIN_R"] in l for l in two_pins_art),
+)
 check("two pins: no junction between different pins", not any(U["T_DOWN"] in l and "xQ" in l for l in two_pins_art))
 
 
@@ -413,7 +429,10 @@ check_equal("shared box: one network", len(shared.networks), 1)
 check_equal("shared box: two outputs", len(shared.networks[0].outputs), 2)
 check_equal("shared box: the timer is called once", len([l for l in shared_st if l.startswith("fbTimer(")]), 1)
 check_equal("shared box: one box is drawn", len([l for l in shared_art if "fbTimer : TON" in l]), 1)
-check("shared box: both stores are still made", "xDone := fbTimer.Q;" in shared_st and "xAny := fbTimer.Q OR xManual;" in shared_st)
+check(
+    "shared box: both stores are still made",
+    "xDone := fbTimer.Q;" in shared_st and "xAny := fbTimer.Q OR xManual;" in shared_st,
+)
 
 # The second reader hangs off the pin on a junction, not on a copy of the box
 # and not on its name in text: the wire is what says the two readers are the
@@ -438,7 +457,9 @@ enable_st = st_render.render_pou(two_pins)
 check("enable: EN is not an operand", "IF xEn THEN iSum := iA + iB + iC; END_IF" in enable_st)
 check("enable: no four-way sum survives", not any("xEn + iA" in line for line in enable_st))
 check("enable: ENO reports the enable", "xSumOk := xEn;" in enable_st)
-check("enable: the ENO store is not itself guarded", not any(line.startswith("IF xEn THEN xSumOk") for line in enable_st))
+check(
+    "enable: the ENO store is not itself guarded", not any(line.startswith("IF xEn THEN xSumOk") for line in enable_st)
+)
 
 # A box with no EN wired keeps its plain expression and no guard.
 check("enable: an unguarded operator is unchanged", "xAny := fbTimer.Q OR xManual;" in shared_st)
@@ -501,7 +522,9 @@ pin_edge = parse_fbd.parse_pous(PIN_EDGE)[0]
 pin_edge_st = st_render.render_pou(pin_edge)
 pin_edge_art = fbd_render.render_network(pin_edge.networks[0])
 
-check_equal("pin edge: the edge reaches the tree", box(pin_edge.networks[0].outputs[0].source).inputs[0][1].edge, "rising")
+check_equal(
+    "pin edge: the edge reaches the tree", box(pin_edge.networks[0].outputs[0].source).inputs[0][1].edge, "rising"
+)
 check("pin edge: the ST shows the trigger", "ctr(CU := R(xPulse), RESET := xRst);" in pin_edge_st)
 check("pin edge: the diagram marks the pin", any("R(xPulse)" in line for line in pin_edge_art))
 check("pin edge: an unmarked pin stays unmarked", not any("R(xRst)" in line for line in pin_edge_st))
@@ -584,7 +607,10 @@ for order, path in (("Q and ET", TWO_READERS), ("ET and Q", TWO_READERS_SWAPPED)
     )
     # The store cannot sit level with ET, because the OR box is in the way; so
     # ET's wire turns down a column of its own and the store hangs off that.
-    check(order + ": the ET wire turns down its own column", "ET" + U["PIN_R"] + U["H"] * 2 + U["TR"] in art_two[et_rows[0]])
+    check(
+        order + ": the ET wire turns down its own column",
+        "ET" + U["PIN_R"] + U["H"] * 2 + U["TR"] in art_two[et_rows[0]],
+    )
     check_equal(order + ": the store hangs below the ET row", len(store_rows) == 1 and store_rows[0] > et_rows[0], True)
     check(order + ": the store is fed from the ET column", art_two[store_rows[0]].lstrip().startswith(U["BL"]))
     check(order + ": the ET row does not feed the OR box", U["PIN_L"] + "In1" not in art_two[et_rows[0]])
@@ -606,7 +632,14 @@ aside = Network(
     [
         Assign("xOther", Signal("xIn")),
         Assign("xDone", OutputRef(aside_timer, "Q")),
-        Assign("xAny", Call("OR", inputs=[("In1", OutputRef(aside_timer, "Q")), ("In2", Signal("xManual"))], outputs=[("Out1", None)])),
+        Assign(
+            "xAny",
+            Call(
+                "OR",
+                inputs=[("In1", OutputRef(aside_timer, "Q")), ("In2", Signal("xManual"))],
+                outputs=[("Out1", None)],
+            ),
+        ),
     ],
 )
 aside_art = fbd_render.render_network(aside)
@@ -627,9 +660,19 @@ eno_st = st_render.render_pou(eno)
 eno_art = fbd_render.render_network(eno.networks[0])
 
 check("execute eno: the box is drawn", any(line.strip() == "EXECUTE" for line in eno_art))
-check("execute eno: the wire to the store is drawn", any("ENO" + U["PIN_R"] + U["H"] * 3 + "> xRan" in line for line in eno_art))
-check("execute eno: the body is inside the box", any(U["V"] + " a := 1;" in line for line in eno_art) and any(U["V"] + " b := 2;" in line for line in eno_art))
-check_equal("execute eno: each body line appears once", [len([l for l in eno_art if "a := 1;" in l]), len([l for l in eno_art if "b := 2;" in l])], [1, 1])
+check(
+    "execute eno: the wire to the store is drawn",
+    any("ENO" + U["PIN_R"] + U["H"] * 3 + "> xRan" in line for line in eno_art),
+)
+check(
+    "execute eno: the body is inside the box",
+    any(U["V"] + " a := 1;" in line for line in eno_art) and any(U["V"] + " b := 2;" in line for line in eno_art),
+)
+check_equal(
+    "execute eno: each body line appears once",
+    [len([l for l in eno_art if "a := 1;" in l]), len([l for l in eno_art if "b := 2;" in l])],
+    [1, 1],
+)
 check("execute eno: the box closes below the body", eno_art[-1].strip().startswith(U["BL"]))
 check("execute eno: the ST guards the body with EN", "IF xRun THEN" in eno_st and "    a := 1;" in eno_st)
 check("execute eno: the ENO store reads the enable", "xRan := xRun;" in eno_st)
@@ -639,7 +682,16 @@ deep_execute = Call("EXECUTE", inputs=[("EN", Signal("xRun"))], outputs=[("ENO",
 deep_execute.wired_outputs.add("ENO")
 deep = Network(
     "",
-    [Assign("xBoth", Call("AND", inputs=[("In1", OutputRef(deep_execute, "ENO")), ("In2", Signal("xOk"))], outputs=[("Out1", None)]))],
+    [
+        Assign(
+            "xBoth",
+            Call(
+                "AND",
+                inputs=[("In1", OutputRef(deep_execute, "ENO")), ("In2", Signal("xOk"))],
+                outputs=[("Out1", None)],
+            ),
+        )
+    ],
 )
 deep_art = fbd_render.render_network(deep)
 check("execute deep: a nested box shows its body inside", any(U["V"] + " c := 3;" in line for line in deep_art))
@@ -694,9 +746,18 @@ SUB_FED = os.path.join(HERE, "fixtures", "fbd-two-execute-boxes-feed-one-sub.xml
 SUB_FED_SWAPPED = os.path.join(HERE, "fixtures", "fbd-two-execute-boxes-feed-one-sub-swapped.xml")
 sub_fed_art = fbd_render.render_network(parse_fbd.parse_pous(SUB_FED)[0].networks[0])
 sub_fed_swapped_art = fbd_render.render_network(parse_fbd.parse_pous(SUB_FED_SWAPPED)[0].networks[0])
-check("numbered execute boxes: titled #1 and #2", [l.strip() for l in sub_fed_art if l.strip().startswith("EXECUTE #")] == ["EXECUTE #1", "EXECUTE #2"])
-check("numbered execute boxes: In1 names box 1", any("EXECUTE#1.ENO" + U["H"] * 2 + U["PIN_L"] + "In1" in l for l in sub_fed_art))
-check("numbered execute boxes: In2 names box 2", any("EXECUTE#2.ENO" + U["H"] * 2 + U["PIN_L"] + "In2" in l for l in sub_fed_art))
+check(
+    "numbered execute boxes: titled #1 and #2",
+    [l.strip() for l in sub_fed_art if l.strip().startswith("EXECUTE #")] == ["EXECUTE #1", "EXECUTE #2"],
+)
+check(
+    "numbered execute boxes: In1 names box 1",
+    any("EXECUTE#1.ENO" + U["H"] * 2 + U["PIN_L"] + "In1" in l for l in sub_fed_art),
+)
+check(
+    "numbered execute boxes: In2 names box 2",
+    any("EXECUTE#2.ENO" + U["H"] * 2 + U["PIN_L"] + "In2" in l for l in sub_fed_art),
+)
 check("numbered execute boxes: swapping the inputs changes the export", sub_fed_art != sub_fed_swapped_art)
 check_equal("numbered execute boxes: each body is drawn once", len([l for l in sub_fed_art if ":=" in l]), 2)
 # A lone EXECUTE box read twice keeps its plain name.
@@ -716,7 +777,10 @@ check(
     "in-out pin: its reader leaves on the pin's own row",
     any(U["PIN_L"] + "pBuf" in l and l.rstrip().endswith("> arrCopy") for l in in_out_art),
 )
-check("in-out pin: the output's reader stays on the output's row", any("Q" + U["PIN_R"] in l and l.rstrip().endswith("> xDone") for l in in_out_art))
+check(
+    "in-out pin: the output's reader stays on the output's row",
+    any("Q" + U["PIN_R"] in l and l.rstrip().endswith("> xDone") for l in in_out_art),
+)
 check("in-out pin: the pin runs through the box", any("pBuf" + U["H"] in l and U["PIN_R"] in l for l in in_out_art))
 
 
@@ -730,10 +794,20 @@ SPLIT = os.path.join(HERE, "fixtures", "fbd-function-read-on-two-output-pins.xml
 split_art = fbd_render.render_network(parse_fbd.parse_pous(SPLIT)[0].networks[0])
 check_equal("two pins, no instance: the box is drawn once", len([l for l in split_art if l.strip() == "F_SPLIT"]), 1)
 check("two pins, no instance: R is teed", any("R" + U["PIN_R"] in l for l in split_art))
-check("two pins, no instance: R's wire leaves the box on R's row", any("R" + U["PIN_R"] + U["H"] in l for l in split_art))
-check("two pins, no instance: nC is drawn below the Q readers", [l.rstrip().endswith("> nC") for l in split_art].index(True) > [l.rstrip().endswith("> xB") for l in split_art].index(True))
+check(
+    "two pins, no instance: R's wire leaves the box on R's row", any("R" + U["PIN_R"] + U["H"] in l for l in split_art)
+)
+check(
+    "two pins, no instance: nC is drawn below the Q readers",
+    [l.rstrip().endswith("> nC") for l in split_art].index(True)
+    > [l.rstrip().endswith("> xB") for l in split_art].index(True),
+)
 check("two pins, no instance: no wire leaves the bottom border", not any(U["BR"] + U["H"] in l for l in split_art))
-check_equal("two pins, no instance: both Q readers are drawn", [any(l.rstrip().endswith("> xA") for l in split_art), any(l.rstrip().endswith("> xB") for l in split_art)], [True, True])
+check_equal(
+    "two pins, no instance: both Q readers are drawn",
+    [any(l.rstrip().endswith("> xA") for l in split_art), any(l.rstrip().endswith("> xB") for l in split_art)],
+    [True, True],
+)
 
 
 # --- a box tees every pin something reads ------------------------------------
@@ -742,18 +816,54 @@ check_equal("two pins, no instance: both Q readers are drawn", [any(l.rstrip().e
 # text. The pin keeps its tee all the same: it is the one mark that the readers
 # take the box's pin, not a variable of the same name. Dropping it made a wired
 # ET and an ET read from an input variable export alike.
-tee_ctr = Call("CTU", "ctr", inputs=[("CU", Signal("xPulse")), ("PV", Signal("10"))], outputs=[("Q", None), ("ET", None), ("CV", None)], active_output="Q")
+tee_ctr = Call(
+    "CTU",
+    "ctr",
+    inputs=[("CU", Signal("xPulse")), ("PV", Signal("10"))],
+    outputs=[("Q", None), ("ET", None), ("CV", None)],
+    active_output="Q",
+)
 tee_ctr.wired_outputs.update(["Q", "ET"])
-tee_and1 = Call("AND", inputs=[("In1", OutputRef(tee_ctr, "Q")), ("In2", OutputRef(tee_ctr, "ET"))], outputs=[("Out1", None)], active_output="Out1", wired_outputs=["Out1"])
-tee_and2 = Call("AND", inputs=[("In1", Signal("v8")), ("In2", Signal("v9"))], outputs=[("Out1", None)], active_output="Out1", wired_outputs=["Out1"])
-tee_or = Call("OR", inputs=[("In1", tee_and1), ("In2", tee_and2)], outputs=[("Out1", None)], active_output="Out1", wired_outputs=["Out1"])
-tee_and3 = Call("AND", inputs=[("In1", OutputRef(tee_ctr, "Q")), ("In2", OutputRef(tee_ctr, "ET"))], outputs=[("Out1", None)], active_output="Out1", wired_outputs=["Out1"])
-tee_art = fbd_render.render_network(Network("", [Assign("s0", Signal("v7")), Assign("s1", tee_or), Assign("s2", tee_and3)]))
+tee_and1 = Call(
+    "AND",
+    inputs=[("In1", OutputRef(tee_ctr, "Q")), ("In2", OutputRef(tee_ctr, "ET"))],
+    outputs=[("Out1", None)],
+    active_output="Out1",
+    wired_outputs=["Out1"],
+)
+tee_and2 = Call(
+    "AND",
+    inputs=[("In1", Signal("v8")), ("In2", Signal("v9"))],
+    outputs=[("Out1", None)],
+    active_output="Out1",
+    wired_outputs=["Out1"],
+)
+tee_or = Call(
+    "OR",
+    inputs=[("In1", tee_and1), ("In2", tee_and2)],
+    outputs=[("Out1", None)],
+    active_output="Out1",
+    wired_outputs=["Out1"],
+)
+tee_and3 = Call(
+    "AND",
+    inputs=[("In1", OutputRef(tee_ctr, "Q")), ("In2", OutputRef(tee_ctr, "ET"))],
+    outputs=[("Out1", None)],
+    active_output="Out1",
+    wired_outputs=["Out1"],
+)
+tee_art = fbd_render.render_network(
+    Network("", [Assign("s0", Signal("v7")), Assign("s1", tee_or), Assign("s2", tee_and3)])
+)
 check("pin tee: ET is named in text", any("ctr.ET" in l for l in tee_art))
 check("pin tee: ET keeps its connection", any("ET" + U["PIN_R"] in l for l in tee_art))
 check("pin tee: Q shows its connection", any("Q" + U["PIN_R"] in l for l in tee_art))
-wired_twice = fbd_render.render_pou(parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-timer-pin-wired-to-two-readers.xml"))[0])
-variable_twice = fbd_render.render_pou(parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-timer-pin-read-from-a-variable-twice.xml"))[0])
+wired_twice = fbd_render.render_pou(
+    parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-timer-pin-wired-to-two-readers.xml"))[0]
+)
+variable_twice = fbd_render.render_pou(
+    parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-timer-pin-read-from-a-variable-twice.xml"))[0]
+)
 check("pin tee: a wired pin and a variable of its name export differently", wired_twice != variable_twice)
 
 # Outside the joined layout a box keeps a tee on every pin something reads. A
@@ -762,10 +872,20 @@ check("pin tee: a wired pin and a variable of its name export differently", wire
 # and not a second one with the same inputs.
 two_output_pins = parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "36-2-fbd-two-output-pins.xml"))[0]
 fanout_art = fbd_render.render_network(two_output_pins.networks[2])
-check("pin tee: a fan-out tees ENO", any("ENO" + U["PIN_R"] + U["H"] in l and l.rstrip().endswith("> xSumOk") for l in fanout_art))
-check("pin tee: a fan-out tees Out1", any("Out1" + U["PIN_R"] + U["H"] in l and l.rstrip().endswith("> iSum") for l in fanout_art))
-one_node = fbd_render.render_pou(parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-function-read-on-two-pins-one-node.xml"))[0])
-two_nodes = fbd_render.render_pou(parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-function-read-on-two-pins-two-nodes.xml"))[0])
+check(
+    "pin tee: a fan-out tees ENO",
+    any("ENO" + U["PIN_R"] + U["H"] in l and l.rstrip().endswith("> xSumOk") for l in fanout_art),
+)
+check(
+    "pin tee: a fan-out tees Out1",
+    any("Out1" + U["PIN_R"] + U["H"] in l and l.rstrip().endswith("> iSum") for l in fanout_art),
+)
+one_node = fbd_render.render_pou(
+    parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-function-read-on-two-pins-one-node.xml"))[0]
+)
+two_nodes = fbd_render.render_pou(
+    parse_fbd.parse_pous(os.path.join(HERE, "fixtures", "fbd-function-read-on-two-pins-two-nodes.xml"))[0]
+)
 check("pin tee: one box read on two pins and two boxes export differently", one_node != two_nodes)
 
 
@@ -794,7 +914,10 @@ check_equal("two reads: one box is drawn", len([line for line in two_reads_art i
 check("two reads: the box is not named in text", not any("ctr." in line for line in two_reads_art))
 q_line = [line for line in two_reads_art if "Q" + U["PIN_R"] in line][0]
 cv_line = [line for line in two_reads_art if "CV" + U["PIN_R"] in line][0]
-check("two reads: Q is wired straight into the AND box", U["PIN_L"] + "In1   Out1" + U["PIN_R"] + U["H"] * 3 + "> xAlarm" in q_line)
+check(
+    "two reads: Q is wired straight into the AND box",
+    U["PIN_L"] + "In1   Out1" + U["PIN_R"] + U["H"] * 3 + "> xAlarm" in q_line,
+)
 check("two reads: CV is wired, down a column of its own", "CV" + U["PIN_R"] + U["H"] * 2 + U["TR"] in cv_line)
 gt_lines = [line for line in two_reads_art if line.lstrip().startswith(U["BL"]) and U["PIN_L"] + "In1   Out1" in line]
 check_equal("two reads: the CV column feeds the GT box", len(gt_lines), 1)
@@ -803,16 +926,34 @@ check("two reads: the GT box feeds In2 of the AND box", gt_lines and U["PIN_L"] 
 # The same two reads the other way up: (ctr.CV > 5) AND ctr.Q puts the CV
 # read above the Q read, where a wire from CV would have to cross the wire
 # from Q. Then the first read keeps its wire and the second is named.
-crossing_counter = Call("CTU", "ctr", inputs=[("CU", Signal("xPulse")), ("PV", Signal("10"))], outputs=[("Q", None), ("CV", None)])
+crossing_counter = Call(
+    "CTU", "ctr", inputs=[("CU", Signal("xPulse")), ("PV", Signal("10"))], outputs=[("Q", None), ("CV", None)]
+)
 crossing_counter.wired_outputs.update(["Q", "CV"])
-crossing_gt = Call("GT", inputs=[("In1", OutputRef(crossing_counter, "CV")), ("In2", Signal("5"))], outputs=[("Out1", None)], wired_outputs=["Out1"])
-crossing_and = Call("AND", inputs=[("In1", crossing_gt), ("In2", OutputRef(crossing_counter, "Q"))], outputs=[("Out1", None)], wired_outputs=["Out1"])
+crossing_gt = Call(
+    "GT",
+    inputs=[("In1", OutputRef(crossing_counter, "CV")), ("In2", Signal("5"))],
+    outputs=[("Out1", None)],
+    wired_outputs=["Out1"],
+)
+crossing_and = Call(
+    "AND",
+    inputs=[("In1", crossing_gt), ("In2", OutputRef(crossing_counter, "Q"))],
+    outputs=[("Out1", None)],
+    wired_outputs=["Out1"],
+)
 crossing = Network("", [Assign("xAlarm", crossing_and)])
 crossing_art = fbd_render.render_network(crossing)
 check("crossing reads: no control character in the output", control_free(crossing_art))
 check_equal("crossing reads: one box is drawn", len([line for line in crossing_art if "ctr : CTU" in line]), 1)
-check("crossing reads: the first read is wired", any("CV" + U["PIN_R"] + U["H"] in line and U["PIN_L"] + "In1   Out1" in line for line in crossing_art))
-check("crossing reads: the second read is named", any("ctr.Q" + U["H"] * 2 in line and U["PIN_L"] + "In2" in line for line in crossing_art))
+check(
+    "crossing reads: the first read is wired",
+    any("CV" + U["PIN_R"] + U["H"] in line and U["PIN_L"] + "In1   Out1" in line for line in crossing_art),
+)
+check(
+    "crossing reads: the second read is named",
+    any("ctr.Q" + U["H"] * 2 in line and U["PIN_L"] + "In2" in line for line in crossing_art),
+)
 check("crossing reads: no wire runs from Q", not any("Q" + U["PIN_R"] + U["H"] in line for line in crossing_art))
 
 
@@ -851,21 +992,38 @@ move = Call("MOVE", inputs=[("EN", Signal("xCond")), ("In", Signal("iSrc"))], ou
 move_st = st_render.network_to_statements(Network("", [move]))
 check("operator store: the guarded store is emitted", "IF xCond THEN iDst := MOVE(iSrc); END_IF" in move_st)
 
-add = Call("ADD", inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))], outputs=[("ENO", None), ("Out1", "iSum")])
+add = Call(
+    "ADD",
+    inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))],
+    outputs=[("ENO", None), ("Out1", "iSum")],
+)
 add_st = st_render.network_to_statements(Network("", [add]))
 check("operator store: the sum is stored under its guard", "IF xEn THEN iSum := iA + iB; END_IF" in add_st)
 
 # A bubble on Out1 while ENO is listed first: the box's active output is ENO,
 # so the negation used to be looked for on the wrong pin and lost. The bubble
 # is on the pin the reader takes.
-neg_out = Call("ADD", inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))],
-               outputs=[("ENO", None), ("Out1", None)], negated_outputs=set(["Out1"]), wired_outputs=["Out1"])
+neg_out = Call(
+    "ADD",
+    inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))],
+    outputs=[("ENO", None), ("Out1", None)],
+    negated_outputs=set(["Out1"]),
+    wired_outputs=["Out1"],
+)
 neg_out_st = st_render.network_to_statements(Network("", [Assign("iSum", OutputRef(neg_out, "Out1"))]))
-check("operator negate: a negated Out1 inverts though ENO is first", "IF xEn THEN iSum := NOT (iA + iB); END_IF" in neg_out_st)
+check(
+    "operator negate: a negated Out1 inverts though ENO is first",
+    "IF xEn THEN iSum := NOT (iA + iB); END_IF" in neg_out_st,
+)
 
 # A negated ENO reports the inverse of the enable.
-neg_eno = Call("ADD", inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))],
-               outputs=[("ENO", None), ("Out1", None)], negated_outputs=set(["ENO"]), wired_outputs=["ENO"])
+neg_eno = Call(
+    "ADD",
+    inputs=[("EN", Signal("xEn")), ("In1", Signal("iA")), ("In2", Signal("iB"))],
+    outputs=[("ENO", None), ("Out1", None)],
+    negated_outputs=set(["ENO"]),
+    wired_outputs=["ENO"],
+)
 neg_eno_st = st_render.network_to_statements(Network("", [Assign("ok", OutputRef(neg_eno, "ENO"))]))
 check("operator negate: a negated ENO inverts the enable", "ok := NOT xEn;" in neg_eno_st)
 
@@ -879,14 +1037,23 @@ check("execute store: the ENO store records the run", "xDid := xRun;" in exec_en
 # A body line indented with a tab: the tab draws as several columns but counts
 # as one character, so it left the box's right wall ragged. Tabs are expanded
 # to spaces, and every body row ends its wall in the same column.
-tab_box = Call("EXECUTE", inputs=[("EN", Signal("xRun"))], outputs=[("ENO", "dude")],
-               st_code=["IF dude THEN", "\twhereismycar := TRUE;", "END_IF"])
+tab_box = Call(
+    "EXECUTE",
+    inputs=[("EN", Signal("xRun"))],
+    outputs=[("ENO", "dude")],
+    st_code=["IF dude THEN", "\twhereismycar := TRUE;", "END_IF"],
+)
 tab_art = fbd_render.render_network(Network("", [tab_box]))
 check("execute tab: no tab survives into the box", not any("\t" in line for line in tab_art))
-check("execute tab: the tabbed line is inside the box", any(U["V"] + "     whereismycar := TRUE;" in line for line in tab_art))
+check(
+    "execute tab: the tabbed line is inside the box",
+    any(U["V"] + "     whereismycar := TRUE;" in line for line in tab_art),
+)
 body_rows = [line for line in tab_art if (U["V"] + " ") in line and line.rstrip().endswith(U["V"])]
 check("execute tab: the box has body rows", len(body_rows) >= 3)
-check_equal("execute tab: every body row's wall ends in one column", len(set(len(line.rstrip()) for line in body_rows)), 1)
+check_equal(
+    "execute tab: every body row's wall ends in one column", len(set(len(line.rstrip()) for line in body_rows)), 1
+)
 
 
 # --- language dispatch -----------------------------------------------------
