@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored, covering LD shapes that were dropped or inverted:
+
+    * a rung terminating in a jump - the guard contact and the jump both
+      vanished from the ST, and the diagram drew ">>?" with the target lost
+    * a label, so a reader can see where the jump lands
+    * inVariable negated="true" wired to a block pin - the NOT was dropped,
+      silently inverting a block parameter
+    * an assignment written straight onto a block output pin - drawn in the
+      diagram but absent from the ST, which is the half reviewers are told
+      to trust
+    * a rung storing its result through an outVariable element - the store
+      vanished from the ST entirely, and a negated one lost its NOT
+    * the negation bubble on a block's own pins: a negated power input and a
+      negated output pin with an inline assignment both inverted silently
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="greenforge-labs" productName="codescribe-fixture" productVersion="1"
+              creationDateTime="2020-01-01T00:00:00"/>
+  <contentHeader name="LadderFidelityFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1"/></fbd>
+      <ld><scaling x="1" y="1"/></ld>
+      <sfc><scaling x="1" y="1"/></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="LD_FIDELITY" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="xGo">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xStart">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xManual">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xDone">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="iCount">
+              <type><INT/></type>
+            </variable>
+            <variable name="ctr">
+              <type><derived name="CTU"/></type>
+            </variable>
+            <variable name="xPress">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xStop">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xRun">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xCool">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="tmr2">
+              <type><derived name="TON"/></type>
+            </variable>
+            <variable name="xB">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xGo2">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xFin">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="tmrA">
+              <type><derived name="TON"/></type>
+            </variable>
+            <variable name="ctr2">
+              <type><derived name="CTU"/></type>
+            </variable>
+            <variable name="tmrD">
+              <type><derived name="TON"/></type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <LD>
+
+            <!-- Network 1: a guarded jump. IF xGo THEN JMP SKIP -->
+            <leftPowerRail localId="1">
+              <position x="10" y="10"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="2" negated="false">
+              <position x="40" y="10"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="1"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xGo</variable>
+            </contact>
+            <jump localId="3" label="SKIP">
+              <position x="90" y="10"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="2"/>
+              </connectionPointIn>
+            </jump>
+
+            <!-- Network 2: the jump target -->
+            <label localId="4" label="SKIP">
+              <position x="10" y="40"/>
+            </label>
+
+            <!-- Network 3: a counter with a negated parameter pin and an
+                 assignment written straight onto its CV output pin -->
+            <leftPowerRail localId="5">
+              <position x="10" y="70"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="6" negated="false">
+              <position x="40" y="70"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="5"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xStart</variable>
+            </contact>
+            <inVariable localId="7" negated="true">
+              <position x="40" y="100"/>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <expression>xManual</expression>
+            </inVariable>
+            <block localId="8" typeName="CTU" instanceName="ctr">
+              <position x="90" y="70"/>
+              <inputVariables>
+                <variable formalParameter="CU">
+                  <connectionPointIn>
+                    <relPosition x="0" y="10"/>
+                    <connection refLocalId="6"/>
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="RESET">
+                  <connectionPointIn>
+                    <relPosition x="0" y="20"/>
+                    <connection refLocalId="7"/>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Q">
+                  <connectionPointOut><relPosition x="40" y="10"/></connectionPointOut>
+                </variable>
+                <variable formalParameter="CV">
+                  <connectionPointOut>
+                    <relPosition x="40" y="20"/>
+                    <expression>iCount</expression>
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <coil localId="9" negated="false">
+              <position x="150" y="70"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="8" formalParameter="Q"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xDone</variable>
+            </coil>
+            <rightPowerRail localId="10">
+              <position x="190" y="70"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="9"/>
+              </connectionPointIn>
+            </rightPowerRail>
+
+            <!-- Network 4: a rung storing through a negated outVariable -->
+            <leftPowerRail localId="11">
+              <position x="10" y="130"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="12" negated="false">
+              <position x="40" y="130"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="11"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xPress</variable>
+            </contact>
+            <outVariable localId="13" negated="true">
+              <position x="90" y="130"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="12"/>
+              </connectionPointIn>
+              <expression>xStop</expression>
+            </outVariable>
+
+            <!-- Network 5: negation bubbles on the block's own pins - a
+                 negated power input and a negated, assigned output -->
+            <leftPowerRail localId="14">
+              <position x="10" y="160"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="15" negated="false">
+              <position x="40" y="160"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="14"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xRun</variable>
+            </contact>
+            <block localId="16" typeName="TON" instanceName="tmr2">
+              <position x="90" y="160"/>
+              <inputVariables>
+                <variable formalParameter="IN" negated="true">
+                  <connectionPointIn>
+                    <relPosition x="0" y="10"/>
+                    <connection refLocalId="15"/>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Q" negated="true">
+                  <connectionPointOut>
+                    <relPosition x="40" y="10"/>
+                    <expression>xCool</expression>
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+
+            <!-- Network 6: a negated block output consumed through a side pin
+                 (tmrA.Q into ctr2's RESET) and a negated wired output feeding
+                 a coil (ctr2.Q) - both consumer paths must keep the NOT -->
+            <leftPowerRail localId="20">
+              <position x="10" y="220"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="21" negated="false">
+              <position x="40" y="250"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="20"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xB</variable>
+            </contact>
+            <block localId="22" typeName="TON" instanceName="tmrA">
+              <position x="90" y="250"/>
+              <inputVariables>
+                <variable formalParameter="IN">
+                  <connectionPointIn>
+                    <relPosition x="0" y="10"/>
+                    <connection refLocalId="21"/>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Q" negated="true">
+                  <connectionPointOut><relPosition x="40" y="10"/></connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <contact localId="23" negated="false">
+              <position x="40" y="220"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="20"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xGo2</variable>
+            </contact>
+            <block localId="24" typeName="CTU" instanceName="ctr2">
+              <position x="150" y="220"/>
+              <inputVariables>
+                <variable formalParameter="CU">
+                  <connectionPointIn>
+                    <relPosition x="0" y="10"/>
+                    <connection refLocalId="23"/>
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="RESET">
+                  <connectionPointIn>
+                    <relPosition x="0" y="20"/>
+                    <connection refLocalId="22" formalParameter="Q"/>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Q" negated="true">
+                  <connectionPointOut><relPosition x="40" y="10"/></connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <coil localId="25" negated="false">
+              <position x="210" y="220"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="24" formalParameter="Q"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xFin</variable>
+            </coil>
+            <rightPowerRail localId="26">
+              <position x="250" y="220"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="25"/>
+              </connectionPointIn>
+            </rightPowerRail>
+
+            <!-- Network 7: a negated power pin fed straight from the rail -
+                 the inversion must be stated even with no rung condition -->
+            <leftPowerRail localId="30">
+              <position x="10" y="280"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <block localId="31" typeName="TON" instanceName="tmrD">
+              <position x="90" y="280"/>
+              <inputVariables>
+                <variable formalParameter="IN" negated="true">
+                  <connectionPointIn>
+                    <relPosition x="0" y="10"/>
+                    <connection refLocalId="30"/>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Q">
+                  <connectionPointOut><relPosition x="40" y="10"/></connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+
+          </LD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+</project>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><FBD>
+<inVariable localId="1"><connectionPointOut/><expression>xIn</expression></inVariable>
+<block localId="3" typeName="F_SPLIT"><inputVariables><variable formalParameter="IN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Q"><connectionPointOut/></variable><variable formalParameter="R"><connectionPointOut/></variable></outputVariables></block>
+<outVariable localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn><expression>xA</expression></outVariable>
+<outVariable localId="5"><connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn><expression>xB</expression></outVariable>
+<outVariable localId="6"><connectionPointIn><connection refLocalId="3" formalParameter="R"/></connectionPointIn><expression>nC</expression></outVariable>
+</FBD></body></pou></pous></types></project>

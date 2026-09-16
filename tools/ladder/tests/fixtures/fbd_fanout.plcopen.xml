@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored, modelled on a shape that is everywhere in real FBD programs
+  and was rendered wrongly: one source driving several outputs.
+
+  CODESYS draws that as a single network with the wire branching. Treating
+  each output as its own network split every one of them in two, wrote the
+  shared expression out twice, and left the network numbering disagreeing
+  with the editor - which is the first thing a reviewer compares against.
+
+  Network 2 is the sharper case: a function block driving two outputs is
+  called once in the program, so emitting the call twice would misstate it.
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <contentHeader name="FanoutFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1" /></fbd>
+      <ld><scaling x="1" y="1" /></ld>
+      <sfc><scaling x="1" y="1" /></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous>
+      <pou name="FANOUT" pouType="program">
+        <interface />
+        <body>
+          <FBD>
+
+            <!-- Network 1: one OR feeding a plain and a negated output -->
+            <comment localId="1" height="0" width="0">
+              <position x="0" y="0" />
+              <content>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Conveyor off is the opposite of conveyor on</xhtml>
+              </content>
+            </comment>
+            <inVariable localId="2">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Flags.FwdSolOn</expression>
+            </inVariable>
+            <inVariable localId="3">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Flags.RevSolOn</expression>
+            </inVariable>
+            <block localId="4" typeName="OR">
+              <position x="0" y="0" />
+              <inputVariables>
+                <variable formalParameter="In1">
+                  <connectionPointIn><connection refLocalId="2" /></connectionPointIn>
+                </variable>
+                <variable formalParameter="In2">
+                  <connectionPointIn><connection refLocalId="3" /></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables />
+              <outputVariables>
+                <variable formalParameter="Out1"><connectionPointOut /></variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">operator</CallType>
+                </data>
+              </addData>
+            </block>
+            <outVariable localId="5">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="4" formalParameter="Out1" />
+              </connectionPointIn>
+              <expression>Flags.ConvOn</expression>
+            </outVariable>
+            <outVariable localId="6" negated="true">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="4" formalParameter="Out1" />
+              </connectionPointIn>
+              <expression>Flags.ConvOff</expression>
+            </outVariable>
+
+            <!-- Network 2: a function block is called once, however many
+                 outputs hang off it -->
+            <comment localId="10" height="0" width="0">
+              <position x="0" y="0" />
+              <content>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Run timer</xhtml>
+              </content>
+            </comment>
+            <inVariable localId="11">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>xRun</expression>
+            </inVariable>
+            <inVariable localId="12">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>T#5S</expression>
+            </inVariable>
+            <block localId="13" typeName="TON" instanceName="TON_0">
+              <position x="0" y="0" />
+              <inputVariables>
+                <variable formalParameter="IN">
+                  <connectionPointIn><connection refLocalId="11" /></connectionPointIn>
+                </variable>
+                <variable formalParameter="PT">
+                  <connectionPointIn><connection refLocalId="12" /></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables />
+              <outputVariables>
+                <variable formalParameter="Q"><connectionPointOut /></variable>
+                <variable formalParameter="ET"><connectionPointOut /></variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">functionblock</CallType>
+                </data>
+              </addData>
+            </block>
+            <outVariable localId="14">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="13" formalParameter="Q" />
+              </connectionPointIn>
+              <expression>Status.Done</expression>
+            </outVariable>
+            <outVariable localId="15">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="13" formalParameter="Q" />
+              </connectionPointIn>
+              <expression>Status.Latched</expression>
+            </outVariable>
+
+            <!-- Network 3: an ordinary single-output network must not be
+                 swept into either of the above -->
+            <inVariable localId="20">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Raw.Level</expression>
+            </inVariable>
+            <outVariable localId="21">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="20" /></connectionPointIn>
+              <expression>Status.Level</expression>
+            </outVariable>
+
+          </FBD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+</project>

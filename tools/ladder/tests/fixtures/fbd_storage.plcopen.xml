@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored for review item 4.4: the other half of the set/reset shapes.
+
+    * an outVariable with storage="reset", the counterpart of the storage="set"
+      in 36-2-fbd-two-output-pins.xml
+    * a block output pin carrying storage="set" on an inline assignment -
+      the same store written on the pin instead of on a wire
+
+  A store held until something resets it must not read as a plain assignment:
+  that says it clears the moment its input drops, which is the opposite of
+  what the program does.
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="greenforge-labs" productName="codescribe-fixture" productVersion="1"
+              creationDateTime="2020-01-01T00:00:00"/>
+  <contentHeader name="StorageFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1"/></fbd>
+      <ld><scaling x="1" y="1"/></ld>
+      <sfc><scaling x="1" y="1"/></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="FBD_STORAGE" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="tmr"><type><derived name="TON"/></type></variable>
+            <variable name="pulse"><type><derived name="TP"/></type></variable>
+          </localVars>
+        </interface>
+        <body>
+          <FBD>
+            <!-- Network 1: a reset store -->
+            <inVariable localId="1">
+              <position x="0" y="0"/>
+              <connectionPointOut/>
+              <expression>xClear</expression>
+            </inVariable>
+            <outVariable localId="2" storage="reset">
+              <position x="0" y="0"/>
+              <connectionPointIn><connection refLocalId="1"/></connectionPointIn>
+              <expression>xLatched</expression>
+            </outVariable>
+
+            <!-- Network 2: the same store written on the output pin itself -->
+            <inVariable localId="10">
+              <position x="0" y="0"/>
+              <connectionPointOut/>
+              <expression>xRun</expression>
+            </inVariable>
+            <inVariable localId="11">
+              <position x="0" y="0"/>
+              <connectionPointOut/>
+              <expression>T#3S</expression>
+            </inVariable>
+            <block localId="12" typeName="TON" instanceName="tmr">
+              <position x="0" y="0"/>
+              <inputVariables>
+                <variable formalParameter="IN">
+                  <connectionPointIn><connection refLocalId="10"/></connectionPointIn>
+                </variable>
+                <variable formalParameter="PT">
+                  <connectionPointIn><connection refLocalId="11"/></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Q" storage="set">
+                  <connectionPointOut><expression>xHeld</expression></connectionPointOut>
+                </variable>
+                <variable formalParameter="ET">
+                  <connectionPointOut/>
+                </variable>
+              </outputVariables>
+            </block>
+
+            <!-- Network 3: a box whose title needs an odd number of padding
+                 spaces. CPython 3 and IronPython 2.7 split an odd remainder
+                 on opposite sides, so a file rendered inside CODESYS and the
+                 same file rendered by the dev CLI differed by one column
+                 here. -->
+            <inVariable localId="20">
+              <position x="0" y="0"/>
+              <connectionPointOut/>
+              <expression>xGo</expression>
+            </inVariable>
+            <inVariable localId="22">
+              <position x="0" y="0"/>
+              <connectionPointOut/>
+              <expression>xEnableIn</expression>
+            </inVariable>
+            <block localId="21" typeName="TP" instanceName="pulse">
+              <position x="0" y="0"/>
+              <inputVariables>
+                <variable formalParameter="IN">
+                  <connectionPointIn><connection refLocalId="20"/></connectionPointIn>
+                </variable>
+                <variable formalParameter="PT">
+                  <connectionPointIn/>
+                </variable>
+                <variable formalParameter="ENABLEIN">
+                  <connectionPointIn><connection refLocalId="22"/></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Q">
+                  <connectionPointOut><expression>xPulseOut</expression></connectionPointOut>
+                </variable>
+                <variable formalParameter="ET">
+                  <connectionPointOut/>
+                </variable>
+              </outputVariables>
+            </block>
+          </FBD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+  <instances><configurations/></instances>
+</project>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored, in the shape CODESYS writes for a graphical POU's network
+  list. Only the parts native_networks.read_networks looks at are here: the
+  flags, the comment, the title, the label, and whether the network holds any
+  items at all.
+
+  Four networks, one of each kind the alignment has to tell apart:
+    1 logic, with a comment
+    2 out-commented, and it still has a comment - this is the network PLCopen
+      leaves out entirely, comment included
+    3 empty, carrying a jump label
+    4 empty, carrying only a comment
+
+  Pinned to a fixture rather than to a real project, because a real project
+  gets edited: a network switched back on in CODESYS should not fail a test
+  about parsing flags.
+-->
+<ObjectList>
+  <List2 Name="NetworkList">
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string">// counts the pulses</Single>
+      <Single Name="Title" Type="string">Pulse counter</Single>
+      <Single Name="Label" Type="string"></Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems">
+        <Single Type="{acfc6f68-8e3a-4af5-bf81-3dd512095a46}" Method="IArchivable">
+          <Single Name="BoxType" Type="string">CTU</Single>
+        </Single>
+      </List2>
+    </Single>
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string">// switched off while we test the interlock</Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string"></Single>
+      <Single Name="OutCommented" Type="bool">True</Single>
+      <List2 Name="NetworkItems">
+        <Single Type="{acfc6f68-8e3a-4af5-bf81-3dd512095a46}" Method="IArchivable">
+          <Single Name="BoxType" Type="string">TON</Single>
+        </Single>
+      </List2>
+    </Single>
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string">RETRY</Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems" />
+    </Single>
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string">SECTION: shutdown</Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string"></Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems" />
+    </Single>
+  </List2>
+</ObjectList>

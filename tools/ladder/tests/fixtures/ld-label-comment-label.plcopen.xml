@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<label localId="1" label="LA"><position x="0" y="0"/></label>
+<comment localId="2" height="0" width="0"><content><xhtml xmlns="http://www.w3.org/1999/xhtml">second one</xhtml></content></comment>
+<label localId="3" label="LB"><position x="0" y="0"/></label>
+<leftPowerRail localId="10"><connectionPointOut/></leftPowerRail>
+<contact localId="11"><connectionPointIn><connection refLocalId="10"/></connectionPointIn><connectionPointOut/><variable>xA</variable></contact>
+<coil localId="12"><connectionPointIn><connection refLocalId="11"/></connectionPointIn><connectionPointOut/><variable>oA</variable></coil>
+<rightPowerRail localId="13"><connectionPointIn><connection refLocalId="12"/></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

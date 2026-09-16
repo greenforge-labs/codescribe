@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xGo</variable></contact>
+<jump localId="2" label="LONELY2"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></jump>
+<label localId="10" label="LONELY1"><position x="0" y="0"/></label>
+<label localId="11" label="LONELY2"><position x="0" y="0"/></label>
+<leftPowerRail localId="20"><connectionPointOut/></leftPowerRail>
+<contact localId="21"><connectionPointIn><connection refLocalId="20"/></connectionPointIn><connectionPointOut/><variable>xA</variable></contact>
+<coil localId="22"><connectionPointIn><connection refLocalId="21"/></connectionPointIn><connectionPointOut/><variable>oA</variable></coil>
+<rightPowerRail localId="23"><connectionPointIn><connection refLocalId="22"/></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

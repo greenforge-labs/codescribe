@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>c</variable></contact>
+<coil localId="3"><connectionPointIn><connection refLocalId="1"/><connection refLocalId="1"/></connectionPointIn><connectionPointOut/><variable>xA</variable></coil>
+<rightPowerRail localId="9"><connectionPointIn></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

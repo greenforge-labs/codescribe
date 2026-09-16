@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjectList>
+  <List2 Name="NetworkList">
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string"></Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems"><Single Type="{x}" Method="IArchivable"><Single Name="BoxType" Type="string">Contact</Single></Single></List2>
+    </Single>
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string">LATER</Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems"><Single Type="{x}" Method="IArchivable"><Single Name="BoxType" Type="string">Contact</Single></Single></List2>
+    </Single>
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string">LONELY</Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems" />
+    </Single>
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string"></Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems"><Single Type="{x}" Method="IArchivable"><Single Name="BoxType" Type="string">Contact</Single></Single></List2>
+    </Single>
+    <Single Type="{d9a99d73-b633-47db-b876-a752acb25871}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string"></Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems"><Single Type="{x}" Method="IArchivable"><Single Name="BoxType" Type="string">Contact</Single></Single></List2>
+    </Single>
+  </List2>
+</ObjectList>

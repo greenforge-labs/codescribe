@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars></localVars></interface><body><FBD>
+<inVariable localId="1"><connectionPointOut/><expression>xRun</expression></inVariable>
+<block localId="3" typeName="EXECUTE"><inputVariables><variable formalParameter="EN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="ENO"><connectionPointOut/></variable></outputVariables><addData><data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation"><CallType xmlns="">execute</CallType></data><data name="http://www.3s-software.com/plcopenxml/stcode" handleUnknown="implementation"><STCode xmlns="">a := 1;
+b := 2;</STCode></data></addData></block>
+<outVariable localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="ENO"/></connectionPointIn><expression>xRan</expression></outVariable>
+
+</FBD></body></pou></pous></types></project>

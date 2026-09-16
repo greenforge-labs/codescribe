@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars><variable name="ctr"><type><derived name="CTU"/></type></variable></localVars></interface><body><FBD>
+<inVariable localId="1"><connectionPointOut/><expression>xPulse</expression></inVariable>
+<inVariable localId="2"><connectionPointOut/><expression>xRst</expression></inVariable>
+<inVariable localId="3"><connectionPointOut/><expression>10</expression></inVariable>
+<block localId="4" typeName="CTU" instanceName="ctr"><inputVariables><variable formalParameter="CU"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="RESET"><connectionPointIn><connection refLocalId="2"/></connectionPointIn></variable><variable formalParameter="PV"><connectionPointIn><connection refLocalId="3"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Q"><connectionPointOut/></variable><variable formalParameter="CV"><connectionPointOut/></variable></outputVariables></block>
+<inVariable localId="6"><connectionPointOut/><expression>5</expression></inVariable>
+<block localId="7" typeName="GT"><inputVariables><variable formalParameter="In1"><connectionPointIn><connection refLocalId="4" formalParameter="CV"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="6"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<block localId="8" typeName="AND"><inputVariables><variable formalParameter="In1"><connectionPointIn><connection refLocalId="4" formalParameter="Q"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="7" formalParameter="Out1"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<outVariable localId="9"><connectionPointIn><connection refLocalId="8" formalParameter="Out1"/></connectionPointIn><expression>xAlarm</expression></outVariable>
+
+</FBD></body></pou></pous></types></project>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars><variable name="fb"><type><derived name="FB_Buf"/></type></variable></localVars></interface><body><FBD>
+<inVariable localId="1"><connectionPointOut/><expression>xStart</expression></inVariable>
+<inVariable localId="2"><connectionPointOut/><expression>arrData</expression></inVariable>
+<block localId="3" typeName="FB_Buf" instanceName="fb">
+  <inputVariables><variable formalParameter="IN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable></inputVariables>
+  <inOutVariables><variable formalParameter="pBuf"><connectionPointIn><connection refLocalId="2"/></connectionPointIn><connectionPointOut/></variable></inOutVariables>
+  <outputVariables><variable formalParameter="Q"><connectionPointOut/></variable></outputVariables>
+</block>
+<outVariable localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn><expression>xDone</expression></outVariable>
+<outVariable localId="5"><connectionPointIn><connection refLocalId="3" formalParameter="pBuf"/></connectionPointIn><expression>arrCopy</expression></outVariable>
+</FBD></body></pou></pous></types></project>

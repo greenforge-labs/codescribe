@@ -1,0 +1,124 @@
+<ExportFile>
+  <StructuredView Guid="{d9b2b2cc-ea99-4c3b-aa42-1e5c49e65b84}">
+<Single xml:space="preserve" Type="{3daac5e4-660e-42e4-9cea-3711b98bfb63}" Method="IArchivable">
+  <Null Name="Profile" />
+  <List2 Name="EntryList">
+    <Single Type="{6198ad31-4b98-445c-927f-3258a0e82fe3}" Method="IArchivable">
+      <Single Name="IsRoot" Type="bool">True</Single>
+      <Single Name="MetaObject" Type="{81297157-7ec9-45ce-845e-84cab2b88ade}" Method="IArchivable">
+        <Single Name="Guid" Type="System.Guid">b0d50df9-cc5b-471e-b9d7-197d5a99c3a1</Single>
+        <Single Name="ParentGuid" Type="System.Guid">f9c00bdb-2f18-4e80-863e-6da977e8f304</Single>
+        <Single Name="Name" Type="string">TaskConfiguration</Single>
+        <Dictionary Type="{2c41fa04-1834-41c1-816e-303c7aa2c05b}" Name="Properties" />
+        <Single Name="TypeGuid" Type="System.Guid">ae1de277-a207-4a28-9efb-456c06bd52f3</Single>
+        <Null Name="EmbeddedTypeGuids" />
+        <Single Name="Timestamp" Type="long">0</Single>
+      </Single>
+      <Single Name="Object" Type="{ae1de277-a207-4a28-9efb-456c06bd52f3}" Method="IArchivable">
+        <List Name="TaskConfigurationList" Type="{75fc8bb3-c744-4e99-b6eb-bb2796e19500}" />
+        <List Name="SystemEventList" Type="{7be1d5a4-d68c-4bc6-a7e5-e42a0ab42a09}" />
+        <Null Name="ExternalEventList" />
+        <Single Name="enum_guid" Type="System.Guid">829378c7-1267-51f4-b4ac-521cf1d5bbf9</Single>
+        <Single Name="jitter_distribution_guid" Type="System.Guid">53ecd2e5-d70a-5903-bab3-942f6b111150</Single>
+        <Single Name="task_struct_guid" Type="System.Guid">ccd76387-5c50-5aed-90e7-2fad510510da</Single>
+        <Single Name="task_config_info_guid" Type="System.Guid">837ac483-1677-559b-8066-58eb0bf867af</Single>
+        <Single Name="task_global_vars_guid" Type="System.Guid">2fce9459-f52d-5106-a284-5b1ba25f58cc</Single>
+        <Single Name="setup_call_pou_guid" Type="System.Guid">6aaa34df-c788-548e-a605-796ed125fcb6</Single>
+        <Single Name="sys_setup_pou_guid" Type="System.Guid">1b7debd5-2424-518a-a4cc-7b6538957411</Single>
+        <Single Name="profiler_global_vars_guid" Type="System.Guid">375b88a9-fec3-53fd-966d-d87dfdb105c1</Single>
+        <Single Name="profiler_init_code_guid" Type="System.Guid">ccbac5e1-21c2-5fc1-94ff-1d5855925882</Single>
+        <Single Name="profiler_cycle_code_guid" Type="System.Guid">f4c5c858-7cb3-5803-9646-9fe3082d62bc</Single>
+        <Single Name="profiler_fb_guid" Type="System.Guid">d5cd0959-13c9-5347-b8d1-315299b2535a</Single>
+        <Single Name="profiler_method_reset_guid" Type="System.Guid">ad2fce79-1837-5391-9e37-1df24b2f70d1</Single>
+        <Single Name="profiler_method_starttiming_guid" Type="System.Guid">2433f898-297a-5757-be54-a58e387c5752</Single>
+        <Single Name="profiler_method_stoptiming_guid" Type="System.Guid">05fb4d09-8e96-5918-a033-9002184f3456</Single>
+        <Single Name="profiler_iectaskgetprofiling_guid" Type="System.Guid">30434813-fff6-5bf5-92c8-9bd7c86e4f0c</Single>
+        <Null Name="alSysEventList" />
+        <Single Name="sysevents_global_vars_guid" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+        <Single Name="sysevents_functionsblock_guid" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+        <Single Name="sysevents_fbinit_method_guid" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+        <Single Name="sysevents_fbexit_method_guid" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+        <Single Name="sysevents_eventcallback_method_guid" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+        <Single Name="sysevents_resetget_property_guid" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+        <Array Name="parent_tasks" Type="System.Guid" />
+        <Single Name="device_app" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+      </Single>
+      <Single Name="ParentSVNodeGuid" Type="System.Guid">f9c00bdb-2f18-4e80-863e-6da977e8f304</Single>
+      <Array Name="Path" Type="string">
+        <Single Type="string">StandardPLC</Single>
+        <Single Type="string">PLC Logic</Single>
+        <Single Type="string">Application</Single>
+      </Array>
+      <Single Name="Index" Type="int">-1</Single>
+    </Single>
+    <Single Type="{6198ad31-4b98-445c-927f-3258a0e82fe3}" Method="IArchivable">
+      <Single Name="IsRoot" Type="bool">False</Single>
+      <Single Name="MetaObject" Type="{81297157-7ec9-45ce-845e-84cab2b88ade}" Method="IArchivable">
+        <Single Name="Guid" Type="System.Guid">12674cf4-d25e-4151-96b2-08a6cc6d1e52</Single>
+        <Single Name="ParentGuid" Type="System.Guid">b0d50df9-cc5b-471e-b9d7-197d5a99c3a1</Single>
+        <Single Name="Name" Type="string">Main</Single>
+        <Dictionary Type="{2c41fa04-1834-41c1-816e-303c7aa2c05b}" Name="Properties" />
+        <Single Name="TypeGuid" Type="System.Guid">98a2708a-9b18-4f31-82ed-a1465b24fa2d</Single>
+        <Null Name="EmbeddedTypeGuids" />
+        <Single Name="Timestamp" Type="long">0</Single>
+      </Single>
+      <Single Name="Object" Type="{98a2708a-9b18-4f31-82ed-a1465b24fa2d}" Method="IArchivable">
+        <Single Name="Kindoftask" Type="{38cb1f21-e463-4240-9171-f74fb561a060}">Cyclic</Single>
+        <List Name="CustomParameters" Type="{3e5ba045-1fc5-40ec-9ce7-4b62ec8ccfdf}" />
+        <List Name="IntervalParameters" Type="{3e5ba045-1fc5-40ec-9ce7-4b62ec8ccfdf}" />
+        <List Name="EventParameters" Type="{3e5ba045-1fc5-40ec-9ce7-4b62ec8ccfdf}" />
+        <List Name="ExternalEventParameters" Type="{3e5ba045-1fc5-40ec-9ce7-4b62ec8ccfdf}" />
+        <List Name="FreewheelingParameters" Type="{3e5ba045-1fc5-40ec-9ce7-4b62ec8ccfdf}" />
+        <Single Name="Priority" Type="string">1</Single>
+        <Single Name="Watchdog" Type="{97c20fcf-2c50-4dbb-8faa-06ff4f1e4275}" Method="IArchivable">
+          <Single Name="Enabled" Type="bool">True</Single>
+          <Single Name="Time" Type="{68e48988-4399-454b-ae43-e500b779c242}" Method="IArchivable">
+            <Single Name="Time" Type="string">t#18ms</Single>
+            <Single Name="Unit" Type="string"></Single>
+          </Single>
+          <Single Name="Sensitivity" Type="string">1</Single>
+        </Single>
+        <Single Name="Interval" Type="{68e48988-4399-454b-ae43-e500b779c242}" Method="IArchivable">
+          <Single Name="Time" Type="string">t#20ms</Single>
+          <Single Name="Unit" Type="string"></Single>
+        </Single>
+        <Single Name="Event" Type="string"></Single>
+        <Single Name="ExternalEvent" Type="string"></Single>
+        <Single Name="TaskGuid" Type="System.Guid">30e3ab47-1b98-4397-9eff-c6534e91a6b8</Single>
+        <Single Name="EventPOUGuid" Type="System.Guid">205b1f78-9060-49b9-896f-0aab4eb3cc59</Single>
+        <List Name="PouList" Type="{33f568bb-4a2c-48cb-a762-34cca3066d03}">
+          <Single Type="{f194d1ef-7376-42ce-a729-4a5485a97a46}" Method="IArchivable">
+            <Single Name="Name" Type="string">Standard_ST</Single>
+            <Single Name="Comment" Type="string"></Single>
+          </Single>
+          <Single Type="{f194d1ef-7376-42ce-a729-4a5485a97a46}" Method="IArchivable">
+            <Single Name="Name" Type="string">SFC_TEST</Single>
+            <Single Name="Comment" Type="string"></Single>
+          </Single>
+          <Single Type="{f194d1ef-7376-42ce-a729-4a5485a97a46}" Method="IArchivable">
+            <Single Name="Name" Type="string">LD_TEST</Single>
+            <Single Name="Comment" Type="string"></Single>
+          </Single>
+          <Single Type="{f194d1ef-7376-42ce-a729-4a5485a97a46}" Method="IArchivable">
+            <Single Name="Name" Type="string">FB_TESTING</Single>
+            <Single Name="Comment" Type="string"></Single>
+          </Single>
+        </List>
+        <Single Name="Implicit" Type="bool">False</Single>
+        <Single Name="WithinSPSTimeSlicing" Type="bool">True</Single>
+        <Single Name="Core" Type="int">-2</Single>
+        <Single Name="SynchTask" Type="string"></Single>
+      </Single>
+      <Single Name="ParentSVNodeGuid" Type="System.Guid">b0d50df9-cc5b-471e-b9d7-197d5a99c3a1</Single>
+      <Array Name="Path" Type="string">
+        <Single Type="string">StandardPLC</Single>
+        <Single Type="string">PLC Logic</Single>
+        <Single Type="string">Application</Single>
+        <Single Type="string">Task Configuration</Single>
+      </Array>
+      <Single Name="Index" Type="int">-1</Single>
+    </Single>
+  </List2>
+  <Null Name="ProfileName" />
+</Single>  </StructuredView>
+</ExportFile>

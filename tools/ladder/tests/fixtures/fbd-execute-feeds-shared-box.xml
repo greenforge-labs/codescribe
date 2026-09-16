@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars></localVars></interface><body><FBD>
+<inVariable localId="1"><connectionPointOut/><expression>xRun</expression></inVariable>
+<inVariable localId="8"><connectionPointOut/><expression>T#1S</expression></inVariable>
+<block localId="3" typeName="EXECUTE"><inputVariables><variable formalParameter="EN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="ENO"><connectionPointOut/></variable></outputVariables><addData><data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation"><CallType xmlns="">execute</CallType></data><data name="http://www.3s-software.com/plcopenxml/stcode" handleUnknown="implementation"><STCode xmlns="">nCount := nCount + 1;</STCode></data></addData></block>
+<block localId="2" typeName="TON" instanceName="tmr"><inputVariables><variable formalParameter="IN"><connectionPointIn><connection refLocalId="3" formalParameter="ENO"/></connectionPointIn></variable><variable formalParameter="PT"><connectionPointIn><connection refLocalId="8"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Q"><connectionPointOut/></variable><variable formalParameter="ET"><connectionPointOut/></variable></outputVariables></block>
+<outVariable localId="4"><connectionPointIn><connection refLocalId="2" formalParameter="Q"/></connectionPointIn><expression>xA</expression></outVariable>
+<outVariable localId="5"><connectionPointIn><connection refLocalId="2" formalParameter="ET"/></connectionPointIn><expression>tElapsed</expression></outVariable>
+<outVariable localId="6"><connectionPointIn><connection refLocalId="3" formalParameter="ENO"/></connectionPointIn><expression>xRan</expression></outVariable>
+</FBD></body></pou></pous></types></project>

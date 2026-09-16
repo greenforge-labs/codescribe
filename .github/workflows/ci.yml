@@ -13,6 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Fail on non-ASCII bytes in src/*.py
         run: python3 tools/ci/check_ascii.py
+      - name: Compile src files with Python 3
+        run: python3 tools/ci/compile_python3.py
 
   ironpython:
     name: ironpython
@@ -30,3 +32,33 @@ jobs:
       - name: Import smoke test with stubbed scriptengine
         shell: pwsh
         run: .\ipy\net45\ipy.exe tools\ci\import_smoke.py
+
+      # The renderers are destined for src/, so they have to pass under the
+      # same interpreter CODESYS embeds - not just under CI's Python 3.
+      - name: Renderer tests under IronPython 2.7
+        shell: pwsh
+        run: |
+          # A native exe's exit code does not halt a pwsh script, so a failure
+          # in the first suite would otherwise be masked by the second passing.
+          .\ipy\net45\ipy.exe tools\ladder\tests\test_ladder.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\ipy\net45\ipy.exe tools\ladder\tests\test_fbd.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\ipy\net45\ipy.exe tools\ladder\tests\test_export.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # The only host with both XML backends, so the only place their
+          # equivalence can actually be checked.
+          .\ipy\net45\ipy.exe tools\ladder\tests\test_xmlbackend.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+  ladder:
+    name: ladder
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Renderer tests under Python 3
+        run: |
+          python3 tools/ladder/tests/test_ladder.py
+          python3 tools/ladder/tests/test_fbd.py
+          python3 tools/ladder/tests/test_export.py
+          python3 tools/ladder/tests/test_xmlbackend.py

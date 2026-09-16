@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11" creationDateTime="2026-08-04T14:40:27.5703697" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-08-04T14:25:20.5601505" organization="ifm electronic">
+    <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
+    <coordinateInfo>
+      <fbd>
+        <scaling x="1" y="1" />
+      </fbd>
+      <ld>
+        <scaling x="1" y="1" />
+      </ld>
+      <sfc>
+        <scaling x="1" y="1" />
+      </sfc>
+    </coordinateInfo>
+    <addData>
+      <data name="http://www.3s-software.com/plcopenxml/projectinformation" handleUnknown="implementation">
+        <ProjectInformation>
+          <property name="Company" type="string">ifm electronic</property>
+          <property name="Description" type="string">Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</property>
+          <property name="Project" type="string">GraphicalTesting</property>
+          <property name="Released" type="boolean">false</property>
+          <property name="Title" type="string">ifmCR711S_TemplateProject</property>
+          <property name="Version" type="version">2.4.10.0</property>
+        </ProjectInformation>
+      </data>
+    </addData>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous>
+      <pou name="LD_TEST" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="Sensor1">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="Sensor2">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="sensor3">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="PowerOn">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="TON_0">
+              <type>
+                <derived name="TON" />
+              </type>
+            </variable>
+            <variable name="CTU_0">
+              <type>
+                <derived name="CTU" />
+              </type>
+            </variable>
+            <variable name="PowerOff">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <LD>
+            <leftPowerRail localId="0">
+              <position x="0" y="0" />
+              <connectionPointOut formalParameter="none" />
+            </leftPowerRail>
+            <comment localId="1" height="0" width="0">
+              <position x="0" y="0" />
+              <content>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </content>
+            </comment>
+            <vendorElement localId="2">
+              <position x="0" y="0" />
+              <alternativeText>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </alternativeText>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                  <ElementType xmlns="">networktitle</ElementType>
+                </data>
+              </addData>
+            </vendorElement>
+            <contact localId="3" negated="false" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="0" />
+              </connectionPointIn>
+              <connectionPointOut />
+              <variable>Sensor1</variable>
+            </contact>
+            <contact localId="4" negated="false" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="0" />
+              </connectionPointIn>
+              <connectionPointOut />
+              <variable>sensor3</variable>
+            </contact>
+            <contact localId="5" negated="true" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="3" />
+                <connection refLocalId="4" />
+              </connectionPointIn>
+              <connectionPointOut />
+              <variable>Sensor2</variable>
+            </contact>
+            <coil localId="6" negated="false" storage="set">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="5" />
+              </connectionPointIn>
+              <connectionPointOut />
+              <variable>PowerOn</variable>
+            </coil>
+            <coil localId="66" negated="false" storage="none">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="5" />
+              </connectionPointIn>
+              <connectionPointOut />
+              <variable>Lamp</variable>
+            </coil>
+            <comment localId="7" height="0" width="0">
+              <position x="0" y="0" />
+              <content>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </content>
+            </comment>
+            <vendorElement localId="8">
+              <position x="0" y="0" />
+              <alternativeText>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </alternativeText>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                  <ElementType xmlns="">networktitle</ElementType>
+                </data>
+              </addData>
+            </vendorElement>
+            <contact localId="11" negated="false" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="0" />
+              </connectionPointIn>
+              <connectionPointOut />
+              <variable>PowerOn</variable>
+            </contact>
+            <inVariable localId="12">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>T#5S</expression>
+            </inVariable>
+            <block localId="10" typeName="TON" instanceName="TON_0">
+              <position x="0" y="0" />
+              <inputVariables>
+                <variable formalParameter="IN">
+                  <connectionPointIn>
+                    <connection refLocalId="11" />
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="PT">
+                  <connectionPointIn>
+                    <connection refLocalId="12" />
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables />
+              <outputVariables>
+                <variable formalParameter="Q">
+                  <connectionPointOut />
+                </variable>
+                <variable formalParameter="ET">
+                  <connectionPointOut>
+                    <expression />
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">functionblock</CallType>
+                </data>
+              </addData>
+            </block>
+            <contact localId="13" negated="false" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="0" />
+              </connectionPointIn>
+              <connectionPointOut />
+              <variable>PowerOff</variable>
+            </contact>
+            <inVariable localId="14">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>10</expression>
+            </inVariable>
+            <block localId="9" typeName="CTU" instanceName="CTU_0">
+              <position x="0" y="0" />
+              <inputVariables>
+                <variable formalParameter="CU">
+                  <connectionPointIn>
+                    <connection refLocalId="10" formalParameter="Q" />
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="RESET">
+                  <connectionPointIn>
+                    <connection refLocalId="13" />
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="PV">
+                  <connectionPointIn>
+                    <connection refLocalId="14" />
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables />
+              <outputVariables>
+                <variable formalParameter="Q">
+                  <connectionPointOut />
+                </variable>
+                <variable formalParameter="CV">
+                  <connectionPointOut>
+                    <expression />
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">functionblock</CallType>
+                </data>
+              </addData>
+            </block>
+            <coil localId="15" negated="false" storage="reset">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="9" formalParameter="Q" />
+              </connectionPointIn>
+              <connectionPointOut />
+              <variable>PowerOff</variable>
+            </coil>
+            <rightPowerRail localId="2147483646">
+              <position x="0" y="0" />
+              <connectionPointIn />
+            </rightPowerRail>
+          </LD>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>4f4ad042-bbb9-4292-adb4-f91543e47fce</ObjectId>
+          </data>
+        </addData>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations />
+  </instances>
+  <addData>
+    <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
+      <ProjectStructure>
+        <Object Name="LD_TEST" ObjectId="4f4ad042-bbb9-4292-adb4-f91543e47fce" />
+      </ProjectStructure>
+    </data>
+  </addData>
+</project>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars><variable name="tmr"><type><derived name="TON"/></type></variable></localVars></interface><body><FBD>
+<inVariable localId="1"><connectionPointOut/><expression>xIn</expression></inVariable>
+<inVariable localId="2"><connectionPointOut/><expression>T#1s</expression></inVariable>
+<block localId="3" typeName="TON" instanceName="tmr">
+  <inputVariables>
+    <variable formalParameter="IN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable>
+    <variable formalParameter="PT"><connectionPointIn><connection refLocalId="2"/></connectionPointIn></variable>
+  </inputVariables>
+  <inOutVariables/>
+  <outputVariables><variable formalParameter="Q"><connectionPointOut/></variable><variable formalParameter="ET"><connectionPointOut/></variable></outputVariables>
+</block>
+<block localId="5" typeName="AND">
+  <inputVariables>
+    <variable formalParameter="In1"><connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn></variable>
+    <variable formalParameter="In2"><connectionPointIn><connection refLocalId="7"/></connectionPointIn></variable>
+  </inputVariables>
+  <inOutVariables/>
+  <outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables>
+</block>
+<outVariable localId="6"><connectionPointIn><connection refLocalId="5" formalParameter="Out1"/></connectionPointIn><expression>s1</expression></outVariable>
+<block localId="8" typeName="AND">
+  <inputVariables>
+    <variable formalParameter="In1"><connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn></variable>
+    <variable formalParameter="In2"><connectionPointIn><connection refLocalId="7"/></connectionPointIn></variable>
+  </inputVariables>
+  <inOutVariables/>
+  <outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables>
+</block>
+<outVariable localId="9"><connectionPointIn><connection refLocalId="8" formalParameter="Out1"/></connectionPointIn><expression>s2</expression></outVariable>
+<inVariable localId="7"><connectionPointOut/><expression>tmr.ET</expression></inVariable>
+</FBD></body></pou></pous></types></project>

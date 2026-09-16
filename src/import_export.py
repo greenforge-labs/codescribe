@@ -4,6 +4,7 @@ import re
 
 import scriptengine  # type: ignore
 
+from graphical_export import write_rendered_text
 from object_type import ObjectType, get_object_type
 from util import *
 
@@ -101,6 +102,8 @@ def export_pou(child_obj, parent_obj, parent_folder_path, export_child_fn):
             write_st(child_obj, f)
     else:
         export_native(child_obj, parent_obj, parent_folder_path, export_child_fn)
+        # Derived, review-only. The native xml above stays the import source.
+        write_rendered_text(child_obj, os.path.join(parent_folder_path, child_obj.get_name()))
 
     for c in child_obj.get_children():
         export_child_fn(c, child_obj, parent_folder_path)
@@ -200,11 +203,12 @@ def export_method(child_obj, parent_obj, parent_folder_path, export_child_fn):
         ) as f:
             write_st(child_obj, f)
     else:
-        write_native(
-            child_obj,
-            os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name() + ".xml"),
-            recursive=False,
-        )
+        base = os.path.join(parent_folder_path, parent_obj.get_name() + "." + child_obj.get_name())
+        write_native(child_obj, base + ".xml", recursive=False)
+        # member_name: the PLCopen export of a sub-POU wraps it in its parent,
+        # parent body included. Without the name, the rendering draws the
+        # parent's networks under this member's filename.
+        write_rendered_text(child_obj, base, member_name=child_obj.get_name())
 
 
 def import_method_st(child, dir_path, dir_parent_obj, import_dir_fn):
@@ -232,6 +236,10 @@ def _export_member_st_or_xml(child_obj, parent_obj, parent_folder_path, st_suffi
             f.write(child_obj.textual_implementation.text)
     else:
         write_native(child_obj, base + ".xml", recursive=False)
+        # member_name: see export_method. An action's export carries the whole
+        # parent POU - rendering without the name is how the HMI PLC_PRG.ACT_*
+        # dumps came to describe the parent instead of the action.
+        write_rendered_text(child_obj, base, member_name=child_obj.get_name())
 
 
 def export_action(child_obj, parent_obj, parent_folder_path, export_child_fn):
@@ -299,6 +307,123 @@ def import_sub_pou(child, dir_path, dir_parent_obj, import_dir_fn):
     )
 
     parent_obj.import_native(full_path)
+
+
+def _probe_attribute(obj, names):
+    """First truthy attribute from names, swallowing property getters that raise.
+
+    ScriptEngine objects are .NET objects whose property set varies between
+    CODESYS versions, and a property that exists can still throw when read.
+    """
+    for name in names:
+        try:
+            value = getattr(obj, name, None)
+        except Exception:
+            value = None
+        if value:
+            return value
+    return None
+
+
+def _describe_library_reference(reference):
+    """One line for a library reference, from whatever this build exposes.
+
+    The reference object's shape is version-dependent and mostly undocumented,
+    so named attributes are probed and str() is the floor - IronPython renders
+    a .NET object's ToString, which for a reference is its display name.
+    """
+    name = _probe_attribute(reference, ("display_name", "name"))
+    if not name:
+        return u"%s" % (reference,)
+    line = u"%s" % name
+    version = _probe_attribute(reference, ("effective_version", "resolved_version", "version"))
+    if version is not None and (u"%s" % version) not in line:
+        line += u", " + (u"%s" % version)
+    company = _probe_attribute(reference, ("company",))
+    if company is not None and (u"%s" % company) not in line:
+        line += u" (" + (u"%s" % company) + u")"
+    # A placeholder reference displays as "#Util", which pins no version at
+    # all - and the placeholder libraries are exactly the ones a bench check
+    # is most likely to need. Show what it resolves to when the build says.
+    resolution = _probe_attribute(reference, ("effective_resolution", "default_resolution", "resolution"))
+    if resolution is not None and (u"%s" % resolution) not in line:
+        line += u" -> " + (u"%s" % resolution)
+    return line
+
+
+def _library_reference_lines(lib_manager_obj):
+    """One display line per configured library reference, in manager order."""
+    lines = []
+    try:
+        references = lib_manager_obj.references
+    except Exception:
+        references = None
+    if references is not None:
+        for reference in references:
+            lines.append(_describe_library_reference(reference))
+    if lines:
+        return lines
+    # IScriptLibManObject.get_libraries returns the list of library names -
+    # poorer (no per-reference detail to probe) but documented on every build
+    # since V3.5.5.0.
+    return [u"%s" % name for name in lib_manager_obj.get_libraries()]
+
+
+def export_library_manager(child_obj, parent_obj, parent_folder_path, export_child_fn):
+    """Write the library references as a read-only <name>.libraries.txt.
+
+    Library *behaviour* is not exportable - but which exact library versions
+    the project resolves is, and a bench check of a library is only meaningful
+    against the version it characterises. The .txt suffix is ignored by the
+    importer by construction, and the object stays out of
+    OBJECT_TYPE_TO_EXPORT_FUNCTION deliberately: membership there makes
+    remove_tracked_objects delete the manager on import, and nothing would
+    recreate it.
+
+    Best-effort: a failure warns and the export carries on.
+    """
+    try:
+        lines = _library_reference_lines(child_obj)
+        path = os.path.join(parent_folder_path, child_obj.get_name() + ".libraries.txt")
+        with open_utf8(path, "w") as f:
+            f.write(u"(* Library references - regenerated by Export To Files; read-only, never imported *)\n")
+            for line in lines:
+                f.write(line + u"\n")
+    except Exception as error:
+        print("WARNING: could not export the library list of " + child_obj.get_name() + ": " + repr(error))
+
+
+def export_visualisation_manager(child_obj, parent_obj, parent_folder_path, export_child_fn):
+    """Export the visualisation manager natively as a read-only <name>.service.txt.
+
+    The manager carries configuration nothing else exports - the global hotkey
+    (key configuration) mapping among it - but importing it back makes CODESYS
+    raise an interactive overwrite dialog on every later import, which is why
+    it was dropped from the export entirely. Read-only is the middle ground:
+    the .service.txt suffix is ignored by the importer by construction
+    (dispatch is on .xml and .st), the project template still carries the real
+    object, and the configuration becomes reviewable. recursive=True for the
+    target and web visualisations that live under the manager; the key
+    configuration is inside the manager entry itself, not in a child.
+
+    Best-effort: a failure warns and the export carries on.
+    """
+    try:
+        write_native(
+            child_obj, os.path.join(parent_folder_path, child_obj.get_name() + ".service.txt"), recursive=True
+        )
+    except Exception as error:
+        print("WARNING: could not export " + child_obj.get_name() + " read-only: " + repr(error))
+
+
+# Read-only, informational exports for objects the importer must never touch.
+# Deliberately a separate table from OBJECT_TYPE_TO_EXPORT_FUNCTION: that
+# membership is also what remove_tracked_objects deletes on import, and these
+# objects are carried by the project template, not the import.
+SERVICE_EXPORT_FUNCTIONS = {
+    ObjectType.LIBRARY_MANAGER: export_library_manager,
+    ObjectType.VISUALISATION_MANAGER: export_visualisation_manager,
+}
 
 
 OBJECT_TYPE_TO_EXPORT_FUNCTION = {

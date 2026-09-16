@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored, modelled on what export_xml writes for an *action*: PLCopen
+  has no top-level element for one, so CODESYS exports the parent POU with
+  the member nested inside it - parent body included.
+
+  Rendering the pou's own <body> from a file like this draws the parent's
+  networks under the action's filename. That is the foreign-dump defect: the
+  HMI PLC_PRG.ACT_* .txt files each carried a copy of the parent PLC_PRG's
+  dump, and the actions' own logic appeared in no .txt at all.
+
+  The parent network assigns Status.Parent; the action assigns Status.Action.
+  Which of the two shows up in the rendering says whose body was drawn.
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <contentHeader name="ActionMemberFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1" /></fbd>
+      <ld><scaling x="1" y="1" /></ld>
+      <sfc><scaling x="1" y="1" /></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous>
+      <pou name="PLC_TEST" pouType="program">
+        <interface />
+        <actions>
+          <action name="ACT_TEST">
+            <body>
+              <FBD>
+                <inVariable localId="10">
+                  <position x="0" y="0" />
+                  <connectionPointOut />
+                  <expression>xAction</expression>
+                </inVariable>
+                <outVariable localId="11">
+                  <position x="0" y="0" />
+                  <connectionPointIn><connection refLocalId="10" /></connectionPointIn>
+                  <expression>Status.Action</expression>
+                </outVariable>
+              </FBD>
+            </body>
+          </action>
+        </actions>
+        <body>
+          <FBD>
+            <inVariable localId="1">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>xParent</expression>
+            </inVariable>
+            <outVariable localId="2">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="1" /></connectionPointIn>
+              <expression>Status.Parent</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+</project>

@@ -1,0 +1,806 @@
+# REMEMBER: this must stay valid under IronPython 2.7 as well as Python 3.
+"""Render a parsed Ladder Diagram as rungs.
+
+Layout comes from the expression tree only - the x/y coordinates in the source
+XML are deliberately ignored. Dragging a contact sideways in CODESYS must not
+show up as a diff.
+
+Composition works on Blocks: a rectangle of text plus the row index its wire
+enters and leaves on. Series concatenates Blocks horizontally aligned on that
+row; Parallel stacks them and threads a junction column down each side.
+
+Drawing characters come from charset, so the same layout renders as either
+box-drawing Unicode or plain ASCII.
+"""
+
+from __future__ import unicode_literals
+
+import charset
+from layout import Block, centred
+from model import BLOCK, COIL, CONTACT, IN_VARIABLE, Element, Empty, Parallel, Series, box_name, parallel, series
+
+# The letter a contact carries for edge detection, reused on a block's power
+# pin so both read the same.
+EDGE_MARKER = {"rising": "P", "falling": "N"}
+
+POU_TYPE_KEYWORDS = {
+    "program": "PROGRAM",
+    "functionBlock": "FUNCTION_BLOCK",
+    "function": "FUNCTION",
+}
+
+
+def _one_line(text):
+    """Comment text safe to put inside a generated (* *) block.
+
+    A comment can span lines and can contain "*)", either of which would
+    terminate the block early and leave the rest of it as code.
+    """
+    return text.replace("\r", " ").replace("\n", " ").replace("*)", "* )")
+
+
+def network_headers(number, network):
+    """The header lines above one network: its number, title and comment.
+
+    CODESYS keeps a network's title separately from its comment and draws the
+    title above it, as the network's heading. So the title goes on the number
+    line and the comment below it, in the order the editor shows them. A
+    network with no title puts its comment on the number line instead, rather
+    than spending a line on an empty heading - most networks have one or the
+    other, not both.
+    """
+    comment = _one_line(network.comment or "").lstrip("/").strip()
+    title = _one_line(getattr(network, "title", "") or "").lstrip("/").strip()
+
+    header = "(* Network " + str(number)
+    heading = title or comment
+    if heading:
+        header += ": " + heading
+    lines = [header + " *)"]
+    if title and comment:
+        lines.append("(* " + comment + " *)")
+    label = _one_line(getattr(network, "label", "") or "").strip()
+    if label:
+        # CODESYS keeps the label on the network; PLCopen exports it as a
+        # loose element, so it is only known here when the native export has
+        # been read. Written as ST writes it - a jump target is program
+        # structure, and inside (* *) it would read as a comment.
+        lines.append(label + ":")
+    note = getattr(network, "note", None)
+    if note:
+        lines.append("(* " + note + " *)")
+    return lines
+
+
+def _symbol_and_label(element):
+    """The drawn symbol, and the caption sitting above it."""
+    chars = charset.active()
+    kind = element.kind
+
+    if kind == CONTACT:
+        if element.edge == "rising":
+            middle = "P"
+        elif element.edge == "falling":
+            middle = "N"
+        elif element.negated:
+            middle = "/"
+        else:
+            middle = " "
+        return chars["CONTACT_L"] + middle + chars["CONTACT_R"], element.label or ""
+
+    if kind == COIL:
+        if element.storage == "set":
+            middle = "S"
+        elif element.storage == "reset":
+            middle = "R"
+        elif element.negated:
+            middle = "/"
+        else:
+            middle = " "
+        return "(" + middle + ")", element.label or ""
+
+    if kind == "jump":
+        return ">>" + (element.label or "?"), ""
+
+    if kind == "return":
+        return "<RETURN>", ""
+
+    if kind == "label":
+        # A jump target: a marker in the rung order, not a symbol on a wire.
+        return (element.label or "?") + ":", ""
+
+    # In/out variables and anything unrecognised draw as a named box so
+    # unhandled logic is visible rather than silently dropped. A negated
+    # variable spells its NOT out - there is no bubble to draw on a box.
+    label = element.label or "?"
+    if element.storage == "set":
+        # The same marker a set coil carries: this store holds until a reset.
+        label = "(S) " + label
+    elif element.storage == "reset":
+        label = "(R) " + label
+    elif element.negated:
+        label = "NOT " + label
+    return "[" + label + "]", ""
+
+
+def _pin_arrow(box, pin):
+    """The inline form, for a store on the pin the rung's wire leaves by.
+
+    "=o>" is "=>" with the negation bubble: the pin stores its inverse. "=S>"
+    and "=R>" are the set and reset a pin can carry, exactly as a coil does.
+    """
+    storage = box.stored_outputs.get(pin)
+    if storage == "set":
+        return " =S> "
+    if storage == "reset":
+        return " =R> "
+    return " =o> " if pin in box.negated_outputs else " => "
+
+
+def _pin_head(box, pin):
+    """The arrow head on a store hung off an output pin on its own wire.
+
+    The same heads a coil carries: "o>" for the negation bubble, "(S)>" and
+    "(R)>" for a set and a reset.
+    """
+    storage = box.stored_outputs.get(pin)
+    if storage == "set":
+        return "(S)> "
+    if storage == "reset":
+        return "(R)> "
+    return "o> " if pin in box.negated_outputs else "> "
+
+
+def _pin_feed_symbols(expr):
+    """A side pin's contact feed as drawn contacts, e.g. "PowerOff |P|".
+
+    The contact a reset or enable reads is shown as the contact it is - its
+    label and its symbol - wired into the pin, rather than flattened into a
+    caption like "R(PowerOff)".
+    """
+    if isinstance(expr, Element) and expr.kind == CONTACT:
+        symbol, label = _symbol_and_label(expr)
+        return (label + " " + symbol) if label else symbol
+    if isinstance(expr, Series):
+        parts = [_pin_feed_symbols(item) for item in expr.items if not isinstance(item, Empty)]
+        return " ".join(part for part in parts if part)
+    if isinstance(expr, Parallel):
+        return "(" + " / ".join(_pin_feed_symbols(branch) for branch in expr.branches) + ")"
+    return ""
+
+
+def _render_block(element):
+    """Draw a function block as a pin box.
+
+    The power pin sorts first, so the wire enters and leaves on the same row.
+    Only pins that are genuinely wired get a tee on the box edge; a
+    parameterised or unconsumed pin leaves the wall unbroken.
+    """
+    chars = charset.active()
+
+    # The value feeding a side pin is drawn to the left of the box, on a wire
+    # into the pin, the way the editor draws it and the way the FBD renderer
+    # already does. Written inside as "PT := T#5S" it reads as part of the pin
+    # name, and it widens the box by the length of every value in it.
+    left = []
+    wired = []
+    values = []
+    for pin, label in element.input_pins:
+        left.append(pin or "?")
+        # A label of None is the power pin - it is wired, not parameterised.
+        wired.append(label is None)
+        if pin in element.pin_feeds:
+            # A contact reset or enable, drawn as the contact it is.
+            values.append(_pin_feed_symbols(element.pin_feeds[pin]))
+        else:
+            values.append("" if label is None else (label or ""))
+
+    # A store written on an output pin hangs off that pin on a wire of its
+    # own, as CODESYS draws it. Writing it inside the box put the target
+    # variable in among the pin names, where it reads as another pin.
+    right = []
+    tails = []
+    for index, pin_and_assignment in enumerate(element.output_pins):
+        pin, assigned = pin_and_assignment
+        text = pin or "?"
+        wired_out = element.output_wired and pin == element.active_output
+        tail = ""
+        if assigned and index > 0:
+            # Hung off the pin, as CODESYS draws it. Only below the first row:
+            # that one carries the rung's own wire onward to the rail, and a
+            # store sharing it would read as the rung running through it.
+            tail = chars["H"] * 3 + _pin_head(element, pin) + assigned
+        elif assigned:
+            text += _pin_arrow(element, pin) + assigned
+        elif pin in element.negated_outputs and not wired_out:
+            # A wired pin draws its bubble on the box edge instead - one
+            # bubble, not two.
+            text += " o"
+        right.append(text)
+        tails.append(tail)
+
+    rows = max(len(left), len(right), 1)
+    left += [""] * (rows - len(left))
+    wired += [False] * (rows - len(wired))
+    values += [""] * (rows - len(values))
+    right += [""] * (rows - len(right))
+    tails += [""] * (rows - len(tails))
+
+    title = element.title
+    # An EXECUTE box carries its inline ST as its body: the lines sit inside
+    # the box, below the pins, and widen it to the longest of them. Tabs are
+    # expanded to spaces so the box's right wall stays straight - a tab counts
+    # as one character but draws as several.
+    code = [line.expandtabs(4) for line in element.st_code]
+    inner = max(
+        [len(title)] + [len(left[i]) + 3 + len(right[i]) for i in range(rows)] + [len(line) + 2 for line in code]
+    )
+
+    # Two columns to the left of the box: the widest value, then a short wire
+    # into the pin. The power pin's row is all wire - the rung feeds that one.
+    lead = max([len(value) for value in values] + [0])
+    lead = lead + 2 if lead else 0
+
+    def feed(index):
+        if not lead:
+            return ""
+        if wired[index]:
+            return chars["H"] * lead
+        value = values[index]
+        if not value:
+            return " " * lead
+        return value + chars["H"] * (lead - len(value))
+
+    lines = [" " * lead + centred(title, inner + 2)]
+    lines.append(" " * lead + chars["TL"] + chars["H"] * inner + chars["TR"])
+    for index in range(rows):
+        gap = inner - len(left[index]) - len(right[index])
+        # A pin fed from the left breaks the wall, whether the rung feeds it
+        # or a value does. A pin with nothing on it leaves the wall unbroken.
+        left_edge = chars["PIN_L"] if (wired[index] or values[index]) else chars["V"]
+        if wired[index] and element.power_edge in EDGE_MARKER:
+            # The P or N on the power pin, drawn on the box wall in the same
+            # place the bubble goes and the same letter a contact carries.
+            left_edge = EDGE_MARKER[element.power_edge]
+        elif wired[index] and element.power_negated:
+            # The negation bubble on the power pin, drawn on the box wall.
+            left_edge = "o"
+        elif left[index] in element.pin_marks:
+            # The bubble or P/N a side pin carries itself, on the wall after
+            # the contact that feeds it - the same place the power pin's goes.
+            negated, edge = element.pin_marks[left[index]]
+            left_edge = EDGE_MARKER[edge] if edge in EDGE_MARKER else "o"
+        # Only the active output continues onward, and only if consumed - but
+        # a pin with a store on it breaks the wall for that wire too.
+        onward = index == 0 and element.output_wired
+        right_edge = chars["PIN_R"] if (onward or tails[index]) else chars["V"]
+        if onward and element.active_output in element.negated_outputs:
+            right_edge = "o"
+        lines.append(feed(index) + left_edge + left[index] + " " * gap + right[index] + right_edge + tails[index])
+    for line in code:
+        # A body line of an EXECUTE box, inside the box below the pins.
+        lines.append(" " * lead + chars["V"] + " " + line + " " * (inner - len(line) - 1) + chars["V"])
+    lines.append(" " * lead + chars["BL"] + chars["H"] * inner + chars["BR"])
+
+    # Row 0 is the title and row 1 the top border, so the first pin is row 2.
+    connect_row = 2
+
+    # A lead-in and lead-out stub, so back-to-back boxes do not fuse into one
+    # unreadable run of border characters.
+    stubbed = []
+    for index, line in enumerate(lines):
+        stub = chars["H"] if index == connect_row else " "
+        stubbed.append(stub + line + stub)
+
+    return Block(stubbed, connect_row)
+
+
+def _render_element(element):
+    if element.kind == BLOCK:
+        return _render_block(element)
+
+    chars = charset.active()
+    symbol, label = _symbol_and_label(element)
+    width = max(len(label) + 2, len(symbol) + 4)
+
+    lead = (width - len(symbol)) // 2
+    symbol_line = chars["H"] * lead + symbol + chars["H"] * (width - len(symbol) - lead)
+
+    lead = (width - len(label)) // 2
+    label_line = " " * lead + label + " " * (width - len(label) - lead)
+
+    return Block([label_line, symbol_line], 1)
+
+
+_SINK_KINDS = (COIL, "jump", "return", "outVariable")
+
+
+def _ends_in_sink(expr):
+    """True when a rung path ends in a coil, a return or another output.
+
+    Such a path runs to the right power rail on its own. A parallel of them -
+    two coils off one contact, or a return beside a coil - is a set of rung
+    ends, not one wire that rejoins and carries on.
+    """
+    if isinstance(expr, Series):
+        return bool(expr.items) and _ends_in_sink(expr.items[-1])
+    if isinstance(expr, Parallel):
+        return bool(expr.branches) and all(_ends_in_sink(branch) for branch in expr.branches)
+    if isinstance(expr, Element):
+        return expr.kind in _SINK_KINDS
+    return False
+
+
+def _render_series(items):
+    blocks = [_render(item) for item in items]
+    connect_row = max(block.connect_row for block in blocks)
+    height = max(connect_row - block.connect_row + len(block.lines) for block in blocks)
+
+    columns = []
+    sink_rows = set()
+    for block in blocks:
+        width = block.width
+        above = connect_row - block.connect_row
+        lines = [" " * width] * above
+        # The wire row is padded with wire, not spaces: a box with a store
+        # hanging off a lower pin is wider than its own wire row, and padding
+        # that with spaces broke the rung in half.
+        lines += block.padded(width)
+        lines += [" " * width] * (height - len(lines))
+        columns.append(lines)
+        # A block that ends in sinks running to the rail keeps those rows -
+        # shifted to where it now sits - so the rung can rail each of them.
+        for row in block.sink_rows:
+            sink_rows.add(above + row)
+
+    joined = []
+    for row in range(height):
+        joined.append("".join(column[row] for column in columns))
+    return Block(joined, connect_row, sink_rows=sink_rows)
+
+
+def _render_parallel(branches):
+    chars = charset.active()
+    blocks = [_render(branch) for branch in branches]
+    width = max(block.width for block in blocks)
+
+    stacked = []
+    connect_rows = []
+    nested_sinks = set()
+    for block in blocks:
+        offset = len(stacked)
+        connect_rows.append(offset + block.connect_row)
+        nested_sinks.update(offset + row for row in block.sink_rows)
+        for index, line in enumerate(block.lines):
+            # The wire itself extends horizontally; everything else with
+            # spaces, so short branches still reach the junction on the right.
+            # A rung end inside a branch is a wire too, running to the rail.
+            fill = chars["H"] if index == block.connect_row or index in block.sink_rows else " "
+            stacked.append(line + fill * (width - len(line)))
+
+    junctions = set(connect_rows)
+    first, last = connect_rows[0], connect_rows[-1]
+
+    # When every branch ends in a sink, each runs to the right rail on its own;
+    # the branch splits on the left but never rejoins on the right.
+    terminal = all(_ends_in_sink(branch) for branch in branches)
+
+    lines = []
+    for row, line in enumerate(stacked):
+        if row == first:
+            # The main line carries straight on and drops a branch downward.
+            left = right = chars["T_DOWN"]
+        elif row == last:
+            left, right = chars["BL"], chars["BR"]
+        elif row in junctions:
+            left, right = chars["T_RIGHT"], chars["T_LEFT"]
+        elif first < row < last:
+            left = right = chars["V"]
+        else:
+            left = right = " "
+        lines.append((left + line) if terminal else (left + line + right))
+
+    # A branch that splits again into rung ends keeps them: each still runs to
+    # the rail on its own.
+    sink_rows = (set(connect_rows) | nested_sinks) if terminal else set()
+    return Block(lines, first, sink_rows=sink_rows)
+
+
+def _render(expr):
+    chars = charset.active()
+    if isinstance(expr, Empty):
+        return Block(["   ", chars["H"] * 3], 1)
+    if isinstance(expr, Element):
+        return _render_element(expr)
+    if isinstance(expr, Series):
+        return _render_series(expr.items)
+    if isinstance(expr, Parallel):
+        return _render_parallel(expr.branches)
+    raise TypeError("cannot render %r" % (expr,))
+
+
+def _identity(expr):
+    """Which elements an expression is made of, so copies of one node can be spotted.
+
+    The parser builds one branch per sink, so a node feeding several sinks
+    arrives as one copy per branch, and those copies are one element in the
+    editor. What an element draws does not decide this: two contacts on one
+    variable, or two EXECUTE boxes with one body, draw the same and are still
+    two elements. Treating them as one deleted the second coil of a double coil.
+    So the key is the node's localId - and, for a box, the pin it is read
+    through, since a box read through two pins does not continue one wire.
+    """
+    if isinstance(expr, Series):
+        return ("series",) + tuple(_identity(item) for item in expr.items)
+    if isinstance(expr, Parallel):
+        return ("parallel",) + tuple(_identity(branch) for branch in expr.branches)
+    if isinstance(expr, Element):
+        if expr.local_id is None:
+            # Built from no node, such as a cycle marker: it is only itself.
+            return ("element", id(expr))
+        return ("element", expr.kind, expr.local_id, expr.active_output, expr.label)
+    return ("empty",)
+
+
+def _factor(expr):
+    """Pull the leading elements shared by every parallel branch out in front.
+
+    The parser builds one branch per sink, so a contact chain or a block that
+    feeds several sinks is repeated in each branch - drawn again and again,
+    which reads as separate rungs rather than one wire that branches. CODESYS
+    draws the shared part once and splits after it; factoring the common
+    prefix of the branches produces exactly that. Power flow is unchanged:
+    "(P AND a) OR (P AND b)" and "P AND (a OR b)" drive the same rung.
+
+    Only copies of one node are pulled out. Branches that begin with the same
+    node are factored even when others beside them do not, as long as they
+    are next to each other: one contact feeding two boxes is one contact, and
+    keeping the branches in their order keeps the rung ends in the order they
+    execute.
+    """
+    if isinstance(expr, Series):
+        return series([_factor(item) for item in expr.items])
+    if isinstance(expr, Parallel):
+        branches = [_factor(branch) for branch in expr.branches]
+        runs = []
+        for branch in branches:
+            items = _items_of(branch)
+            head = _identity(items[0]) if items else None
+            if runs and head is not None and runs[-1][0] == head:
+                runs[-1][1].append(branch)
+            else:
+                runs.append((head, [branch]))
+        if len(runs) == 1:
+            return _factor_run(branches)
+        return parallel([_factor_run(run) for _head, run in runs])
+    return expr
+
+
+def _items_of(branch):
+    """The elements along a branch. An empty branch has none, so no head to share."""
+    if isinstance(branch, Empty):
+        return []
+    return list(branch.items) if isinstance(branch, Series) else [branch]
+
+
+def _factor_run(branches):
+    """Pull the leading elements every one of ``branches`` shares out in front."""
+    if len(branches) == 1:
+        return branches[0]
+    parts = [_items_of(branch) for branch in branches]
+    prefix = []
+    while all(part for part in parts):
+        first = parts[0][0]
+        identity = _identity(first)
+        if any(_identity(part[0]) != identity for part in parts):
+            break
+        prefix.append(first)
+        parts = [part[1:] for part in parts]
+    if not prefix:
+        return parallel(branches)
+    if not any(parts):
+        # Every branch was the same wire - one pin listing one source twice.
+        return series(prefix)
+    # What follows the shared head is a parallel of its own, and some of its
+    # branches can share a head again. The prefix is not empty, so this works
+    # on fewer elements each time and ends.
+    return series(prefix + [_factor(parallel([series(part) for part in parts]))])
+
+
+def _pin_block_rungs(expr, found):
+    """Collect the sub-rungs feeding side pins, in the order they execute.
+
+    A box wired into another box's side pin is drawn on a wire of its own
+    above the box that reads it, which names it in its pin caption. Deeper
+    boxes come first, because that is the order the values are produced in.
+    """
+    if isinstance(expr, Series):
+        for item in expr.items:
+            _pin_block_rungs(item, found)
+    elif isinstance(expr, Parallel):
+        for branch in expr.branches:
+            _pin_block_rungs(branch, found)
+    elif isinstance(expr, Element):
+        for pin_block in expr.pin_blocks:
+            _pin_block_rungs(pin_block, found)
+            found.append(pin_block)
+    return found
+
+
+def _render_wire(expr):
+    """One wire between the rails."""
+    chars = charset.active()
+    block = _render(expr)
+    lines = []
+    for row, line in enumerate(block.lines):
+        if row == block.connect_row:
+            lines.append(chars["T_RIGHT"] + chars["H"] * 2 + line + chars["H"] * 2 + chars["T_LEFT"])
+        elif row in block.sink_rows:
+            # A lower branch that ends in a coil or a return: the left rail runs
+            # past it, and it reaches the right rail on its own.
+            lines.append(chars["V"] + "  " + line + chars["H"] * 2 + chars["T_LEFT"])
+        else:
+            lines.append(chars["V"] + "  " + line)
+    return lines
+
+
+def _block_prefix_key(rung):
+    """The identity of a rung's head up to and including its first block.
+
+    Two rungs with the same key begin with the same chain into the same box -
+    the same nodes, not merely nodes that draw alike.
+    A box read by several sinks is one box that runs once, so those rungs are
+    the branches of one wire that splits after it; grouping them by this key
+    lets the split be drawn once. A rung with no block returns None and is
+    never merged - rungs that share only leading contacts may be separate
+    rungs the editor keeps apart, and fusing them would misread the program.
+    """
+    items = rung.items if isinstance(rung, Series) else [rung]
+    prefix = []
+    for item in items:
+        prefix.append(item)
+        if isinstance(item, Element) and item.kind == BLOCK:
+            return tuple(_identity(part) for part in prefix)
+    return None
+
+
+def _merge_rungs(rungs):
+    """Combine rungs that split after a shared box into one branched rung.
+
+    Rungs sharing a block are gathered into a Parallel, in the order they
+    first appear; _factor then pulls the common head (the chain and the box)
+    out in front so the box is drawn once and the readers branch off it.
+    Everything else is left exactly as it was.
+    """
+    order = []
+    groups = {}
+    for rung in rungs:
+        key = _block_prefix_key(rung)
+        marker = key if key is not None else object()
+        if marker not in groups:
+            groups[marker] = []
+            order.append(marker)
+        groups[marker].append(rung)
+
+    merged = []
+    for marker in order:
+        group = groups[marker]
+        merged.append(group[0] if len(group) == 1 else parallel(group))
+    return merged
+
+
+def _box_key(item):
+    """(localId, pin) for a copy of a box with no instance name, else None.
+
+    A box with an instance is never built twice: every reader after the first
+    already names it.
+    """
+    if isinstance(item, Element) and item.kind == BLOCK and item.local_id is not None and not item.instance_name:
+        return (item.local_id, item.active_output)
+    return None
+
+
+def _box_keys(expr, found):
+    """Every box key on the wires of ``expr``, in drawing order, repeats kept.
+
+    The boxes hoisted into a box's side pins are drawn as wires of their own,
+    so they are not on this wire and are not counted here.
+    """
+    if isinstance(expr, Series):
+        for item in expr.items:
+            _box_keys(item, found)
+    elif isinstance(expr, Parallel):
+        for branch in expr.branches:
+            _box_keys(branch, found)
+    else:
+        key = _box_key(expr)
+        if key is not None:
+            found.append(key)
+    return found
+
+
+def _reference_to(box):
+    """The pin of a box drawn elsewhere, named where a copy of the box would be."""
+    pin = box.active_output
+    base = box_name(box)
+    return Element(
+        kind=IN_VARIABLE,
+        label=(base + "." + pin) if pin else base,
+        negated=pin in box.negated_outputs,
+        local_id=box.local_id,
+    )
+
+
+def _keep_first(expr, repeat):
+    """``expr`` with every copy of a box in ``repeat`` but the first built replaced.
+
+    The first copy the parser built is kept, wherever it is drawn: only that
+    copy carries the instance boxes upstream of the box, because each later
+    build finds them built and names them. Keeping any other copy deleted
+    them. A replaced copy takes the wire that powers it with it: that wire is
+    the input of the box, drawn once with the box, and left in front of the
+    name it would state a condition the program does not have.
+    """
+    if isinstance(expr, Series):
+        out = []
+        produced = []
+        for index, item in enumerate(expr.items):
+            key = _box_key(item)
+            if key is not None and key in repeat and item.copy:
+                power = min(item.power_len, index)
+                dropped = sum(produced[index - power : index])
+                if dropped:
+                    del out[len(out) - dropped :]
+                for position in range(index - power, index):
+                    produced[position] = 0
+                out.append(_reference_to(item))
+                produced.append(1)
+                continue
+            out.append(_keep_first(item, repeat))
+            produced.append(1)
+        return series(out)
+    if isinstance(expr, Parallel):
+        return parallel([_keep_first(branch, repeat) for branch in expr.branches])
+    key = _box_key(expr)
+    if key is not None and key in repeat and expr.copy:
+        return _reference_to(expr)
+    return expr
+
+
+def _last_box(wire):
+    """The box a hoisted wire ends in: the one the side pin reads."""
+    return wire.items[-1] if isinstance(wire, Series) else wire
+
+
+def _drawn_twice(rungs, repeat):
+    """The boxes the rungs would draw more than once, with ``repeat`` named.
+
+    Counted over the whole network, on the rungs as laid out and on every
+    hoisted wire the rungs draw: copies that the rung merge or the
+    shared-prefix factoring draw as one box count once.
+    """
+    counts = {}
+    for rung in rungs:
+        rung = _keep_first(rung, repeat)
+        wires = [_factor(rung)]
+        for pin_block in _pin_block_rungs(rung, []):
+            last = _last_box(pin_block)
+            if not (_box_key(last) in repeat and last.copy):
+                wires.append(pin_block)
+        for wire in wires:
+            for key in _box_keys(wire, []):
+                counts[key] = counts.get(key, 0) + 1
+    return set(key for key in counts if counts[key] > 1)
+
+
+def _network_repeats(rungs):
+    """The boxes to name rather than draw again, for one network.
+
+    Naming a copy takes its wire with it, and that can stop the copies of the
+    box after it from sharing a head, so they are drawn twice in turn. The set
+    is widened until naming it leaves nothing drawn twice. It only grows, and
+    there are finitely many boxes, so this ends.
+    """
+    repeat = set()
+    while True:
+        wider = repeat | _drawn_twice(rungs, repeat)
+        if wider == repeat:
+            return repeat
+        repeat = wider
+
+
+def render_rung(expr, repeat=None):
+    """Render one rung, bounded by the power rails.
+
+    Boxes feeding side pins are drawn first, on wires of their own: the
+    caption that reads one names only its output, so without the box the
+    diagram would not say what feeds it. An EXECUTE box's inline ST is drawn
+    inside the box, below its pins, by _render_block.
+
+    ``repeat`` holds the boxes the network would otherwise draw more than once
+    (see _network_repeats). Every copy of one but the first built is named by
+    its pin, so one box in the editor is one box on the page.
+    """
+    if repeat is None:
+        repeat = _network_repeats([expr])
+    lines = []
+    for pin_block in _pin_block_rungs(expr, []):
+        # Every reader of a hoisted box carries the hoist; the first built
+        # draws the box, and the pin's caption names it for the rest.
+        last = _last_box(pin_block)
+        if _box_key(last) in repeat and last.copy:
+            continue
+        lines.extend(_render_wire(_keep_first(pin_block, repeat)))
+    # Draw the shared head of parallel branches once, then the split - the way
+    # the editor draws it - instead of repeating it down every branch.
+    lines.extend(_render_wire(_factor(_keep_first(expr, repeat))))
+    return lines
+
+
+def render_declaration(pou):
+    """The POU's declaration.
+
+    Verbatim when CODESYS gave us the plaintext version, because that is the
+    only form carrying comments, pragmas and attributes - and a pragma like
+    {attribute 'qualified_only'} changes what the code means, so paraphrasing
+    it away is worse than not showing it. Otherwise rebuilt from the
+    structured interface, which is all older exports offer.
+    """
+    if pou.declaration_text:
+        return pou.declaration_text.split("\n")
+
+    # The rebuilt form is not what CODESYS holds: the structured interface has
+    # nowhere to put a comment, a pragma or an attribute, and a variable whose
+    # type the export omits comes back as UNKNOWN. The summary says how many
+    # POUs this happened to; the file has to say that it is one of them.
+    keyword = POU_TYPE_KEYWORDS.get(pou.pou_type, "PROGRAM")
+    lines = [
+        "(* Declaration rebuilt from the structured interface:"
+        " comments, pragmas and attributes are missing; an omitted type reads UNKNOWN. *)",
+        keyword + " " + pou.name,
+    ]
+
+    scope = None
+    for variable in pou.variables:
+        if variable.scope != scope:
+            if scope is not None:
+                lines.append("END_VAR")
+            lines.append(variable.scope)
+            scope = variable.scope
+        entry = "    " + variable.name + " : " + variable.type_name
+        if variable.initial_value is not None:
+            entry += " := " + variable.initial_value
+        lines.append(entry + ";")
+    if scope is not None:
+        lines.append("END_VAR")
+
+    return lines
+
+
+def render_pou(pou):
+    """Render a whole POU: declaration, then the rungs of each network.
+
+    A network can hold more than one rung - a block driving three outputs is
+    one network in the editor - so the number belongs to the network, not to
+    the rung.
+    """
+    lines = render_declaration(pou)
+    lines.append("")
+
+    if not pou.networks:
+        lines.append("(* no rungs *)")
+
+    for index, network in enumerate(pou.networks):
+        lines.extend(network_headers(index + 1, network))
+        rungs = _merge_rungs(network.outputs)
+        repeat = _network_repeats(rungs)
+        for rung in rungs:
+            lines.extend(render_rung(rung, repeat))
+        lines.append("")
+
+    while lines and lines[-1] == "":
+        lines.pop()
+
+    # Trailing whitespace is an artefact of grid composition, and the repo's
+    # pre-commit hooks would strip it anyway.
+    return [line.rstrip() for line in lines]

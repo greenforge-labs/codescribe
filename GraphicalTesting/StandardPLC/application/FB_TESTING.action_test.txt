@@ -1,0 +1,25 @@
+(* FB_TESTING.action_test - the declaration below is the parent POU's *)
+
+PROGRAM FB_TESTING
+(***********************************************************************************************
+FULLY SICK FUNCTION BLOCK DIAGRAM FOR TESTING. Do not worry about what the logic is doing.
+***********************************************************************************************)
+VAR CONSTANT
+	uiMinVoltage 		: UINT := 5000;    // Minimum Voltage in mV
+END_VAR
+VAR
+	fbSystemSupply 	: ifmIOcommon.SystemSupply; // Function Block to monitor supply voltage on VBB15 (from ignition)
+	fbSupplySwitch 	: ifmIOcommon.SupplySwitch; // Function Block to turn ON/OFF latching switch on VBB15 supply (from ignition)
+	uiCurrSupplyVolt	: UINT ;    // Operating Voltage in mV
+	TOF_0: TOF;
+	Test: BOOL;
+	dude: BOOL;
+	fbenable: TON;
+	xResult : BOOL;
+	xTimerDone : BOOL;
+	TON_0: TON;
+	whereismycar : BOOL;
+END_VAR
+
+(* Network 1 *)
+dude───> TRUE

@@ -1,0 +1,32 @@
+(* Declaration rebuilt from the structured interface: comments, pragmas and attributes are missing; an omitted type reads UNKNOWN. *)
+PROGRAM FB_TESTING
+VAR CONSTANT
+    uiMinVoltage : UINT := 5000;
+END_VAR
+VAR
+    fbSystemSupply : ifmIOcommon.SystemSupply;
+    fbSupplySwitch : ifmIOcommon.SupplySwitch;
+    uiCurrSupplyVolt : UINT;
+    TOF_0 : TOF;
+END_VAR
+
+(* Network 1: Function Block to monitor supply voltage on VBB15 (from ignition) *)
+                                            fbSystemSupply : ifmIOcommon.SystemSupply
+                                           ┌─────────────────────────────────────────┐
+ifmIOcommon.SYS_VOLTAGE_CHANNEL.VBB15──────┤eChannel                           xError│
+ifmIOcommon.MODE_SYSTEM_SUPPLY.SYS_SUPPLY──┤eMode                           eDiagInfo│
+                                           │eFilter                         xPrepared│
+                                           │                             uiOutVoltage├───> uiCurrSupplyVolt
+                                           └─────────────────────────────────────────┘
+
+(* Network 2: Safely power off PLC when ignition (VBB15) is lower than 5V for more than 10s. Enable timer on falling edge *)
+                                                   fbSupplySwitch : ifmIOcommon.SupplySwitch
+                                                  ┌─────────────────────────────────────────┐
+ifmIOcommon.MODE_SUPPLY_SWITCH.SYS_SUPPLY_SWITCH──┤eMode                              xError│
+                       GT        TOF_0 : TOF      │                                         │
+                  ┌──────────┐  ┌───────────┐     │                                         │
+uiCurrSupplyVolt──┤In1   Out1├──┤IN        Q├─────┤xValue                          eDiagInfo│
+uiMinVoltage──────┤In2       │  │           │     │                                xPrepared│
+                  └──────────┘  │           │     └─────────────────────────────────────────┘
+T#5S────────────────────────────┤PT       ET│
+                                └───────────┘

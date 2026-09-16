@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored, modelled on shapes found in a real CODESYS FBD program that
+  the original fixtures did not cover. Every one of these was being dropped
+  silently rather than reported:
+
+    * a jump - the whole guard network vanished, because a jump was not
+      treated as something that can terminate a network
+    * an EXECUTE box, whose entire body is inline ST carried in addData - the
+      box was drawn empty
+    * inVariable negated="true" - the negation was ignored, inverting the logic
+    * a label, so a reader can see where a jump lands
+
+  Names are generic on purpose: this is modelled on customer logic, not copied
+  from it.
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <contentHeader name="ControlFlowFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1" /></fbd>
+      <ld><scaling x="1" y="1" /></ld>
+      <sfc><scaling x="1" y="1" /></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous>
+      <pou name="CONTROL_FLOW" pouType="program">
+        <interface>
+          <inputVars>
+            <variable name="xInitDone">
+              <type><BOOL /></type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <FBD>
+
+            <!-- Network 1: guard clause. Skip everything unless initialised. -->
+            <inVariable localId="1" negated="true">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>xInitDone</expression>
+            </inVariable>
+            <inVariable localId="2">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Mode.Current = Mode.ESTOP</expression>
+            </inVariable>
+            <block localId="3" typeName="OR">
+              <position x="0" y="0" />
+              <inputVariables>
+                <variable formalParameter="In1">
+                  <connectionPointIn><connection refLocalId="1" /></connectionPointIn>
+                </variable>
+                <variable formalParameter="In2">
+                  <connectionPointIn><connection refLocalId="2" /></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables />
+              <outputVariables>
+                <variable formalParameter="Out1"><connectionPointOut /></variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">operator</CallType>
+                </data>
+              </addData>
+            </block>
+            <jump localId="4" label="END">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="3" formalParameter="Out1" />
+              </connectionPointIn>
+            </jump>
+
+            <!-- Network 2: an arithmetic operator, which reads better infix -->
+            <inVariable localId="10">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>RawPressure</expression>
+            </inVariable>
+            <inVariable localId="11">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>100</expression>
+            </inVariable>
+            <block localId="12" typeName="DIV">
+              <position x="0" y="0" />
+              <inputVariables>
+                <variable formalParameter="In1">
+                  <connectionPointIn><connection refLocalId="10" /></connectionPointIn>
+                </variable>
+                <variable formalParameter="In2">
+                  <connectionPointIn><connection refLocalId="11" /></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables />
+              <outputVariables>
+                <variable formalParameter="Out1"><connectionPointOut /></variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">operator</CallType>
+                </data>
+              </addData>
+            </block>
+            <block localId="13" typeName="REAL_TO_UINT">
+              <position x="0" y="0" />
+              <inputVariables>
+                <variable formalParameter="In1">
+                  <connectionPointIn>
+                    <connection refLocalId="12" formalParameter="Out1" />
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables />
+              <outputVariables>
+                <variable formalParameter="Out1"><connectionPointOut /></variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">operator</CallType>
+                </data>
+              </addData>
+            </block>
+            <outVariable localId="14">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="13" formalParameter="Out1" />
+              </connectionPointIn>
+              <expression>Status.PressureBar</expression>
+            </outVariable>
+
+            <!-- Network 3: the jump target -->
+            <label localId="20" label="END">
+              <position x="0" y="0" />
+            </label>
+
+            <!-- Network 4: an EXECUTE box, all of whose logic is inline ST -->
+            <inVariable localId="21">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>xInitDone</expression>
+            </inVariable>
+            <block localId="22" typeName="EXECUTE">
+              <position x="0" y="0" />
+              <inputVariables>
+                <variable formalParameter="EN">
+                  <connectionPointIn><connection refLocalId="21" /></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables />
+              <outputVariables>
+                <variable formalParameter="ENO"><connectionPointOut /></variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">execute</CallType>
+                </data>
+                <data name="http://www.3s-software.com/plcopenxml/stcode" handleUnknown="implementation">
+                  <STCode xmlns="">IF NOT xInitDone THEN
+Status.PressureBar := 0;
+Status.Faulted := FALSE;
+END_IF</STCode>
+                </data>
+              </addData>
+            </block>
+
+          </FBD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+</project>

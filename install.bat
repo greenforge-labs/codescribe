@@ -1,2 +1,2 @@
-python %~dp0/install.py
+python "%~dp0install.py"
 pause

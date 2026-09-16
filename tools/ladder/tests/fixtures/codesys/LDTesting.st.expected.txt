@@ -1,0 +1,19 @@
+(* Declaration rebuilt from the structured interface: comments, pragmas and attributes are missing; an omitted type reads UNKNOWN. *)
+PROGRAM LD_TEST
+VAR
+    Sensor1 : BOOL;
+    Sensor2 : BOOL;
+    sensor3 : BOOL;
+    PowerOn : BOOL;
+    TON_0 : TON;
+    CTU_0 : CTU;
+    PowerOff : BOOL;
+END_VAR
+
+(* Network 1 *)
+IF (Sensor1 OR sensor3) AND NOT Sensor2 THEN PowerOn := TRUE; END_IF
+
+(* Network 2 *)
+TON_0(IN := PowerOn, PT := T#5S);
+CTU_0(CU := TON_0.Q, RESET := PowerOff, PV := 10);
+IF CTU_0.Q THEN PowerOff := FALSE; END_IF

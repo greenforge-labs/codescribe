@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1" negated="true"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>PowerOff</variable></contact>
+<contact localId="2"><connectionPointIn><connection refLocalId="1"/></connectionPointIn><connectionPointOut/><variable>PowerOn</variable></contact>
+<inVariable localId="5"><connectionPointOut/><expression>1</expression></inVariable>
+<inVariable localId="6"><connectionPointOut/><expression>2</expression></inVariable>
+<block localId="3" typeName="ADD"><inputVariables><variable formalParameter="EN"><connectionPointIn><connection refLocalId="2"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="5"/></connectionPointIn></variable><variable formalParameter="In3"><connectionPointIn><connection refLocalId="6"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="ENO"><connectionPointOut/></variable><variable formalParameter="Out2"><connectionPointOut/></variable></outputVariables></block>
+<return localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="ENO"/></connectionPointIn></return>
+<contact localId="8" edge="rising"><connectionPointIn><connection refLocalId="3" formalParameter="ENO"/></connectionPointIn><connectionPointOut/><variable>edgetrigger</variable></contact>
+<coil localId="9"><connectionPointIn><connection refLocalId="8"/></connectionPointIn><connectionPointOut/><variable>PowerOff</variable></coil>
+<rightPowerRail localId="19"><connectionPointIn><connection refLocalId="9"/></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>
