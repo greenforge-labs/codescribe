@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xGo</variable></contact>
+<inVariable localId="10"><connectionPointOut/><expression>iA</expression></inVariable>
+<inVariable localId="11"><connectionPointOut/><expression>iB</expression></inVariable>
+<block localId="3" typeName="ADD"><inputVariables><variable formalParameter="EN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="In1"><connectionPointIn><connection refLocalId="10"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="11"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="ENO"><connectionPointOut/></variable><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<contact localId="2"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xK</variable></contact>
+<block localId="31" typeName="AND"><inputVariables><variable formalParameter="In1"><connectionPointIn><connection refLocalId="2"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="3" formalParameter="Out1"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<coil localId="32"><connectionPointIn><connection refLocalId="31" formalParameter="Out1"/></connectionPointIn><connectionPointOut/><variable>xA</variable></coil>
+<outVariable localId="6"><connectionPointIn><connection refLocalId="3" formalParameter="Out1"/></connectionPointIn><expression>iSum</expression></outVariable>
+<rightPowerRail localId="9"><connectionPointIn><connection refLocalId="32"/></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

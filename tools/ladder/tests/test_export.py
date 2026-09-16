@@ -512,6 +512,39 @@ check_equal("labelled: without the native list the label still appears once", le
 check_equal("labelled: and under its header", unlabelled[unlabelled.index("(* Network 2 *)") + 1], "LATER:")
 graphical_export.reset_stats()
 
+# Two empty labelled networks in a row, with no comment element between them.
+# Both label elements were carried to the next network with logic; the first
+# became its label and the second stayed in its body, drawn as a rung. A label
+# arriving while one is already carried means the first headed a network with
+# no logic, and that network is closed there.
+TWO_LABELS = os.path.join(HERE, "fixtures", "ld-two-labels-on-empty-networks.plcopen.xml")
+TWO_LABELS_NATIVE = os.path.join(HERE, "fixtures", "ld-two-labels-on-empty-networks.native.xml")
+graphical_export.reset_stats()
+two_labels = graphical_export.render_plcopen(TWO_LABELS, None, None, TWO_LABELS_NATIVE)
+check("two labels: the networks line up with the native list", graphical_export.ALIGNMENT_WARNING not in two_labels)
+check_equal("two labels: one header per editor network", len([l for l in two_labels if l.startswith("(* Network ")]), 4)
+check_equal("two labels: each label is written once", [two_labels.count("LONELY1:"), two_labels.count("LONELY2:")], [1, 1])
+check("two labels: no label is drawn as a rung", not any("LONELY" in l and ":" in l and l not in ("LONELY1:", "LONELY2:") for l in two_labels))
+fourth = two_labels.index("(* Network 4 *)")
+check("two labels: the network with logic carries no label", "xA" in two_labels[fourth + 1])
+two_labels_bare = graphical_export.render_plcopen(TWO_LABELS, None, None, None)
+check_equal("two labels: without the native list each label is written once", [two_labels_bare.count("LONELY1:"), two_labels_bare.count("LONELY2:")], [1, 1])
+check("two labels: without the native list no label is drawn as a rung", not any("LONELY" in l and ":" in l and l not in ("LONELY1:", "LONELY2:") for l in two_labels_bare))
+graphical_export.reset_stats()
+
+# CODESYS writes a network's comment before its label. A comment arriving while
+# a label is carried therefore heads the next network, and the carried label's
+# network ends first. Closing it only at the next label gave it the comment.
+COMMENT_BETWEEN = os.path.join(HERE, "fixtures", "ld-label-comment-label.plcopen.xml")
+COMMENT_BETWEEN_NATIVE = os.path.join(HERE, "fixtures", "ld-label-comment-label.native.xml")
+graphical_export.reset_stats()
+for native, name in ((COMMENT_BETWEEN_NATIVE, "with"), (None, "without")):
+    between = graphical_export.render_plcopen(COMMENT_BETWEEN, None, None, native)
+    headed = [between[i + 1] for i, l in enumerate(between) if l.startswith("(* Network ") and "second one" in l]
+    check_equal("comment between labels, " + name + " the native list: the comment heads the LB network", headed, ["LB:"])
+    check("comment between labels, " + name + " the native list: LA carries no comment", not any(l.startswith("(* Network ") and "second one" in l and between[i + 1] == "LA:" for i, l in enumerate(between)))
+graphical_export.reset_stats()
+
 
 # --- the label of an out-commented network -----------------------------------
 

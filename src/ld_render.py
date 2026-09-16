@@ -17,7 +17,7 @@ from __future__ import unicode_literals
 
 import charset
 from layout import Block, centred
-from model import BLOCK, COIL, CONTACT, Element, Empty, Parallel, Series, parallel, series
+from model import BLOCK, COIL, CONTACT, IN_VARIABLE, Element, Empty, Parallel, Series, box_name, parallel, series
 
 # The letter a contact carries for edge detection, reused on a block's power
 # pin so both read the same.
@@ -364,12 +364,16 @@ def _render_parallel(branches):
 
     stacked = []
     connect_rows = []
+    nested_sinks = set()
     for block in blocks:
-        connect_rows.append(len(stacked) + block.connect_row)
+        offset = len(stacked)
+        connect_rows.append(offset + block.connect_row)
+        nested_sinks.update(offset + row for row in block.sink_rows)
         for index, line in enumerate(block.lines):
             # The wire itself extends horizontally; everything else with
             # spaces, so short branches still reach the junction on the right.
-            fill = chars["H"] if index == block.connect_row else " "
+            # A rung end inside a branch is a wire too, running to the rail.
+            fill = chars["H"] if index == block.connect_row or index in block.sink_rows else " "
             stacked.append(line + fill * (width - len(line)))
 
     junctions = set(connect_rows)
@@ -394,7 +398,9 @@ def _render_parallel(branches):
             left = right = " "
         lines.append((left + line) if terminal else (left + line + right))
 
-    sink_rows = set(connect_rows) if terminal else set()
+    # A branch that splits again into rung ends keeps them: each still runs to
+    # the rail on its own.
+    sink_rows = (set(connect_rows) | nested_sinks) if terminal else set()
     return Block(lines, first, sink_rows=sink_rows)
 
 
@@ -444,31 +450,59 @@ def _factor(expr):
     prefix of the branches produces exactly that. Power flow is unchanged:
     "(P AND a) OR (P AND b)" and "P AND (a OR b)" drive the same rung.
 
-    Only copies of one node are pulled out. The first copy is the one kept:
-    a box hoists the boxes feeding its side pins on the rung that builds it
-    first, and a later copy only names them.
+    Only copies of one node are pulled out. Branches that begin with the same
+    node are factored even when others beside them do not, as long as they
+    are next to each other: one contact feeding two boxes is one contact, and
+    keeping the branches in their order keeps the rung ends in the order they
+    execute.
     """
     if isinstance(expr, Series):
         return series([_factor(item) for item in expr.items])
     if isinstance(expr, Parallel):
         branches = [_factor(branch) for branch in expr.branches]
-
-        def items_of(branch):
-            return list(branch.items) if isinstance(branch, Series) else [branch]
-
-        parts = [items_of(branch) for branch in branches]
-        prefix = []
-        while all(part for part in parts):
-            first = parts[0][0]
-            identity = _identity(first)
-            if any(_identity(part[0]) != identity for part in parts):
-                break
-            prefix.append(first)
-            parts = [part[1:] for part in parts]
-        if not prefix:
-            return parallel(branches)
-        return series(prefix + [parallel([series(part) for part in parts])])
+        runs = []
+        for branch in branches:
+            items = _items_of(branch)
+            head = _identity(items[0]) if items else None
+            if runs and head is not None and runs[-1][0] == head:
+                runs[-1][1].append(branch)
+            else:
+                runs.append((head, [branch]))
+        if len(runs) == 1:
+            return _factor_run(branches)
+        return parallel([_factor_run(run) for _head, run in runs])
     return expr
+
+
+def _items_of(branch):
+    """The elements along a branch. An empty branch has none, so no head to share."""
+    if isinstance(branch, Empty):
+        return []
+    return list(branch.items) if isinstance(branch, Series) else [branch]
+
+
+def _factor_run(branches):
+    """Pull the leading elements every one of ``branches`` shares out in front."""
+    if len(branches) == 1:
+        return branches[0]
+    parts = [_items_of(branch) for branch in branches]
+    prefix = []
+    while all(part for part in parts):
+        first = parts[0][0]
+        identity = _identity(first)
+        if any(_identity(part[0]) != identity for part in parts):
+            break
+        prefix.append(first)
+        parts = [part[1:] for part in parts]
+    if not prefix:
+        return parallel(branches)
+    if not any(parts):
+        # Every branch was the same wire - one pin listing one source twice.
+        return series(prefix)
+    # What follows the shared head is a parallel of its own, and some of its
+    # branches can share a head again. The prefix is not empty, so this works
+    # on fewer elements each time and ends.
+    return series(prefix + [_factor(parallel([series(part) for part in parts]))])
 
 
 def _pin_block_rungs(expr, found):
@@ -553,20 +587,151 @@ def _merge_rungs(rungs):
     return merged
 
 
-def render_rung(expr):
+def _box_key(item):
+    """(localId, pin) for a copy of a box with no instance name, else None.
+
+    A box with an instance is never built twice: every reader after the first
+    already names it.
+    """
+    if isinstance(item, Element) and item.kind == BLOCK and item.local_id is not None and not item.instance_name:
+        return (item.local_id, item.active_output)
+    return None
+
+
+def _box_keys(expr, found):
+    """Every box key on the wires of ``expr``, in drawing order, repeats kept.
+
+    The boxes hoisted into a box's side pins are drawn as wires of their own,
+    so they are not on this wire and are not counted here.
+    """
+    if isinstance(expr, Series):
+        for item in expr.items:
+            _box_keys(item, found)
+    elif isinstance(expr, Parallel):
+        for branch in expr.branches:
+            _box_keys(branch, found)
+    else:
+        key = _box_key(expr)
+        if key is not None:
+            found.append(key)
+    return found
+
+
+def _reference_to(box):
+    """The pin of a box drawn elsewhere, named where a copy of the box would be."""
+    pin = box.active_output
+    base = box_name(box)
+    return Element(
+        kind=IN_VARIABLE,
+        label=(base + "." + pin) if pin else base,
+        negated=pin in box.negated_outputs,
+        local_id=box.local_id,
+    )
+
+
+def _keep_first(expr, repeat):
+    """``expr`` with every copy of a box in ``repeat`` but the first built replaced.
+
+    The first copy the parser built is kept, wherever it is drawn: only that
+    copy carries the instance boxes upstream of the box, because each later
+    build finds them built and names them. Keeping any other copy deleted
+    them. A replaced copy takes the wire that powers it with it: that wire is
+    the input of the box, drawn once with the box, and left in front of the
+    name it would state a condition the program does not have.
+    """
+    if isinstance(expr, Series):
+        out = []
+        produced = []
+        for index, item in enumerate(expr.items):
+            key = _box_key(item)
+            if key is not None and key in repeat and item.copy:
+                power = min(item.power_len, index)
+                dropped = sum(produced[index - power : index])
+                if dropped:
+                    del out[len(out) - dropped :]
+                for position in range(index - power, index):
+                    produced[position] = 0
+                out.append(_reference_to(item))
+                produced.append(1)
+                continue
+            out.append(_keep_first(item, repeat))
+            produced.append(1)
+        return series(out)
+    if isinstance(expr, Parallel):
+        return parallel([_keep_first(branch, repeat) for branch in expr.branches])
+    key = _box_key(expr)
+    if key is not None and key in repeat and expr.copy:
+        return _reference_to(expr)
+    return expr
+
+
+def _last_box(wire):
+    """The box a hoisted wire ends in: the one the side pin reads."""
+    return wire.items[-1] if isinstance(wire, Series) else wire
+
+
+def _drawn_twice(rungs, repeat):
+    """The boxes the rungs would draw more than once, with ``repeat`` named.
+
+    Counted over the whole network, on the rungs as laid out and on every
+    hoisted wire the rungs draw: copies that the rung merge or the
+    shared-prefix factoring draw as one box count once.
+    """
+    counts = {}
+    for rung in rungs:
+        rung = _keep_first(rung, repeat)
+        wires = [_factor(rung)]
+        for pin_block in _pin_block_rungs(rung, []):
+            last = _last_box(pin_block)
+            if not (_box_key(last) in repeat and last.copy):
+                wires.append(pin_block)
+        for wire in wires:
+            for key in _box_keys(wire, []):
+                counts[key] = counts.get(key, 0) + 1
+    return set(key for key in counts if counts[key] > 1)
+
+
+def _network_repeats(rungs):
+    """The boxes to name rather than draw again, for one network.
+
+    Naming a copy takes its wire with it, and that can stop the copies of the
+    box after it from sharing a head, so they are drawn twice in turn. The set
+    is widened until naming it leaves nothing drawn twice. It only grows, and
+    there are finitely many boxes, so this ends.
+    """
+    repeat = set()
+    while True:
+        wider = repeat | _drawn_twice(rungs, repeat)
+        if wider == repeat:
+            return repeat
+        repeat = wider
+
+
+def render_rung(expr, repeat=None):
     """Render one rung, bounded by the power rails.
 
     Boxes feeding side pins are drawn first, on wires of their own: the
     caption that reads one names only its output, so without the box the
     diagram would not say what feeds it. An EXECUTE box's inline ST is drawn
     inside the box, below its pins, by _render_block.
+
+    ``repeat`` holds the boxes the network would otherwise draw more than once
+    (see _network_repeats). Every copy of one but the first built is named by
+    its pin, so one box in the editor is one box on the page.
     """
+    if repeat is None:
+        repeat = _network_repeats([expr])
     lines = []
     for pin_block in _pin_block_rungs(expr, []):
-        lines.extend(_render_wire(pin_block))
+        # Every reader of a hoisted box carries the hoist; the first built
+        # draws the box, and the pin's caption names it for the rest.
+        last = _last_box(pin_block)
+        if _box_key(last) in repeat and last.copy:
+            continue
+        lines.extend(_render_wire(_keep_first(pin_block, repeat)))
     # Draw the shared head of parallel branches once, then the split - the way
     # the editor draws it - instead of repeating it down every branch.
-    lines.extend(_render_wire(_factor(expr)))
+    lines.extend(_render_wire(_factor(_keep_first(expr, repeat))))
     return lines
 
 
@@ -625,8 +790,10 @@ def render_pou(pou):
 
     for index, network in enumerate(pou.networks):
         lines.extend(network_headers(index + 1, network))
-        for rung in _merge_rungs(network.outputs):
-            lines.extend(render_rung(rung))
+        rungs = _merge_rungs(network.outputs)
+        repeat = _network_repeats(rungs)
+        for rung in rungs:
+            lines.extend(render_rung(rung, repeat))
         lines.append("")
 
     while lines and lines[-1] == "":

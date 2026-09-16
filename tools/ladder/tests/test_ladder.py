@@ -671,6 +671,148 @@ check("numbered in a caption: moving the reset to the other box changes the expo
 check("numbered boxes: a lone box keeps its plain name", not any("#" in l for l in two_pins_art))
 check("numbered boxes: boxes the text never names are not numbered", not any("#" in l for l in alike_art))
 
+
+# --- one box in the editor is one box in the drawing -------------------------
+
+# The parser builds a copy of a box for every rung that reaches it, and relies on
+# the rung merge and the shared-prefix factoring to draw the copies as one. Where
+# they cannot fuse - the copies sit in rungs of different shapes, two readers
+# hoist one box into a side pin, or a hoisted box is also read on a rung - the
+# box was drawn once per copy. The first copy in drawing order is now drawn, and
+# each later copy is named by the pin it reads, without the wire that powers it:
+# that wire belongs to the box already drawn.
+def title_rows(art, title):
+    """How many box titles in ``art`` read exactly ``title``.
+
+    Titles of boxes side by side share a row, separated by runs of spaces.
+    """
+    import re
+
+    count = 0
+    for line in art:
+        for part in re.split(r"\s{2,}", line.strip(U["V"] + " ")):
+            if part == title:
+                count += 1
+    return count
+
+
+def box_art(name):
+    return render_pou(parse_pous(os.path.join(FIXTURES, name))[0])
+
+
+hoisted_two_art = box_art("ld-hoisted-operator-two-readers.xml")
+check_equal("one box: a box hoisted by two readers is drawn once", title_rows(hoisted_two_art, "MUL"), 1)
+
+hoisted_then_art = box_art("ld-hoisted-operator-then-read-on-its-pin.xml")
+check_equal("one box: a box on a rung and hoisted into a pin is drawn once", title_rows(hoisted_then_art, "ADD"), 1)
+check("one box: the rung's store is still drawn", any("iSum" in l for l in hoisted_then_art))
+check("one box: the pin still reads the box", any("ADD.Out1" + U["H"] * 2 + U["PIN_L"] + "In2" in l for l in hoisted_then_art))
+
+shapes_art = box_art("ld-operator-read-by-two-rung-shapes.xml")
+check_equal("one box: a box read by rungs of two shapes is drawn once", title_rows(shapes_art, "ADD"), 1)
+check("one box: the second rung reads the box by name", any("[ADD.ENO]" in l for l in shapes_art))
+check("one box: both coils are drawn", any("xA" in l for l in shapes_art) and any("xB" in l for l in shapes_art))
+check("one box: the parallel contact is kept", any("xK" in l for l in shapes_art))
+
+or_art = box_art("ld-hoisted-or-under-two-coils.xml")
+check_equal("one box: a hoisted OR under two coils is drawn once", title_rows(or_art, "OR"), 1)
+check_equal("one box: the box that reads it is drawn once", title_rows(or_art, "AND"), 1)
+
+exec_mixed_art = box_art("ld-execute-read-by-a-coil-and-a-contact.xml")
+check_equal("one box: two EXECUTE boxes are drawn", title_rows(exec_mixed_art, "EXECUTE #1") + title_rows(exec_mixed_art, "EXECUTE #2"), 2)
+check_equal("one box: the first body once", len([l for l in exec_mixed_art if "nA := nA + 1;" in l]), 1)
+check_equal("one box: the second body once", len([l for l in exec_mixed_art if "nB := nB + 1;" in l]), 1)
+check("one box: the contact's rung reads the first box by name", any("[EXECUTE#1.ENO]" in l and "xK" not in l for l in exec_mixed_art))
+check_equal("one box: the contact feeding both boxes is drawn once", len([l for l in exec_mixed_art if "xGo" in l]), 1)
+check_equal(
+    "one box: every coil still reaches the right rail",
+    len([l for l in exec_mixed_art if "( )" in l and l.rstrip().endswith(U["T_LEFT"])]),
+    3,
+)
+
+# The copy of a box that is kept must be the first one built. Only that copy
+# carries the instance boxes upstream of it: every later copy names them, as
+# "[tmr.Q]". Keeping the first copy drawn instead deleted the timer, its contact
+# and its preset from the export, and two programs that differ only in the
+# preset exported identically.
+behind_timer_art = box_art("ld-box-on-rung-and-in-side-pin-behind-a-timer.xml")
+behind_timer_pt10_art = box_art("ld-box-on-rung-and-in-side-pin-behind-a-timer-pt10.xml")
+check_equal("first build: the timer is drawn", title_rows(behind_timer_art, "tmr : TON"), 1)
+check("first build: the timer's contact is drawn", any("xGo" in l for l in behind_timer_art))
+check("first build: the timer's preset is drawn", any("T#5S" in l for l in behind_timer_art))
+check_equal("first build: the box behind it is drawn once", title_rows(behind_timer_art, "GT"), 1)
+check("first build: a different preset changes the export", behind_timer_art != behind_timer_pt10_art)
+check_equal("first build: a later rung merged forward keeps the timer", title_rows(box_art("ld-box-behind-a-timer-read-by-a-later-rung.xml"), "tmr : TON"), 1)
+check_equal("first build: a later rung's hoist keeps the timer", title_rows(box_art("ld-box-behind-a-timer-hoisted-by-a-later-rung.xml"), "tmr : TON"), 1)
+
+# Naming one repeated box can break the fusion of the box after it: the copies
+# of MUL no longer shared a head once one copy of ADD was named, and MUL was
+# drawn twice, exporting like a program with two MUL boxes. The repeats are
+# found again until nothing new is drawn twice.
+behind_repeat_art = box_art("ld-box-feeding-two-coils-behind-a-repeated-box.xml")
+check_equal("repeats: the box behind a named box is drawn once", title_rows(behind_repeat_art, "MUL"), 1)
+check_equal("repeats: the named box is drawn once", title_rows(behind_repeat_art, "ADD"), 1)
+check("repeats: one MUL and two MUL boxes export differently", behind_repeat_art != box_art("ld-box-feeding-two-coils-behind-a-repeated-box-two-nodes.xml"))
+
+
+def label_count(art, name):
+    """How many times a contact or coil label appears in ``art``."""
+    import re
+
+    return sum(len(re.findall(r"(?<![\w.#])" + re.escape(name) + r"(?![\w.#])", line)) for line in art)
+
+
+# A factored run's own branches were not factored again, so a box shared by
+# only some of them was counted twice, one copy was named, and the contact in
+# front of it was drawn twice.
+split_art = box_art("ld-contact-feeding-a-box-read-twice-and-another-box.xml")
+check_equal("inner runs: the shared contact is drawn once", label_count(split_art, "xGo"), 1)
+check_equal("inner runs: the box read twice is drawn once", title_rows(split_art, "ADD"), 1)
+check_equal("inner runs: the other box is drawn once", title_rows(split_art, "SUB"), 1)
+check_equal("inner runs: every coil reaches the right rail", len([l for l in split_art if "( )" in l and l.rstrip().endswith(U["T_LEFT"])]), 3)
+chain_art = box_art("ld-contact-chain-shared-by-part-of-a-run.xml")
+check_equal("inner runs: every contact in a partly shared chain is drawn once", [label_count(chain_art, name) for name in ("c1", "c2", "c3", "c4", "c5", "c9")], [1, 1, 1, 1, 1, 1])
+each_art = box_art("ld-two-boxes-two-coils-each.xml")
+check_equal("inner runs: two boxes with two coils each, contact once", label_count(each_art, "xGo"), 1)
+check_equal("inner runs: two boxes with two coils each, one of each box", [title_rows(each_art, "ADD"), title_rows(each_art, "SUB")], [1, 1])
+
+# A pin can list the same source twice. Its branches are then one node sequence
+# twice, the whole of each is the shared head, and nothing is left after it.
+# Factoring what was left recursed without end: CPython raised RecursionError,
+# and IronPython - the interpreter CODESYS runs - terminated the process.
+import ld_render  # noqa: E402
+from model import Empty  # noqa: E402
+
+
+def factors(expr):
+    try:
+        ld_render._factor(expr)
+        return True
+    except RuntimeError:
+        return False
+
+
+twin = Element(kind=CONTACT, label="xGo", local_id="1")
+check("identical branches: two empty branches factor", factors(Parallel([Empty(), Empty()])))
+check("identical branches: two copies of one contact factor", factors(Parallel([twin, twin])))
+check("identical branches: two copies of one chain factor", factors(Parallel([Series([twin, twin]), Series([twin, twin])])))
+for name in ("ld-two-connections-from-one-pin-into-a-coil.xml", "ld-two-connections-from-one-contact.xml", "ld-two-connections-into-one-box-pin.xml"):
+    try:
+        rendered = box_art(name)
+    except RuntimeError:
+        rendered = None
+    check("identical branches: " + name + " renders", rendered is not None)
+
+# A box whose only reader is a side pin's caption, reached through a parallel
+# branch, was named in the caption and drawn nowhere, and the caption listed the
+# box's own enable as a term of the pin's condition. It is hoisted and drawn.
+nested_only_art = box_art("ld-operator-only-in-a-nested-caption.xml")
+check_equal("nested caption: both ADD boxes are drawn", title_rows(nested_only_art, "ADD #1") + title_rows(nested_only_art, "ADD #2"), 2)
+check(
+    "nested caption: the caption reads the box, not its enable",
+    any("(ADD#2.Out1 OR xC) AND xM" + U["H"] * 2 + U["PIN_L"] + "In1" in l for l in nested_only_art),
+)
+
 # A box whose side pin reads a timer was rebuilt differently for its second
 # reader: the first copy hoisted the timer, the second only named it. The copies
 # no longer drew the same, so the AND box was drawn twice.

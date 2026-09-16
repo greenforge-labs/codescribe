@@ -259,9 +259,12 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
             if not node.instance_name:
                 drawn.named.add(node.local_id)
             return _block_reference(node, via_pin)
+        drawn.copied.add(node.local_id)
     else:
         drawn.order[node.local_id] = len(drawn.order)
     drawn.pins[node.local_id] = read_pin
+    copy = drawn.builds.get(node.local_id, 0)
+    drawn.builds[node.local_id] = copy + 1
 
     power_expr = Empty()
     power_pin = None
@@ -368,6 +371,8 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
         pin_blocks=pin_blocks,
         local_id=node.local_id,
         ordinal=node.ordinal,
+        power_len=len(power_expr.items) if isinstance(power_expr, Series) else (0 if isinstance(power_expr, Empty) else 1),
+        copy=copy,
     )
     return series([power_expr, element])
 
@@ -393,10 +398,15 @@ def _pin_expr_text(expr, hoisted):
             if isinstance(item, Element) and item.kind == BLOCK:
                 cut = index
         if cut < 0:
-            return expr_to_text(expr)
+            # No box directly on this wire, but a parallel branch on it can
+            # hold one, and that box is hoisted the same way. Flattening the
+            # branch whole named the box and never drew it.
+            parts = [part for part in (_pin_expr_text(item, hoisted) for item in items) if part]
+            return " AND ".join(parts)
         hoisted.append(series(items[: cut + 1]))
-        parts = [part for part in (expr_to_text(item) for item in items[cut:]) if part]
-        return " AND ".join(parts)
+        parts = [expr_to_text(items[cut])]
+        parts += [part for part in (_pin_expr_text(item, hoisted) for item in items[cut + 1 :]) if part]
+        return " AND ".join([part for part in parts if part])
     if isinstance(expr, Parallel):
         parts = [part for part in (_pin_expr_text(branch, hoisted) for branch in expr.branches) if part]
         return "(" + " OR ".join(parts) + ")"
@@ -477,13 +487,21 @@ class _Built(object):
         # localIds of boxes with no instance name that the text names - in a
         # reference to a pin, or anywhere in a side pin's caption
         self.named = set()
+        # localIds of boxes built more than once, for readers of one pin. The
+        # renderer draws the copies as one box where they fuse, and names the
+        # rest by their pin - so these may be named in the text as well.
+        self.copied = set()
+        # {localId: how many copies of the block have been built}
+        self.builds = {}
 
 
 def _number_named_boxes(logic, find, built):
     """Give an ordinal to each box that its type alone would not identify.
 
     Only in a network holding two or more boxes of one type with no instance
-    name, and only where the text names one of them; everywhere else a box is
+    name, and only where the text names one of them or may name one: a box
+    built more than once can be named by the renderer, which decides that only
+    when it draws, after the names are written. Everywhere else a box is
     written as it always was. Numbered in the order the boxes are first built,
     which is fixed by the export and so stable from one export to the next.
     Returns True when any box was numbered, so the networks must be rebuilt.
@@ -495,7 +513,7 @@ def _number_named_boxes(logic, find, built):
 
     numbered = False
     for group in groups.values():
-        if len(group) < 2 or not any(node.local_id in built.named for node in group):
+        if len(group) < 2 or not any(node.local_id in built.named or node.local_id in built.copied for node in group):
             continue
         # A box never built draws nowhere; it goes last, in export order.
         group.sort(key=lambda node: (node.local_id not in built.order, built.order.get(node.local_id, 0)))

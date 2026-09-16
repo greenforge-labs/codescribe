@@ -237,7 +237,10 @@ def assemble_networks(nodes, root_of, outputs_by_root, label_roots=()):
     for node in nodes:
         if node.kind in (COMMENT, TITLE):
             index = 0 if node.kind == COMMENT else 1
-            if header[index] is not None:
+            # A header comes before its network's label, so one arriving after a
+            # carried label heads the next network: the label's ends here.
+            carries_label = any(label_name(tree) is not None for tree in carried)
+            if header[index] is not None or carries_label:
                 networks.append(_network(header, list(carried)))
                 del carried[:]
                 header = [None, None]
@@ -249,6 +252,13 @@ def assemble_networks(nodes, root_of, outputs_by_root, label_roots=()):
             continue
         seen.add(root)
         if root in label_roots:
+            # A network has one label. A second arriving before any logic means
+            # the first labelled a network with none, which ends here - carried
+            # on, the second label was left in the next network's body.
+            if any(label_name(tree) is not None for tree in carried):
+                networks.append(_network(header, list(carried)))
+                del carried[:]
+                header = [None, None]
             carried.extend(outputs_by_root[root])
             continue
 
@@ -536,10 +546,20 @@ class Element(object):
         pin_marks=None,
         local_id=None,
         ordinal=None,
+        power_len=0,
+        copy=0,
     ):
         self.kind = kind
+        # Blocks only: 0 for the first copy of the box the parser built, 1 for
+        # the next, and so on. Only the first carries the instance boxes
+        # upstream of it; a later copy names them. See ld_render._keep_first.
+        self.copy = copy
         # Blocks only; see box_name.
         self.ordinal = ordinal
+        # Blocks only: how many items directly before the box in its rung are
+        # the wire that powers it. A later copy of the box is replaced by a
+        # reference, and that wire goes with it, since it belongs to the box.
+        self.power_len = power_len
         # The localId of the PLCopen node this element was built from. The
         # parser builds one branch per sink, so one node can arrive as several
         # copies; this is what says they are one element in the editor. Two
