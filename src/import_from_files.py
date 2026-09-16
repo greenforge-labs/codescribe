@@ -12,6 +12,7 @@ from entrypoint import (
 from import_export import *
 from util import *
 
+SKIP_NAMES = ["Library Information"]
 
 def first_word_of_line_iter(f):
     for line in f.readlines():
@@ -112,5 +113,9 @@ def import_lib_from_files(project):
 
     # Service/manager objects are not in OBJECT_TYPE_TO_EXPORT_FUNCTION, so they are
     # left in place here (they are ignored by the lib export too).
-    remove_tracked_objects(project.get_children())
-    import_directory(pous_folder, project)
+    tracked_children = [obj for obj in project.get_children() if obj.get_name() not in SKIP_NAMES]
+    remove_tracked_objects(tracked_children)
+
+    for child in sorted(os.listdir(pous_folder), key=lambda x: x.count(".")):
+        if os.path.splitext(child)[0] not in SKIP_NAMES:
+            import_directory_child(child, pous_folder, project)
