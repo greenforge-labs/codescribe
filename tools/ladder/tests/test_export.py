@@ -811,6 +811,53 @@ try:
 finally:
     shutil.rmtree(workspace)
 
+
+# --- the re-include keeps CODESYS working files out of the repo --------------
+
+# .gitignore re-includes the whole of GraphicalTesting/ so that no generic
+# pattern drops a POU from the tracked export. That re-include is the last
+# pattern to match there, so it also cancelled *.project, *.opt and *.~u, which
+# exist because those files carry the controller serial and gateway address,
+# and "git add -A" then staged them. Asked of git itself, since only git knows
+# which pattern wins. -q, not -v: -v exits 0 on a negated match as well.
+# --no-index, because git never reports a path it already tracks as ignored,
+# so without it the check on the tracked template could not fail.
+def git_ignores(path):
+    import subprocess
+
+    devnull = open(os.devnull, "w")
+    try:
+        return subprocess.call(
+            ["git", "check-ignore", "-q", "--no-index", path], cwd=REPO, stdout=devnull, stderr=devnull
+        )
+    finally:
+        devnull.close()
+
+
+try:
+    have_git = git_ignores(".gitignore") in (0, 1)
+except Exception:
+    have_git = False
+
+if not have_git:
+    print("SKIP    .gitignore checks: git is not available here")
+else:
+    APPLICATION = "GraphicalTesting/StandardPLC/application"
+    for path in (
+        APPLICATION + "/Main.project",
+        APPLICATION + "/Main.opt",
+        APPLICATION + "/Main.project.~u",
+        APPLICATION + ".codescribe_staging/Main.xml",
+        APPLICATION + ".codescribe_backup/Main.xml",
+    ):
+        check_equal("ignored inside the export: " + path, git_ignores(path), 0)
+    for path in (
+        APPLICATION + "/PLC_PRG.st",
+        APPLICATION + "/lib/Helper.st",
+        "GraphicalTesting_template_v1.project",
+    ):
+        check_equal("tracked: " + path, git_ignores(path), 1)
+
 print("")
 if failures:
     print("%d check(s) failed" % len(failures))

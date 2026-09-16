@@ -206,3 +206,11 @@ cython_debug/
 !GraphicalTesting/**
 GraphicalTesting/*/devices/
 GraphicalTesting/*/communication/
+# The re-include above is the last pattern to match inside the export, so it
+# cancels the CODESYS working-file rules at the top of this file as well. Those
+# carry the controller serial and gateway address; exclude them again here.
+GraphicalTesting/**/*.project
+GraphicalTesting/**/*.opt
+GraphicalTesting/**/*.~u
+GraphicalTesting/**/*.codescribe_staging/
+GraphicalTesting/**/*.codescribe_backup/
