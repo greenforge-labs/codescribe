@@ -112,9 +112,37 @@ class Node(object):
         self.negated_outputs = negated_outputs if negated_outputs is not None else set()
         # blocks only: {pin: "set" | "reset"} for inline assignments that store
         self.stored_outputs = dict(stored_outputs) if stored_outputs is not None else {}
+        # blocks only: set by the network builder; see box_name
+        self.ordinal = None
 
     def __repr__(self):
         return "Node(%s, %s, %r, inputs=%r)" % (self.local_id, self.kind, self.label, self.inputs)
+
+
+def box_name(box):
+    """The name a box is written under when the text names it instead of a wire.
+
+    An instance has its own name. A box without one - an operator, or an
+    EXECUTE box - is named by its type, and two such boxes of one type in one
+    network would then be indistinguishable: rewiring a coil from one to the
+    other would change nothing in the export. So where a network holds two or
+    more of them and one is named, each carries an ordinal, printed after its
+    type in its title and in every reference to it.
+    """
+    if box.instance_name:
+        return box.instance_name
+    base = box.type_name or "?"
+    if box.ordinal:
+        return "%s#%d" % (base, box.ordinal)
+    return base
+
+
+def _numbered_type(box):
+    """A box title's type part: 'ADD', or 'ADD #2' when it carries an ordinal."""
+    base = box.type_name or "?"
+    if box.ordinal:
+        return "%s #%d" % (base, box.ordinal)
+    return base
 
 
 def component_finder(nodes):
@@ -376,6 +404,8 @@ class Call(object):
         # none; a block read through two of its pins has two, and is still one
         # box, called once.
         self.wired_outputs = set(wired_outputs) if wired_outputs is not None else set()
+        # Set by the renderer; see box_name.
+        self.ordinal = None
 
     @property
     def output_wired(self):
@@ -386,7 +416,7 @@ class Call(object):
     def title(self):
         if self.instance_name:
             return self.instance_name + " : " + (self.type_name or "?")
-        return self.type_name or "?"
+        return _numbered_type(self)
 
     @property
     def is_operator(self):
@@ -504,8 +534,17 @@ class Element(object):
         st_code=None,
         pin_feeds=None,
         pin_marks=None,
+        local_id=None,
+        ordinal=None,
     ):
         self.kind = kind
+        # Blocks only; see box_name.
+        self.ordinal = ordinal
+        # The localId of the PLCopen node this element was built from. The
+        # parser builds one branch per sink, so one node can arrive as several
+        # copies; this is what says they are one element in the editor. Two
+        # nodes that draw the same are still two elements.
+        self.local_id = local_id
         self.label = label
         self.negated = negated
         self.edge = edge
@@ -552,7 +591,9 @@ class Element(object):
         """Caption drawn above a block: 'TON_0 : TON', or just 'GT'."""
         if self.instance_name:
             return self.instance_name + " : " + (self.type_name or "?")
-        return self.type_name or self.label or "?"
+        if self.type_name:
+            return _numbered_type(self)
+        return self.label or "?"
 
     def __repr__(self):
         return "Element(%s, %r)" % (self.kind, self.label)

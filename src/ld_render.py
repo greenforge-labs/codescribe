@@ -411,25 +411,26 @@ def _render(expr):
     raise TypeError("cannot render %r" % (expr,))
 
 
-def _signature(expr):
-    """A hashable structural fingerprint, so equal drawn elements can be spotted.
+def _identity(expr):
+    """Which elements an expression is made of, so copies of one node can be spotted.
 
-    Two elements with the same fingerprint render identically, which is what
-    lets a shared prefix be pulled out of parallel branches without changing
-    what any branch draws.
+    The parser builds one branch per sink, so a node feeding several sinks
+    arrives as one copy per branch, and those copies are one element in the
+    editor. What an element draws does not decide this: two contacts on one
+    variable, or two EXECUTE boxes with one body, draw the same and are still
+    two elements. Treating them as one deleted the second coil of a double coil.
+    So the key is the node's localId - and, for a box, the pin it is read
+    through, since a box read through two pins does not continue one wire.
     """
     if isinstance(expr, Series):
-        return ("series",) + tuple(_signature(item) for item in expr.items)
+        return ("series",) + tuple(_identity(item) for item in expr.items)
     if isinstance(expr, Parallel):
-        return ("parallel",) + tuple(_signature(branch) for branch in expr.branches)
+        return ("parallel",) + tuple(_identity(branch) for branch in expr.branches)
     if isinstance(expr, Element):
-        return (
-            "element", expr.kind, expr.label, expr.negated, expr.edge, expr.storage,
-            expr.type_name, expr.instance_name, tuple(expr.input_pins), tuple(expr.output_pins),
-            expr.active_output, expr.output_wired, expr.power_negated, expr.power_edge,
-            tuple(sorted(expr.negated_outputs)), tuple(sorted(expr.stored_outputs.items())),
-            tuple(expr.st_code), tuple(_signature(block) for block in expr.pin_blocks),
-        )
+        if expr.local_id is None:
+            # Built from no node, such as a cycle marker: it is only itself.
+            return ("element", id(expr))
+        return ("element", expr.kind, expr.local_id, expr.active_output, expr.label)
     return ("empty",)
 
 
@@ -442,6 +443,10 @@ def _factor(expr):
     draws the shared part once and splits after it; factoring the common
     prefix of the branches produces exactly that. Power flow is unchanged:
     "(P AND a) OR (P AND b)" and "P AND (a OR b)" drive the same rung.
+
+    Only copies of one node are pulled out. The first copy is the one kept:
+    a box hoists the boxes feeding its side pins on the rung that builds it
+    first, and a later copy only names them.
     """
     if isinstance(expr, Series):
         return series([_factor(item) for item in expr.items])
@@ -455,8 +460,8 @@ def _factor(expr):
         prefix = []
         while all(part for part in parts):
             first = parts[0][0]
-            signature = _signature(first)
-            if any(_signature(part[0]) != signature for part in parts):
+            identity = _identity(first)
+            if any(_identity(part[0]) != identity for part in parts):
                 break
             prefix.append(first)
             parts = [part[1:] for part in parts]
@@ -504,9 +509,10 @@ def _render_wire(expr):
 
 
 def _block_prefix_key(rung):
-    """The signature of a rung's head up to and including its first block.
+    """The identity of a rung's head up to and including its first block.
 
-    Two rungs with the same key begin with the same chain into the same box.
+    Two rungs with the same key begin with the same chain into the same box -
+    the same nodes, not merely nodes that draw alike.
     A box read by several sinks is one box that runs once, so those rungs are
     the branches of one wire that splits after it; grouping them by this key
     lets the split be drawn once. A rung with no block returns None and is
@@ -518,7 +524,7 @@ def _block_prefix_key(rung):
     for item in items:
         prefix.append(item)
         if isinstance(item, Element) and item.kind == BLOCK:
-            return tuple(_signature(part) for part in prefix)
+            return tuple(_identity(part) for part in prefix)
     return None
 
 

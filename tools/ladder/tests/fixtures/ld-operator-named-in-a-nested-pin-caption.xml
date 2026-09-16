@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xGo</variable></contact>
+<inVariable localId="11"><connectionPointOut/><expression>xQ</expression></inVariable>
+<inVariable localId="14"><connectionPointOut/><expression>xS</expression></inVariable>
+<inVariable localId="15"><connectionPointOut/><expression>10</expression></inVariable>
+<block localId="3" typeName="AND"><inputVariables><variable formalParameter="In1"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="11"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<coil localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="Out1"/></connectionPointIn><connectionPointOut/><variable>xA</variable></coil>
+<block localId="13" typeName="AND"><inputVariables><variable formalParameter="In1"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="14"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<coil localId="16"><connectionPointIn><connection refLocalId="13" formalParameter="Out1"/></connectionPointIn><connectionPointOut/><variable>xB</variable></coil>
+<contact localId="30"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xC</variable></contact>
+<contact localId="31"><connectionPointIn><connection refLocalId="3" formalParameter="Out1"/><connection refLocalId="30"/></connectionPointIn><connectionPointOut/><variable>xM</variable></contact>
+<contact localId="2"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xE</variable></contact>
+<block localId="20" typeName="CTU" instanceName="ctr"><inputVariables><variable formalParameter="CU"><connectionPointIn><connection refLocalId="2"/></connectionPointIn></variable><variable formalParameter="RESET"><connectionPointIn><connection refLocalId="31"/></connectionPointIn></variable><variable formalParameter="PV"><connectionPointIn><connection refLocalId="15"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Q"><connectionPointOut/></variable><variable formalParameter="CV"><connectionPointOut/></variable></outputVariables></block>
+<coil localId="21"><connectionPointIn><connection refLocalId="20" formalParameter="Q"/></connectionPointIn><connectionPointOut/><variable>xFull</variable></coil>
+<rightPowerRail localId="9"><connectionPointIn></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

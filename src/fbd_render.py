@@ -12,7 +12,7 @@ from __future__ import unicode_literals
 import charset
 from layout import Block, centred, stack
 from ld_render import network_headers, render_declaration
-from model import Assign, Call, Jump, Label, OutputRef, Signal
+from model import Assign, Call, Jump, Label, OutputRef, Signal, box_name
 
 
 def _render_signal(node):
@@ -238,15 +238,31 @@ def _render_call(call, read_pin, drawn, subs=None):
     return Block(lines, connect_row, pin_rows)
 
 
+# The boxes without an instance name that the render in progress named in text,
+# by id. render_network clears it before each render and reads it after; it is
+# module state only because a render copies its set of drawn boxes on the way.
+_named = []
+
+
 def _reference(call, pin):
     """The name of a box already drawn in this network, on the pin being read.
 
-    Only an instance can be referred to this way: an operator has no name to
-    print, and being stateless it costs nothing to draw again.
+    An instance is named by its instance. An operator has no name to print,
+    and being stateless it costs nothing to draw again - so it is redrawn. A
+    box that carries inline ST, such as EXECUTE, has no instance either, but it
+    is not stateless: its body runs once, and a redraw prints the body again,
+    which reads as the statements running twice. It is named by its type, the
+    way the ladder renderer names a box it does not redraw, and numbered by
+    render_network when its type alone would not say which box it is.
     """
-    if not call.instance_name:
+    if call.instance_name:
+        base = call.instance_name
+    elif call.st_code:
+        base = box_name(call)
+        _named.append(id(call))
+    else:
         return None
-    text = call.instance_name + "." + pin if pin else call.instance_name
+    text = base + "." + pin if pin else base
     if pin in call.negated_outputs:
         text = "NOT " + text
     return text
@@ -664,7 +680,10 @@ def _render_joined(readers, call, drawn):
     """
     chars = charset.active()
     drawn.add(id(call))
-    source = _render_call(call, None, set())
+    # Against this network's drawn boxes, not a fresh set: a box drawn in the
+    # shared box's inputs is on the page, and a reader elsewhere that reaches it
+    # must name it rather than draw it - and an EXECUTE body - a second time.
+    source = _render_call(call, None, drawn)
     default_row = source.connect_row
 
     for every_pin in (True, False):
@@ -741,10 +760,80 @@ def render_network(network):
     behind the store its ENO feeds, or behind another box.
     """
     outputs = getattr(network, "outputs", [network])
+    unnamed = _unnamed_calls(outputs)
+    for call in unnamed:
+        call.ordinal = None
+
     # Per network: a box drawn for one output must not be drawn again for the
     # next, but a box shared between two networks is two boxes on the page.
-    drawn = set()
-    return _render_outputs(outputs, drawn)
+    del _named[:]
+    lines = _render_outputs(outputs, set())
+    # Which boxes the text names is known only once the network is drawn, and
+    # a box's title is written when it is drawn - so a numbered network draws
+    # twice. See box_name.
+    if _number_named_calls(unnamed, set(_named)):
+        del _named[:]
+        lines = _render_outputs(outputs, set())
+    return lines
+
+
+def _unnamed_calls(outputs):
+    """The boxes with no instance name in a network, in the order the trees reach them.
+
+    The output trees in order, and within a tree a box's inputs before the box.
+    That is fixed by the network, not by where the renderer places a box: a
+    shared box is drawn first, so a box in its inputs can be drawn above one
+    numbered before it.
+    """
+    found = []
+    seen = set()
+
+    def walk(node):
+        inner = node.call if isinstance(node, OutputRef) else node
+        if isinstance(inner, Call):
+            if id(inner) in seen:
+                return
+            seen.add(id(inner))
+            for _pin, source in inner.inputs:
+                if source is not None:
+                    walk(source)
+            if not inner.instance_name:
+                found.append(inner)
+        elif isinstance(node, Assign):
+            if node.source is not None:
+                walk(node.source)
+        elif isinstance(node, Jump):
+            if node.condition is not None:
+                walk(node.condition)
+
+    for tree in outputs:
+        walk(tree)
+    return found
+
+
+def _number_named_calls(unnamed, named):
+    """Number the boxes of each type that the text names ambiguously.
+
+    Only a type with two or more such boxes in the network, one of which the
+    text names. Returns True when any box was numbered.
+    """
+    groups = {}
+    order = []
+    for call in unnamed:
+        if call.type_name not in groups:
+            groups[call.type_name] = []
+            order.append(call.type_name)
+        groups[call.type_name].append(call)
+
+    numbered = False
+    for type_name in order:
+        group = groups[type_name]
+        if len(group) < 2 or not any(id(call) in named for call in group):
+            continue
+        for index, call in enumerate(group):
+            call.ordinal = index + 1
+        numbered = True
+    return numbered
 
 
 def render_pou(pou):

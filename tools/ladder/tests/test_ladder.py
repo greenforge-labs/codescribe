@@ -591,6 +591,99 @@ check("unnamed pin: no untee'd wire runs from the box", not any("ENO" + U["V"] +
 check("unnamed pin: RETURN and the coil are both drawn", any("<RETURN>" in l for l in unnamed_art) and any("( )" in l for l in unnamed_art))
 
 
+# --- elements are the same only when they are the same node ------------------
+
+# The rung merge and the shared-prefix factoring decided that two elements were
+# one by comparing what they draw. Two contacts on one variable, or two boxes of
+# one type with one body, draw the same and are still two elements in the
+# editor. Treating them as one deleted the second coil of a double coil, and
+# fused two EXECUTE boxes into one. Sameness is the node's localId now.
+DOUBLE_COIL = os.path.join(FIXTURES, "ld-double-coil.xml")
+double_coil_art = render_pou(parse_pous(DOUBLE_COIL)[0])
+check_equal("double coil: both coils are drawn", len([l for l in double_coil_art if "( )" in l]), 2)
+check_equal("double coil: both contacts are drawn", len([l for l in double_coil_art if "xGo" in l]), 2)
+check_equal(
+    "double coil: each coil reaches the right rail",
+    len([l for l in double_coil_art if "( )" in l and l.rstrip().endswith(U["T_LEFT"])]),
+    2,
+)
+
+ALIKE = os.path.join(FIXTURES, "ld-two-execute-boxes-alike.xml")
+alike_art = render_pou(parse_pous(ALIKE)[0])
+check_equal("alike boxes: two EXECUTE boxes are drawn", len([l for l in alike_art if l.strip(U["V"] + " ") == "EXECUTE"]), 2)
+check_equal("alike boxes: each body is drawn", len([l for l in alike_art if "nCount := nCount + 1;" in l]), 2)
+
+# The control: one EXECUTE box read by two coils is still one box, one body.
+EXECUTE_TWO_COILS = os.path.join(FIXTURES, "ld-execute-two-coils.xml")
+execute_two_coils_art = render_pou(parse_pous(EXECUTE_TWO_COILS)[0])
+check_equal("one execute, two coils: one box", len([l for l in execute_two_coils_art if l.strip(U["V"] + " ") == "EXECUTE"]), 1)
+check_equal("one execute, two coils: the body once", len([l for l in execute_two_coils_art if "nCount := nCount + 1;" in l]), 1)
+check("one execute, two coils: both coils", any("xA" in l for l in execute_two_coils_art) and any("xB" in l for l in execute_two_coils_art))
+
+# One box read on two different pins was redrawn for the second pin, because an
+# operator has no instance to name, and the copies differ in their active pin so
+# nothing merged them. The ADD box was drawn twice: two additions for one.
+TWO_PINS = os.path.join(FIXTURES, "ld-operator-read-on-two-pins.xml")
+two_pins_art = render_pou(parse_pous(TWO_PINS)[0])
+check_equal("operator on two pins: the box is drawn once", len([l for l in two_pins_art if "In3" in l]), 1)
+check("operator on two pins: the coil is drawn", any("xDone" in l for l in two_pins_art))
+check("operator on two pins: the store is drawn", any("iSum" in l for l in two_pins_art))
+check(
+    "operator on two pins: the coil reads the box's ENO by name",
+    any("[ADD.ENO]" in l and "( )" in l for l in two_pins_art),
+)
+
+# Named by type alone, two ADD boxes in one network were indistinguishable:
+# "[ADD.ENO]" twice, and moving a coil from one box to the other changed
+# nothing in the export. Where the text names one of two or more unnamed boxes
+# of a type, each is numbered in the order it is built, on its title and in
+# every reference to it.
+TWO_OPERATORS = os.path.join(FIXTURES, "ld-two-operators-each-read-on-two-pins.xml")
+TWO_OPERATORS_SWAPPED = os.path.join(FIXTURES, "ld-two-operators-each-read-on-two-pins-swapped.xml")
+two_operators_art = render_pou(parse_pous(TWO_OPERATORS)[0])
+two_operators_swapped_art = render_pou(parse_pous(TWO_OPERATORS_SWAPPED)[0])
+check("numbered boxes: the first box is titled #1", any(l.strip(U["V"] + " ") == "ADD #1" for l in two_operators_art))
+check("numbered boxes: the second box is titled #2", any(l.strip(U["V"] + " ") == "ADD #2" for l in two_operators_art))
+check_equal(
+    "numbered boxes: each coil names its own box",
+    [
+        ("[ADD#1.ENO]" in two_operators_art[i + 1], "[ADD#2.ENO]" in two_operators_art[i + 1])
+        for i, l in enumerate(two_operators_art[:-1])
+        if l.strip(U["V"] + " ") in ("xA", "xB")
+    ],
+    [(True, False), (False, True)],
+)
+check("numbered boxes: no reference is left unnumbered", not any("[ADD.ENO]" in l for l in two_operators_art))
+check("numbered boxes: swapping the coils between the boxes changes the export", two_operators_art != two_operators_swapped_art)
+# A box the text names only inside a side pin's caption - here through a
+# parallel branch into a counter's RESET - is named all the same, so it is
+# numbered too. It was not, and rewiring the reset from one AND box to the
+# other changed nothing in the export.
+IN_CAPTION = os.path.join(FIXTURES, "ld-operator-named-in-a-nested-pin-caption.xml")
+IN_CAPTION_SWAPPED = os.path.join(FIXTURES, "ld-operator-named-in-a-nested-pin-caption-swapped.xml")
+in_caption_art = render_pou(parse_pous(IN_CAPTION)[0])
+in_caption_swapped_art = render_pou(parse_pous(IN_CAPTION_SWAPPED)[0])
+check("numbered in a caption: both boxes are numbered", any(l.strip(U["V"] + " ") == "AND #1" for l in in_caption_art) and any(l.strip(U["V"] + " ") == "AND #2" for l in in_caption_art))
+check("numbered in a caption: the caption names a numbered box", any("RESET" in l and "AND#1.Out1" in l for l in in_caption_art))
+check("numbered in a caption: moving the reset to the other box changes the export", in_caption_art != in_caption_swapped_art)
+
+# A single box of a type is not numbered, and neither are two that the text never names.
+check("numbered boxes: a lone box keeps its plain name", not any("#" in l for l in two_pins_art))
+check("numbered boxes: boxes the text never names are not numbered", not any("#" in l for l in alike_art))
+
+# A box whose side pin reads a timer was rebuilt differently for its second
+# reader: the first copy hoisted the timer, the second only named it. The copies
+# no longer drew the same, so the AND box was drawn twice.
+SIDE_INSTANCE = os.path.join(FIXTURES, "ld-operator-with-instance-side-pin.xml")
+side_instance_art = render_pou(parse_pous(SIDE_INSTANCE)[0])
+check_equal("operator with an instance side pin: the box is drawn once", len([l for l in side_instance_art if "In1   Out1" in l]), 1)
+check_equal("operator with an instance side pin: the timer is drawn once", len([l for l in side_instance_art if "tmr : TON" in l]), 1)
+check(
+    "operator with an instance side pin: both coils",
+    any("xA" in l for l in side_instance_art) and any("xB" in l for l in side_instance_art),
+)
+
+
 # --- a side pin fed by a contact is drawn as that contact --------------------
 
 # A reset or enable read off the rail by a contact was flattened into the pin

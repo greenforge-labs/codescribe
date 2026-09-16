@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xGo</variable></contact>
+<inVariable localId="10"><connectionPointOut/><expression>iA</expression></inVariable>
+<inVariable localId="11"><connectionPointOut/><expression>iB</expression></inVariable>
+<block localId="3" typeName="ADD"><inputVariables><variable formalParameter="EN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="In1"><connectionPointIn><connection refLocalId="10"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="11"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="ENO"><connectionPointOut/></variable><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<coil localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="ENO"/></connectionPointIn><connectionPointOut/><variable>xA</variable></coil>
+<outVariable localId="6"><connectionPointIn><connection refLocalId="3" formalParameter="Out1"/></connectionPointIn><expression>iSum</expression></outVariable>
+<block localId="13" typeName="ADD"><inputVariables><variable formalParameter="EN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="In1"><connectionPointIn><connection refLocalId="11"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="10"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="ENO"><connectionPointOut/></variable><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<coil localId="14"><connectionPointIn><connection refLocalId="13" formalParameter="ENO"/></connectionPointIn><connectionPointOut/><variable>xB</variable></coil>
+<outVariable localId="16"><connectionPointIn><connection refLocalId="13" formalParameter="Out1"/></connectionPointIn><expression>iDiff</expression></outVariable>
+<rightPowerRail localId="9"><connectionPointIn><connection refLocalId="4"/><connection refLocalId="14"/></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

@@ -28,6 +28,7 @@ from model import (
     Pou,
     Series,
     assemble_networks,
+    box_name,
     component_finder,
     is_simple_term,
     parallel,
@@ -139,7 +140,14 @@ def _to_element(node):
         negated=node.negated,
         edge=node.edge,
         storage=node.storage,
+        local_id=node.local_id,
     )
+
+
+# While the networks are built: the set of localIds of boxes with no instance
+# name that a caption has named, wherever in the caption they sit. None at any
+# other time, such as when the ST renderer flattens an expression.
+_naming = None
 
 
 def expr_to_text(expr):
@@ -159,7 +167,9 @@ def expr_to_text(expr):
         return "(" + " OR ".join(parts) + ")"
     if isinstance(expr, Element):
         if expr.kind == BLOCK:
-            base = expr.instance_name or expr.type_name or "?"
+            base = box_name(expr)
+            if _naming is not None and not expr.instance_name and expr.local_id is not None:
+                _naming.add(expr.local_id)
             text = (base + "." + expr.active_output) if expr.active_output else base
             # The negation bubble on the consumed output inverts what leaves
             # the box - on this flattened path just like on the power flow.
@@ -201,11 +211,12 @@ def _block_reference(node, via_pin):
     pin = via_pin
     if pin is None and node.outputs:
         pin = node.outputs[0][0]
-    base = node.instance_name or node.type_name or "?"
+    base = box_name(node)
     return Element(
         kind=IN_VARIABLE,
         label=(base + "." + pin) if pin else base,
         negated=pin in node.negated_outputs,
+        local_id=node.local_id,
     )
 
 
@@ -232,14 +243,25 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
     an inVariable are parameters, not power, so the first genuinely wired pin
     wins and the rest become captions inside the box.
     """
-    if node.local_id in drawn and node.instance_name:
+    read_pin = via_pin
+    if read_pin is None and node.outputs:
+        read_pin = node.outputs[0][0]
+    if node.local_id in drawn.pins:
         # Drawn once already. A stateful function block is one box that runs
         # once, so the next reader names the pin it takes. A stateless
-        # operator has no instance to name - "OR.Out1" points at no variable,
-        # and would be ambiguous with a second OR - so it is redrawn instead,
-        # the rule the FBD renderer already follows.
-        return _block_reference(node, via_pin)
-    drawn.add(node.local_id)
+        # operator has no instance to name - "OR.Out1" points at no variable -
+        # so a reader of the same pin redraws it, and the rung merge then draws
+        # the copies as one box. A reader of a different pin cannot merge: the
+        # copies differ in the pin the wire leaves by, and a redraw is a second
+        # box where the editor has one. That reader names the pin instead, and
+        # box_name numbers the box if its type alone would not say which.
+        if node.instance_name or drawn.pins[node.local_id] != read_pin:
+            if not node.instance_name:
+                drawn.named.add(node.local_id)
+            return _block_reference(node, via_pin)
+    else:
+        drawn.order[node.local_id] = len(drawn.order)
+    drawn.pins[node.local_id] = read_pin
 
     power_expr = Empty()
     power_pin = None
@@ -344,6 +366,8 @@ def _build_block(node, by_id, visiting, via_pin, drawn, consumed=None):
         negated_outputs=set(node.negated_outputs),
         stored_outputs=node.stored_outputs,
         pin_blocks=pin_blocks,
+        local_id=node.local_id,
+        ordinal=node.ordinal,
     )
     return series([power_expr, element])
 
@@ -413,7 +437,7 @@ def _build_expr(node, by_id, visiting, via_pin=None, drawn=None, consumed=None):
     is drawn and called once.
     """
     if drawn is None:
-        drawn = set()
+        drawn = _Built()
     if node.local_id in visiting:
         # Feedback loops are not legal in a rung, but a malformed export should
         # produce a visible marker rather than blow the stack.
@@ -438,6 +462,47 @@ def _build_expr(node, by_id, visiting, via_pin=None, drawn=None, consumed=None):
         return incoming
 
     return series([incoming, _to_element(node)])
+
+
+class _Built(object):
+    """The blocks built so far for one POU."""
+
+    def __init__(self):
+        # {localId: the pin the block was first built for}
+        self.pins = {}
+        # {localId: the order blocks were first built in}. That follows the
+        # rungs in export order; a box hoisted into a side pin is built after
+        # the box that reads it, though it is drawn above it.
+        self.order = {}
+        # localIds of boxes with no instance name that the text names - in a
+        # reference to a pin, or anywhere in a side pin's caption
+        self.named = set()
+
+
+def _number_named_boxes(logic, find, built):
+    """Give an ordinal to each box that its type alone would not identify.
+
+    Only in a network holding two or more boxes of one type with no instance
+    name, and only where the text names one of them; everywhere else a box is
+    written as it always was. Numbered in the order the boxes are first built,
+    which is fixed by the export and so stable from one export to the next.
+    Returns True when any box was numbered, so the networks must be rebuilt.
+    """
+    groups = {}
+    for node in logic:
+        if node.kind == BLOCK and not node.instance_name:
+            groups.setdefault((find(node.local_id), node.type_name), []).append(node)
+
+    numbered = False
+    for group in groups.values():
+        if len(group) < 2 or not any(node.local_id in built.named for node in group):
+            continue
+        # A box never built draws nowhere; it goes last, in export order.
+        group.sort(key=lambda node: (node.local_id not in built.order, built.order.get(node.local_id, 0)))
+        for index, node in enumerate(group):
+            node.ordinal = index + 1
+        numbered = True
+    return numbered
 
 
 def build_networks(nodes):
@@ -482,21 +547,35 @@ def build_networks(nodes):
         for connection in node.inputs:
             consumed.add(connection.ref_id)
 
-    # A block read by several outputs is built once, on the first rung that
-    # reaches it; the rest name its output pin. The set is per POU, and a
-    # block belongs to one network, so this cannot leak across networks.
-    drawn = set()
+    def build_rungs():
+        # A block read by several outputs is built once, on the first rung that
+        # reaches it; the rest name its output pin. Per POU, and a block belongs
+        # to one network, so this cannot leak across networks.
+        global _naming
+        built = _Built()
+        rungs_by_root = {}
+        _naming = built.named
+        try:
+            for node in nodes:
+                if node.local_id in consumed or node.kind in (LEFT_RAIL, COMMENT, TITLE):
+                    # An unconnected left rail is an empty rung, not a terminal.
+                    continue
+                expr = _build_expr(node, by_id, set(), None, built, consumed)
+                if isinstance(expr, Empty):
+                    # An unconnected rail or a stray element with nothing on it.
+                    continue
+                rungs_by_root.setdefault(root_of(node), []).append(expr)
+        finally:
+            _naming = None
+        return rungs_by_root, built
 
-    rungs_by_root = {}
-    for node in nodes:
-        if node.local_id in consumed or node.kind in (LEFT_RAIL, COMMENT, TITLE):
-            # An unconnected left rail is an empty rung, not a terminal.
-            continue
-        expr = _build_expr(node, by_id, set(), None, drawn, consumed)
-        if isinstance(expr, Empty):
-            # An unconnected rail or a stray element with nothing on it.
-            continue
-        rungs_by_root.setdefault(root_of(node), []).append(expr)
+    for node in logic:
+        node.ordinal = None
+    rungs_by_root, built = build_rungs()
+    # Which boxes the text names is known only once the rungs are built, and
+    # their names are written while building - so a numbered POU builds twice.
+    if _number_named_boxes(logic, find, built):
+        rungs_by_root, built = build_rungs()
 
     # A component that is nothing but a jump label is the label of the network
     # that follows it, not a network of its own.

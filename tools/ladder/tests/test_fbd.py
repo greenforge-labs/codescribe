@@ -646,6 +646,63 @@ check("execute deep: a nested box shows its body inside", any(U["V"] + " c := 3;
 check_equal("execute deep: the body appears once", len([line for line in deep_art if "c := 3;" in line]), 1)
 
 
+# --- one EXECUTE box read from two places ------------------------------------
+
+# An EXECUTE box has no instance name, so a second reader redrew it - and once
+# the body moved inside the box, the redraw copied the body too. One box whose
+# ENO feeds a store and an AND then showed "nCount := nCount + 1;" twice, which
+# reads as a counter that advances by two each scan. The body belongs to the one
+# box; a redraw of it must not repeat the statements.
+EXECUTE_TWO = os.path.join(HERE, "fixtures", "fbd-execute-two-readers.xml")
+execute_two = parse_fbd.parse_pous(EXECUTE_TWO)[0]
+execute_two_art = fbd_render.render_network(execute_two.networks[0])
+
+check_equal(
+    "execute two readers: the body is drawn once",
+    len([line for line in execute_two_art if "nCount := nCount + 1;" in line]),
+    1,
+)
+check("execute two readers: the store is still drawn", any("> xRan" in line for line in execute_two_art))
+check("execute two readers: the AND reader is still drawn", any("> xBoth" in line for line in execute_two_art))
+check(
+    "execute two readers: the AND reads the box by name",
+    any("EXECUTE.ENO" + U["H"] * 2 + U["PIN_L"] + "In1" in line for line in execute_two_art),
+)
+
+# The same box feeding a shared timer. The timer's inputs were drawn against a
+# fresh set of drawn boxes, so the EXECUTE box inside them was never recorded,
+# and the store that also reads it drew the box - and its body - a second time.
+EXECUTE_SHARED = os.path.join(HERE, "fixtures", "fbd-execute-feeds-shared-box.xml")
+execute_shared = parse_fbd.parse_pous(EXECUTE_SHARED)[0]
+execute_shared_art = fbd_render.render_network(execute_shared.networks[0])
+
+check_equal(
+    "execute feeds a shared box: the body is drawn once",
+    len([line for line in execute_shared_art if "nCount := nCount + 1;" in line]),
+    1,
+)
+check("execute feeds a shared box: the timer is drawn", any("tmr : TON" in line for line in execute_shared_art))
+check(
+    "execute feeds a shared box: the store reads the box by name",
+    any("EXECUTE.ENO" + U["H"] * 3 + "> xRan" in line for line in execute_shared_art),
+)
+
+# Two EXECUTE boxes feeding one SUB were both named "EXECUTE.ENO", so the
+# export did not say which feeds In1 - and SUB is not commutative. Each is
+# numbered in the order the network reaches it, on its title and in the reference.
+SUB_FED = os.path.join(HERE, "fixtures", "fbd-two-execute-boxes-feed-one-sub.xml")
+SUB_FED_SWAPPED = os.path.join(HERE, "fixtures", "fbd-two-execute-boxes-feed-one-sub-swapped.xml")
+sub_fed_art = fbd_render.render_network(parse_fbd.parse_pous(SUB_FED)[0].networks[0])
+sub_fed_swapped_art = fbd_render.render_network(parse_fbd.parse_pous(SUB_FED_SWAPPED)[0].networks[0])
+check("numbered execute boxes: titled #1 and #2", [l.strip() for l in sub_fed_art if l.strip().startswith("EXECUTE #")] == ["EXECUTE #1", "EXECUTE #2"])
+check("numbered execute boxes: In1 names box 1", any("EXECUTE#1.ENO" + U["H"] * 2 + U["PIN_L"] + "In1" in l for l in sub_fed_art))
+check("numbered execute boxes: In2 names box 2", any("EXECUTE#2.ENO" + U["H"] * 2 + U["PIN_L"] + "In2" in l for l in sub_fed_art))
+check("numbered execute boxes: swapping the inputs changes the export", sub_fed_art != sub_fed_swapped_art)
+check_equal("numbered execute boxes: each body is drawn once", len([l for l in sub_fed_art if ":=" in l]), 2)
+# A lone EXECUTE box read twice keeps its plain name.
+check("numbered execute boxes: a lone box is not numbered", not any("#" in l for l in execute_two_art))
+
+
 # --- one expression reading two pins of a shared box -------------------------
 
 # xAlarm := ctr.Q AND (ctr.CV > 5). Each read of the shared box was replaced
