@@ -91,7 +91,7 @@ def ui_error_with_traceback(message):
 def open_utf8(path, mode):
     # ScriptEngine runs on Python 2.7; the builtin open() writes a byte stream and would
     # implicitly encode unicode text as ascii, crashing on Cyrillic / accented chars / smart
-    # punctuation. codecs.open with an excplicit encoding keeps everything UTF-8 round-trippable.
+    # punctuation. codecs.open with an explicit encoding keeps everything UTF-8 round-trippable.
     #
     # io.open(path, mode, encoding="utf-8") looks equivalent but is unreliable on the
     # IronPython 2.7 runtime CODESYS ScriptEngine uses: encoding resolution can silently
