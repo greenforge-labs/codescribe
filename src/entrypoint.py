@@ -11,6 +11,13 @@ def get_src_folder(project):
     return src_folder
 
 
+def get_lib_src_folder(project):
+    # Sibling of the device/application export folder so the two exports never clash.
+    working_dir = os.path.dirname(project.path)
+    project_name, _ = os.path.splitext(os.path.basename(project.path))
+    return os.path.join(working_dir, "{}.POUs".format(project_name))
+
+
 def get_device_entrypoints(project):
     children = project.get_children()
     for child in children:
