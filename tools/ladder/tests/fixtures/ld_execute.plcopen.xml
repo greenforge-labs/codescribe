@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored for review item 4.1: a box wired into another box's side pin.
+
+  An SR latch drives the RESET pin of a counter, with no negation anywhere -
+  the plainest form of the shape. Everything to the left of the latch is the
+  latch's own input, so the counter's RESET pin reads "latch.Q1" and nothing
+  else; folding the chain into the caption ("xSet AND latch.Q1") states a
+  condition the program does not have, and leaves the latch never called.
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="greenforge-labs" productName="codescribe-fixture" productVersion="1"
+              creationDateTime="2020-01-01T00:00:00"/>
+  <contentHeader name="LadderExecuteFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1"/></fbd>
+      <ld><scaling x="1" y="1"/></ld>
+      <sfc><scaling x="1" y="1"/></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="LD_EXECUTE" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="xSet">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xClear">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xCount">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="xDone">
+              <type><BOOL/></type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <LD>
+            <!-- Network 1: an EXECUTE box, whose whole body is inline ST -->
+            <leftPowerRail localId="1">
+              <position x="10" y="10"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="2" negated="false">
+              <position x="40" y="10"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="1"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>xRun</variable>
+            </contact>
+            <block localId="3" typeName="EXECUTE">
+              <position x="90" y="10"/>
+              <inputVariables>
+                <variable formalParameter="EN">
+                  <connectionPointIn>
+                    <relPosition x="0" y="10"/>
+                    <connection refLocalId="2"/>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="ENO">
+                  <connectionPointOut><relPosition x="40" y="10"/></connectionPointOut>
+                </variable>
+              </outputVariables>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation">
+                  <CallType xmlns="">execute</CallType>
+                </data>
+                <data name="http://www.3s-software.com/plcopenxml/stcode" handleUnknown="implementation">
+                  <STCode xmlns="">iCount := iCount + 1;
+IF iCount &gt; 10 THEN
+iCount := 0;
+END_IF</STCode>
+                </data>
+              </addData>
+            </block>
+          </LD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+  <instances><configurations/></instances>
+</project>

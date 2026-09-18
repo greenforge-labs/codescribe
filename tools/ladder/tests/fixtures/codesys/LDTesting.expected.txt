@@ -1,0 +1,25 @@
+(* Declaration rebuilt from the structured interface: comments, pragmas and attributes are missing; an omitted type reads UNKNOWN. *)
+PROGRAM LD_TEST
+VAR
+    Sensor1 : BOOL;
+    Sensor2 : BOOL;
+    sensor3 : BOOL;
+    PowerOn : BOOL;
+    TON_0 : TON;
+    CTU_0 : CTU;
+    PowerOff : BOOL;
+END_VAR
+
+(* Network 1 *)
+│    Sensor1   Sensor2  PowerOn
+├──┬───┤ ├───┬───┤/├──────(S)─────┤
+│  │ sensor3 │
+│  └───┤ ├───┘
+
+(* Network 2 *)
+│                   TON_0 : TON                  CTU_0 : CTU
+│   PowerOn        ┌───────────┐                ┌───────────┐  PowerOff
+├─────┤ ├──────────┤IN        Q├────────────────┤CU        Q├────(R)──────┤
+│            T#5S──┤PT       ET│  PowerOff ┤ ├──┤RESET    CV│
+│                  └───────────┘  10────────────┤PV         │
+│                                               └───────────┘

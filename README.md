@@ -61,6 +61,54 @@ Items are exported in formatted structured text (`.st`) where possible, and in n
 
 Actions and Transitions export as `.st` with the kind encoded in the filename (`MyPou.MyAction.action.st`, `MyPou.MyTransition.transition.st`). The file contains the implementation text only, as these objects have no textual declaration.
 
+Two service objects export **read-only** — written on every export, never imported (the project template carries the real objects):
+
+- The Library Manager exports its reference list as `<name>.libraries.txt` (one line per library: name, version, vendor), so a review or bench check can see the version each library resolves to - shown where CODESYS reports it, and as the requested constraint (such as `*` for newest) where it does not.
+- The Visualization Manager exports natively as `<name>.service.txt` (recursively, to take in the target and web visualization settings under it; the global hotkey/key configuration is in the manager entry itself). Importing this object raises interactive overwrite dialogs, which is why it is not round-tripped.
+
+### Reading graphical POUs
+
+Ladder and Function Block Diagram POUs have no textual implementation, so they export as native xml that git can store but nobody can review. Alongside that xml, CODESCRIBE writes a `.txt` holding the declaration and a diagram of each network:
+
+```
+(* Network 2: header text *)
+(* Comment *)
+│                   TON_0 : TON                  CTU_0 : CTU
+│   PowerOn        ┌───────────┐                ┌───────────┐  PowerOff
+├─────┤ ├──────────┤IN        Q├────────────────┤CU        Q├────(R)──────┤
+│            T#5S──┤PT       ET│  PowerOff ┤ ├──┤RESET    CV│
+│                  └───────────┘  10────────────┤PV         │
+│                                               └───────────┘
+```
+
+The declaration is copied from the original CODESYS declaration source, preserving comments, pragmas, safety-qualified types, and literal spelling. The diagram is derived from PLCopen XML. On older CODESYS versions where the plaintext declaration is unavailable, the declaration is rebuilt from the structured interface. That form cannot carry comments, pragmas or attributes, so the rendering says on its first line that it is a rebuilt one, and the export summary counts how many POUs it happened to. A variable whose type the export does not carry reads `UNKNOWN` rather than being assumed to be a `BOOL`.
+
+This file is **derived and read-only**. The native xml remains the only thing `Import From Files` reads, so editing the `.txt` changes nothing — it exists to make diffs and code review possible. Layout comes from how the elements are wired, not from their coordinates, so moving a block in the CODESYS editor produces no diff.
+
+An equivalent-Structured-Text rendering of the same networks is available but not written by the export. The ST states the logic exactly where the diagram can only approximate it - a block read through two of its output pins is one call, and no single-wire diagram can say so - but it is a rendering, not a translation, and must never be fed back into CODESYS. `tools/ladder/write_st.py` writes one from a PLCopen export when it is wanted, and its docstring says how to put it back on the export path.
+
+An EXECUTE box has no body of its own - the whole of it is inline ST carried alongside the box - so the rendering shows that text inside the box, below its pins, rather than an empty rectangle, and the equivalent ST guards it with the rung or pin condition that decides whether it runs.
+
+SFC and CFC POUs are not yet rendered; they export as native xml alone.
+
+Networks are numbered as CODESYS numbers them, so a network in the file lines up with the one in the editor. Each is headed by its title, as the editor heads it, with the network's comment on the line below; a network with no title puts its comment on the number line instead.
+
+CODESYS leaves out of the PLCopen export every network that carries no elements: an out-commented one goes entirely, comment included, and so does an empty one. The numbering comes from the native xml written beside the rendering, which lists every network the editor shows, so those keep their number and say why they have no diagram:
+
+```
+(* Network 2: Safely power off PLC when ignition is lower than 5V *)
+(* out-commented in CODESYS - does not execute; diagram not exported, see the native xml *)
+```
+
+If the two cannot be lined up, the file says so at the top and falls back to numbering in export order, rather than showing numbers that quietly disagree with the editor.
+
+To render an exported PLCopen file by hand, to get plain ASCII instead of box drawing, or to print the equivalent Structured Text the export does not write:
+
+```
+python tools/ladder/render.py --charset ascii MyPou.xml
+python tools/ladder/render.py --format st MyPou.xml
+```
+
 Visualisations export as `<name>.vis.xml`, so a `Main` visualisation cannot collide with a `Main` POU.
 
 Exports made with older versions of CODESCRIBE use different filenames for some of these objects; they still import correctly, and re-exporting once migrates the tracked files. See [CHANGELOG.md](CHANGELOG.md) for the details.
@@ -186,10 +234,11 @@ The scripts run inside the CODESYS ScriptEngine, which embeds IronPython 2.7:
 - `main` is protected: changes go through a pull request and the CI checks must pass.
 - Changes that alter the export format or behaviour should be noted in [CHANGELOG.md](CHANGELOG.md).
 
-CI runs two jobs on every pull request (see `.github/workflows/ci.yml` and `tools/ci/`):
+CI runs three jobs on every pull request (see `.github/workflows/ci.yml` and `tools/ci/`):
 
-- `ascii-check`: fails on any non-ASCII byte in `src/*.py`.
-- `ironpython`: compiles every src file with real IronPython 2.7.12 (catches Python 2 syntax errors) and imports the library modules against a stubbed `scriptengine` (catches module-scope errors).
+- `ascii-check`: fails on any non-ASCII byte in `src/*.py`, then compiles every src file with Python 3.
+- `ironpython`: compiles every src file with real IronPython 2.7.12 (catches Python 2 syntax errors), imports the library modules against a stubbed `scriptengine` (catches module-scope errors), and runs the four renderer test suites under IronPython 2.7.
+- `ladder`: runs the same four renderer test suites under Python 3.
 
 Note that `python -m py_compile` under Python 3 is not a sufficient local check; it misses both failure classes above.
 

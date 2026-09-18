@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <contentHeader name="x"><coordinateInfo><fbd><scaling x="1" y="1" /></fbd><ld><scaling x="1" y="1" /></ld><sfc><scaling x="1" y="1" /></sfc></coordinateInfo></contentHeader>
+  <types><dataTypes /><pous>
+    <pou name="FBD_B" pouType="program">
+      <interface><localVars><variable name="ctr"><type><derived name="CTU" /></type></variable></localVars></interface>
+      <body><FBD>
+        <inVariable localId="30"><position x="0" y="0" /><connectionPointOut /><expression>xPulse</expression></inVariable>
+        <inVariable localId="31"><position x="0" y="0" /><connectionPointOut /><expression>xRst</expression></inVariable>
+        <block localId="32" typeName="CTU" instanceName="ctr"><position x="0" y="0" />
+          <inputVariables>
+            <variable formalParameter="CU" edge="rising"><connectionPointIn><connection refLocalId="30" /></connectionPointIn></variable>
+            <variable formalParameter="RESET"><connectionPointIn><connection refLocalId="31" /></connectionPointIn></variable>
+          </inputVariables><inOutVariables />
+          <outputVariables><variable formalParameter="Q"><connectionPointOut /></variable><variable formalParameter="CV"><connectionPointOut><expression>iCv</expression></connectionPointOut></variable></outputVariables></block>
+        <outVariable localId="33"><position x="0" y="0" /><connectionPointIn><connection refLocalId="32" formalParameter="Q" /></connectionPointIn><expression>xCntDone</expression></outVariable>
+        <inVariable localId="40"><position x="0" y="0" /><connectionPointOut /><expression>iX</expression></inVariable>
+        <inVariable localId="41"><position x="0" y="0" /><connectionPointOut /><expression>iY</expression></inVariable>
+        <block localId="42" typeName="SUB"><position x="0" y="0" />
+          <inputVariables>
+            <variable formalParameter="In2"><connectionPointIn><connection refLocalId="41" /></connectionPointIn></variable>
+            <variable formalParameter="In1"><connectionPointIn><connection refLocalId="40" /></connectionPointIn></variable>
+          </inputVariables><inOutVariables />
+          <outputVariables><variable formalParameter="Out1"><connectionPointOut /></variable></outputVariables></block>
+        <outVariable localId="43"><position x="0" y="0" /><connectionPointIn><connection refLocalId="42" formalParameter="Out1" /></connectionPointIn><expression>iDiff</expression></outVariable>
+        <inVariable localId="50"><position x="0" y="0" /><connectionPointOut /><expression>xP</expression></inVariable>
+        <inVariable localId="51"><position x="0" y="0" /><connectionPointOut /><expression>xQ2</expression></inVariable>
+        <block localId="52" typeName="AND"><position x="0" y="0" />
+          <inputVariables>
+            <variable formalParameter="In1"><connectionPointIn><connection refLocalId="50" /></connectionPointIn></variable>
+            <variable formalParameter="In2"><connectionPointIn><connection refLocalId="51" /></connectionPointIn></variable>
+          </inputVariables><inOutVariables />
+          <outputVariables><variable formalParameter="Out1"><connectionPointOut /></variable></outputVariables></block>
+        <outVariable localId="53"><position x="0" y="0" /><connectionPointIn><connection refLocalId="52" formalParameter="Out1" /></connectionPointIn><expression>xBoth</expression></outVariable>
+        <inVariable localId="54"><position x="0" y="0" /><connectionPointOut /><expression>xR</expression></inVariable>
+        <block localId="55" typeName="OR"><position x="0" y="0" />
+          <inputVariables>
+            <variable formalParameter="In1"><connectionPointIn><connection refLocalId="52" formalParameter="Out1" /></connectionPointIn></variable>
+            <variable formalParameter="In2"><connectionPointIn><connection refLocalId="54" /></connectionPointIn></variable>
+          </inputVariables><inOutVariables />
+          <outputVariables><variable formalParameter="Out1"><connectionPointOut /></variable></outputVariables></block>
+        <outVariable localId="56"><position x="0" y="0" /><connectionPointIn><connection refLocalId="55" formalParameter="Out1" /></connectionPointIn><expression>xEither</expression></outVariable>
+        <jump localId="57" label="END"><position x="0" y="0" /><connectionPointIn><connection refLocalId="52" formalParameter="Out1" /></connectionPointIn></jump>
+      </FBD></body>
+    </pou>
+  </pous></types>
+</project>

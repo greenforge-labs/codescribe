@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <contentHeader name="x"><coordinateInfo><fbd><scaling x="1" y="1" /></fbd><ld><scaling x="1" y="1" /></ld><sfc><scaling x="1" y="1" /></sfc></coordinateInfo></contentHeader>
+  <types><dataTypes /><pous>
+    <pou name="FBD_A" pouType="program">
+      <interface><localVars><variable name="tmr"><type><derived name="TON" /></type></variable></localVars></interface>
+      <body><FBD>
+        <inVariable localId="1"><position x="0" y="0" /><connectionPointOut /><expression>xStart</expression></inVariable>
+        <inVariable localId="2"><position x="0" y="0" /><connectionPointOut /><expression>T#1S</expression></inVariable>
+        <block localId="3" typeName="TON" instanceName="tmr"><position x="0" y="0" />
+          <inputVariables>
+            <variable formalParameter="IN"><connectionPointIn><connection refLocalId="1" /></connectionPointIn></variable>
+            <variable formalParameter="PT"><connectionPointIn><connection refLocalId="2" /></connectionPointIn></variable>
+          </inputVariables><inOutVariables />
+          <outputVariables><variable formalParameter="Q"><connectionPointOut /></variable><variable formalParameter="ET"><connectionPointOut /></variable></outputVariables></block>
+        <outVariable localId="4"><position x="0" y="0" /><connectionPointIn><connection refLocalId="3" formalParameter="Q" /></connectionPointIn><expression>xQ</expression></outVariable>
+        <outVariable localId="5"><position x="0" y="0" /><connectionPointIn><connection refLocalId="3" formalParameter="ET" /></connectionPointIn><expression>tEt</expression></outVariable>
+        <inVariable localId="10"><position x="0" y="0" /><connectionPointOut /><expression>xTrip</expression></inVariable>
+        <outVariable localId="11" storage="set"><position x="0" y="0" /><connectionPointIn><connection refLocalId="10" /></connectionPointIn><expression>xLatched</expression></outVariable>
+        <inVariable localId="20"><position x="0" y="0" /><connectionPointOut /><expression>xEn</expression></inVariable>
+        <inVariable localId="21"><position x="0" y="0" /><connectionPointOut /><expression>iA</expression></inVariable>
+        <inVariable localId="22"><position x="0" y="0" /><connectionPointOut /><expression>iB</expression></inVariable>
+        <inVariable localId="23"><position x="0" y="0" /><connectionPointOut /><expression>iC</expression></inVariable>
+        <block localId="24" typeName="ADD"><position x="0" y="0" />
+          <inputVariables>
+            <variable formalParameter="EN"><connectionPointIn><connection refLocalId="20" /></connectionPointIn></variable>
+            <variable formalParameter="In1"><connectionPointIn><connection refLocalId="21" /></connectionPointIn></variable>
+            <variable formalParameter="In2"><connectionPointIn><connection refLocalId="22" /></connectionPointIn></variable>
+            <variable formalParameter="In3"><connectionPointIn><connection refLocalId="23" /></connectionPointIn></variable>
+          </inputVariables><inOutVariables />
+          <outputVariables><variable formalParameter="ENO"><connectionPointOut /></variable><variable formalParameter="Out1"><connectionPointOut /></variable></outputVariables></block>
+        <outVariable localId="25"><position x="0" y="0" /><connectionPointIn><connection refLocalId="24" formalParameter="Out1" /></connectionPointIn><expression>iSum</expression></outVariable>
+        <outVariable localId="26"><position x="0" y="0" /><connectionPointIn><connection refLocalId="24" formalParameter="ENO" /></connectionPointIn><expression>xSumOk</expression></outVariable>
+      </FBD></body>
+    </pou>
+  </pous></types>
+</project>

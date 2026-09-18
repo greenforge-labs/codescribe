@@ -1,4 +1,39 @@
+# CODESYS working files. None of these belong in the repository:
+# a .project is a large binary that every clone then carries for ever, and it
+# and the .opt session files carry device identifiers - serial numbers and
+# gateway addresses - along with the user and machine name in the .~u lock.
+# The template and the exported sources together regenerate the project.
+*.project
+*.opt
+*.~u
+# The template is the exception: it and the exported sources together
+# regenerate the working project, so it is tracked. Its connection label has
+# had the controller address and serial taken out of it - see the commit that
+# tracked it for why clearing the gateway in CODESYS is not enough.
+!GraphicalTesting_template_v1.project
+
+# Review correspondence. Kept beside the checkout, not in it.
+review/
+
+# The export's device and fieldbus xml. 449,000 lines of CR711S and CAN bus
+# descriptions that say nothing about the code under review, and 36 MB that
+# every clone would carry for ever. The application folders are what is
+# tracked; a full export still writes these, they are just not committed.
+GraphicalTesting/*/devices/
+GraphicalTesting/*/communication/
+
+# The staging and backup copies util.py writes beside an export. A locked
+# target leaves one behind, and a stray "git add -A" would sweep the whole
+# export into the repo under it - which is how the device xml got committed
+# once already.
+*.codescribe_staging/
+*.codescribe_backup/
+
 .vscode/
+
+# Claude Code's per-developer tool permissions. Machine-specific paths, and
+# permission grants that should not be inherited by whoever clones the repo.
+.claude/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -160,3 +195,22 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# The exported source tree is tracked in full, so none of the generic Python
+# and tooling patterns above may reach into it: a POU or a folder a developer
+# names "lib", "build", "var" or "target" would otherwise be dropped from the
+# export with no warning. Re-include the directories first and then their
+# files - git will not descend into a directory a bare pattern excluded - and
+# re-exclude only the two heavy subtrees that are deliberately left out.
+!GraphicalTesting/**/
+!GraphicalTesting/**
+GraphicalTesting/*/devices/
+GraphicalTesting/*/communication/
+# The re-include above is the last pattern to match inside the export, so it
+# cancels the CODESYS working-file rules at the top of this file as well. Those
+# carry the controller serial and gateway address; exclude them again here.
+GraphicalTesting/**/*.project
+GraphicalTesting/**/*.opt
+GraphicalTesting/**/*.~u
+GraphicalTesting/**/*.codescribe_staging/
+GraphicalTesting/**/*.codescribe_backup/

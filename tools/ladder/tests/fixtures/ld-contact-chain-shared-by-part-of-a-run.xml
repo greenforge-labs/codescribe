@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>c1</variable></contact>
+<contact localId="2"><connectionPointIn><connection refLocalId="1"/></connectionPointIn><connectionPointOut/><variable>c2</variable></contact>
+<contact localId="3"><connectionPointIn><connection refLocalId="2"/></connectionPointIn><connectionPointOut/><variable>c3</variable></contact>
+<coil localId="4"><connectionPointIn><connection refLocalId="3"/></connectionPointIn><connectionPointOut/><variable>A</variable></coil>
+<contact localId="5"><connectionPointIn><connection refLocalId="2"/></connectionPointIn><connectionPointOut/><variable>c4</variable></contact>
+<coil localId="6"><connectionPointIn><connection refLocalId="5"/></connectionPointIn><connectionPointOut/><variable>B</variable></coil>
+<contact localId="7"><connectionPointIn><connection refLocalId="1"/></connectionPointIn><connectionPointOut/><variable>c5</variable></contact>
+<coil localId="8"><connectionPointIn><connection refLocalId="7"/></connectionPointIn><connectionPointOut/><variable>C</variable></coil>
+<contact localId="9"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>c9</variable></contact>
+<coil localId="10"><connectionPointIn><connection refLocalId="9"/></connectionPointIn><connectionPointOut/><variable>D</variable></coil>
+<rightPowerRail localId="11"><connectionPointIn><connection refLocalId="4"/><connection refLocalId="6"/><connection refLocalId="8"/><connection refLocalId="10"/></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

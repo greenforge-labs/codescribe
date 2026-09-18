@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored: one function block instance read by two different networks
+  outputs, one directly and one through further boxes.
+
+  This is the shape FB_TESTING network 9 has in the GraphicalTesting project.
+  A block driving several outputs directly is drawn once and branched, but
+  when one reader sits behind another box the two readers are separate trees,
+  and the box was drawn once per tree - two timers where the program has one.
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="greenforge-labs" productName="codescribe-fixture" productVersion="1"
+              creationDateTime="2020-01-01T00:00:00"/>
+  <contentHeader name="SharedBoxFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1"/></fbd>
+      <ld><scaling x="1" y="1"/></ld>
+      <sfc><scaling x="1" y="1"/></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="FBD_SHARED" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="fbTimer"><type><derived name="TON"/></type></variable>
+          </localVars>
+        </interface>
+        <body>
+          <FBD>
+            <inVariable localId="1">
+              <position x="0" y="0"/><connectionPointOut/>
+              <expression>xStart</expression>
+            </inVariable>
+            <inVariable localId="2">
+              <position x="0" y="0"/><connectionPointOut/>
+              <expression>T#5S</expression>
+            </inVariable>
+            <block localId="3" typeName="TON" instanceName="fbTimer">
+              <position x="0" y="0"/>
+              <inputVariables>
+                <variable formalParameter="IN">
+                  <connectionPointIn><connection refLocalId="1"/></connectionPointIn>
+                </variable>
+                <variable formalParameter="PT">
+                  <connectionPointIn><connection refLocalId="2"/></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Q"><connectionPointOut/></variable>
+                <variable formalParameter="ET"><connectionPointOut/></variable>
+              </outputVariables>
+            </block>
+            <!-- reader one: straight off the pin -->
+            <outVariable localId="4">
+              <position x="0" y="0"/>
+              <connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn>
+              <expression>xDone</expression>
+            </outVariable>
+            <!-- reader two: the same pin, behind another box -->
+            <inVariable localId="5">
+              <position x="0" y="0"/><connectionPointOut/>
+              <expression>xManual</expression>
+            </inVariable>
+            <block localId="6" typeName="OR">
+              <position x="0" y="0"/>
+              <inputVariables>
+                <variable formalParameter="In1">
+                  <connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn>
+                </variable>
+                <variable formalParameter="In2">
+                  <connectionPointIn><connection refLocalId="5"/></connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="Out1"><connectionPointOut/></variable>
+              </outputVariables>
+            </block>
+            <outVariable localId="7">
+              <position x="0" y="0"/>
+              <connectionPointIn><connection refLocalId="6" formalParameter="Out1"/></connectionPointIn>
+              <expression>xAny</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+  <instances><configurations/></instances>
+</project>

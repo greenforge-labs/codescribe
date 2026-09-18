@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11" creationDateTime="2026-09-10T00:00:00" />
+  <contentHeader name="LabelFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1" /></fbd>
+      <ld><scaling x="1" y="1" /></ld>
+      <sfc><scaling x="1" y="1" /></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous>
+      <pou name="LABELS" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="xGo"><type><BOOL /></type></variable>
+            <variable name="xA"><type><BOOL /></type></variable>
+            <variable name="oA"><type><BOOL /></type></variable>
+            <variable name="xB"><type><BOOL /></type></variable>
+            <variable name="xC"><type><BOOL /></type></variable>
+            <variable name="oC"><type><BOOL /></type></variable>
+          </localVars>
+        </interface>
+        <body>
+          <LD>
+            <comment localId="1" height="0" width="0">
+              <position x="0" y="0" />
+              <content><xhtml xmlns="http://www.w3.org/1999/xhtml" /></content>
+            </comment>
+            <vendorElement localId="2">
+              <position x="0" y="0" />
+              <alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml" /></alternativeText>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                  <ElementType xmlns="">networktitle</ElementType>
+                </data>
+              </addData>
+            </vendorElement>
+            <leftPowerRail localId="3">
+              <position x="0" y="0" />
+              <connectionPointOut formalParameter="none" />
+            </leftPowerRail>
+            <contact localId="4" negated="false" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="3" /></connectionPointIn>
+              <connectionPointOut />
+              <variable>xGo</variable>
+            </contact>
+            <jump localId="5" label="LATER">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="4" /></connectionPointIn>
+            </jump>
+            <comment localId="10" height="0" width="0">
+              <position x="0" y="0" />
+              <content><xhtml xmlns="http://www.w3.org/1999/xhtml" /></content>
+            </comment>
+            <vendorElement localId="11">
+              <position x="0" y="0" />
+              <alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml" /></alternativeText>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                  <ElementType xmlns="">networktitle</ElementType>
+                </data>
+              </addData>
+            </vendorElement>
+            <label localId="12" label="LATER">
+              <position x="0" y="0" />
+            </label>
+            <leftPowerRail localId="13">
+              <position x="0" y="0" />
+              <connectionPointOut formalParameter="none" />
+            </leftPowerRail>
+            <contact localId="14" negated="false" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="13" /></connectionPointIn>
+              <connectionPointOut />
+              <variable>xA</variable>
+            </contact>
+            <coil localId="15" negated="false" storage="none">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="14" /></connectionPointIn>
+              <connectionPointOut />
+              <variable>oA</variable>
+            </coil>
+            <rightPowerRail localId="16">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="15" /></connectionPointIn>
+            </rightPowerRail>
+            <comment localId="20" height="0" width="0">
+              <position x="0" y="0" />
+              <content><xhtml xmlns="http://www.w3.org/1999/xhtml" /></content>
+            </comment>
+            <vendorElement localId="21">
+              <position x="0" y="0" />
+              <alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml" /></alternativeText>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                  <ElementType xmlns="">networktitle</ElementType>
+                </data>
+              </addData>
+            </vendorElement>
+            <label localId="22" label="LONELY">
+              <position x="0" y="0" />
+            </label>
+            <comment localId="30" height="0" width="0">
+              <position x="0" y="0" />
+              <content><xhtml xmlns="http://www.w3.org/1999/xhtml" /></content>
+            </comment>
+            <vendorElement localId="31">
+              <position x="0" y="0" />
+              <alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml" /></alternativeText>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                  <ElementType xmlns="">networktitle</ElementType>
+                </data>
+              </addData>
+            </vendorElement>
+            <leftPowerRail localId="32">
+              <position x="0" y="0" />
+              <connectionPointOut formalParameter="none" />
+            </leftPowerRail>
+            <contact localId="33" negated="false" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="32" /></connectionPointIn>
+              <connectionPointOut />
+              <variable>xB</variable>
+            </contact>
+            <jump localId="34" label="NOWHERE">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="33" /></connectionPointIn>
+            </jump>
+            <comment localId="40" height="0" width="0">
+              <position x="0" y="0" />
+              <content><xhtml xmlns="http://www.w3.org/1999/xhtml" /></content>
+            </comment>
+            <vendorElement localId="41">
+              <position x="0" y="0" />
+              <alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml" /></alternativeText>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                  <ElementType xmlns="">networktitle</ElementType>
+                </data>
+              </addData>
+            </vendorElement>
+            <leftPowerRail localId="42">
+              <position x="0" y="0" />
+              <connectionPointOut formalParameter="none" />
+            </leftPowerRail>
+            <contact localId="43" negated="false" storage="none" edge="none">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="42" /></connectionPointIn>
+              <connectionPointOut />
+              <variable>xC</variable>
+            </contact>
+            <coil localId="44" negated="false" storage="none">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="43" /></connectionPointIn>
+              <connectionPointOut />
+              <variable>oC</variable>
+            </coil>
+            <rightPowerRail localId="45">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="44" /></connectionPointIn>
+            </rightPowerRail>
+          </LD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+</project>

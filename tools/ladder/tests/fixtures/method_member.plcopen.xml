@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored: a graphical method, spelled the way a real export spells it.
+
+  CODESYS writes <Method name="..."> with a capital M where it writes
+  <action> in lower case. Matching the tag only in lower case meant a
+  graphical method never matched its own body, so it silently fell back to
+  no rendering at all while actions rendered correctly.
+
+  The parent body assigns Status.Parent; the method assigns Status.Method.
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <contentHeader name="MethodMemberFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1" /></fbd>
+      <ld><scaling x="1" y="1" /></ld>
+      <sfc><scaling x="1" y="1" /></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous>
+      <pou name="FB_TEST" pouType="functionBlock">
+        <interface />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="Compute">
+              <body>
+                <FBD>
+                  <inVariable localId="10">
+                    <position x="0" y="0" />
+                    <connectionPointOut />
+                    <expression>xMethod</expression>
+                  </inVariable>
+                  <outVariable localId="11">
+                    <position x="0" y="0" />
+                    <connectionPointIn><connection refLocalId="10" /></connectionPointIn>
+                    <expression>Status.Method</expression>
+                  </outVariable>
+                </FBD>
+              </body>
+            </Method>
+          </data>
+        </addData>
+        <body>
+          <FBD>
+            <inVariable localId="1">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>xParent</expression>
+            </inVariable>
+            <outVariable localId="2">
+              <position x="0" y="0" />
+              <connectionPointIn><connection refLocalId="1" /></connectionPointIn>
+              <expression>Status.Parent</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+</project>

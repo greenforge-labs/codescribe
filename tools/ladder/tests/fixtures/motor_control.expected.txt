@@ -1,0 +1,26 @@
+(* Declaration rebuilt from the structured interface: comments, pragmas and attributes are missing; an omitted type reads UNKNOWN. *)
+PROGRAM Motor_Control
+VAR
+    Start_PB : BOOL;
+    Stop_PB : BOOL;
+    Motor_Run : BOOL := FALSE;
+    Fault_In : BOOL;
+    Fault_Latch : BOOL;
+    Reset_PB : BOOL;
+    Ack : BOOL;
+    Run_Time : TON;
+END_VAR
+
+(* Network 1 *)
+│    Start_PB    Stop_PB  Motor_Run
+├──┬───┤ ├─────┬───┤/├───────( )──────┤
+│  │ Motor_Run │
+│  └────┤ ├────┘
+
+(* Network 2 *)
+│   Fault_In  Fault_Latch
+├─────┤P├─────────(S)───────┤
+
+(* Network 3 *)
+│   Reset_PB   Ack   Fault_Latch
+├─────┤ ├──────┤/├───────(R)───────┤

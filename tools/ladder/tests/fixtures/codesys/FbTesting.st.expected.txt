@@ -1,0 +1,19 @@
+(* Declaration rebuilt from the structured interface: comments, pragmas and attributes are missing; an omitted type reads UNKNOWN. *)
+PROGRAM FB_TESTING
+VAR CONSTANT
+    uiMinVoltage : UINT := 5000;
+END_VAR
+VAR
+    fbSystemSupply : ifmIOcommon.SystemSupply;
+    fbSupplySwitch : ifmIOcommon.SupplySwitch;
+    uiCurrSupplyVolt : UINT;
+    TOF_0 : TOF;
+END_VAR
+
+(* Network 1: Function Block to monitor supply voltage on VBB15 (from ignition) *)
+fbSystemSupply(eChannel := ifmIOcommon.SYS_VOLTAGE_CHANNEL.VBB15, eMode := ifmIOcommon.MODE_SYSTEM_SUPPLY.SYS_SUPPLY);
+uiCurrSupplyVolt := fbSystemSupply.uiOutVoltage;
+
+(* Network 2: Safely power off PLC when ignition (VBB15) is lower than 5V for more than 10s. Enable timer on falling edge *)
+TOF_0(IN := uiCurrSupplyVolt > uiMinVoltage, PT := T#5S);
+fbSupplySwitch(eMode := ifmIOcommon.MODE_SUPPLY_SWITCH.SYS_SUPPLY_SWITCH, xValue := TOF_0.Q);

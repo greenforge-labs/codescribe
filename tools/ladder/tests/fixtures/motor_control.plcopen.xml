@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hand-authored PLCopen XML, written against the IEC 61131-10 LD element set.
+
+  This is a stand-in until real CODESYS exports are available. It deliberately
+  exercises the cases that drive layout: a parallel seal-in branch, a negated
+  contact, a rising-edge contact, set/reset coils, and a final rung whose
+  terminal is the coil itself rather than a right power rail.
+
+  The x/y positions are plausible but arbitrary. The renderer must ignore them.
+-->
+<project xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="greenforge-labs" productName="codescribe-fixture" productVersion="1"
+              creationDateTime="2020-01-01T00:00:00"/>
+  <contentHeader name="LadderFixture">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1"/></fbd>
+      <ld><scaling x="1" y="1"/></ld>
+      <sfc><scaling x="1" y="1"/></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="Motor_Control" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="Start_PB">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="Stop_PB">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="Motor_Run">
+              <type><BOOL/></type>
+              <initialValue><simpleValue value="FALSE"/></initialValue>
+            </variable>
+            <variable name="Fault_In">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="Fault_Latch">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="Reset_PB">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="Ack">
+              <type><BOOL/></type>
+            </variable>
+            <variable name="Run_Time">
+              <type><derived name="TON"/></type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <LD>
+
+            <!-- Network 1: start/stop with seal-in -->
+            <leftPowerRail localId="1">
+              <position x="10" y="10"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="2" negated="false">
+              <position x="40" y="10"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="1"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>Start_PB</variable>
+            </contact>
+            <contact localId="3" negated="false">
+              <position x="40" y="40"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="1"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>Motor_Run</variable>
+            </contact>
+            <!-- two connections in one connectionPointIn: the wired OR -->
+            <contact localId="4" negated="true">
+              <position x="90" y="10"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="2"/>
+                <connection refLocalId="3"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>Stop_PB</variable>
+            </contact>
+            <coil localId="5" negated="false">
+              <position x="140" y="10"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="4"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>Motor_Run</variable>
+            </coil>
+            <rightPowerRail localId="6">
+              <position x="200" y="10"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="5"/>
+              </connectionPointIn>
+            </rightPowerRail>
+
+            <!-- Network 2: rising edge latches the fault -->
+            <leftPowerRail localId="10">
+              <position x="10" y="90"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="11" negated="false" edge="rising">
+              <position x="40" y="90"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="10"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>Fault_In</variable>
+            </contact>
+            <coil localId="12" negated="false" storage="set">
+              <position x="90" y="90"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="11"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>Fault_Latch</variable>
+            </coil>
+            <rightPowerRail localId="13">
+              <position x="200" y="90"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="12"/>
+              </connectionPointIn>
+            </rightPowerRail>
+
+            <!-- Network 3: acknowledged reset, terminating on the coil -->
+            <leftPowerRail localId="20">
+              <position x="10" y="140"/>
+              <connectionPointOut><relPosition x="0" y="10"/></connectionPointOut>
+            </leftPowerRail>
+            <contact localId="21" negated="false">
+              <position x="40" y="140"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="20"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>Reset_PB</variable>
+            </contact>
+            <contact localId="22" negated="true">
+              <position x="90" y="140"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="21"/>
+              </connectionPointIn>
+              <connectionPointOut><relPosition x="30" y="10"/></connectionPointOut>
+              <variable>Ack</variable>
+            </contact>
+            <coil localId="23" negated="false" storage="reset">
+              <position x="140" y="140"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="22"/>
+              </connectionPointIn>
+              <variable>Fault_Latch</variable>
+            </coil>
+
+          </LD>
+        </body>
+      </pou>
+    </pous>
+  </types>
+</project>

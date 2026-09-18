@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <contentHeader name="x"><coordinateInfo><fbd><scaling x="1" y="1" /></fbd><ld><scaling x="1" y="1" /></ld><sfc><scaling x="1" y="1" /></sfc></coordinateInfo></contentHeader>
+  <types><dataTypes /><pous>
+    <pou name="FBD_EMPTY" pouType="program">
+      <interface><localVars><variable name="x"><type><BOOL /></type></variable></localVars></interface>
+      <body><FBD>
+        <comment localId="1" height="0" width="0"><position x="0" y="0" /><content><xhtml xmlns="http://www.w3.org/1999/xhtml">// Section header: E-STOP CHAIN (documentation-only network)</xhtml></content></comment>
+        <vendorElement localId="2"><position x="0" y="0" /><alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml">Title of network one</xhtml></alternativeText>
+          <addData><data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation"><ElementType xmlns="">networktitle</ElementType></data></addData></vendorElement>
+        <comment localId="3" height="0" width="0"><position x="0" y="0" /><content><xhtml xmlns="http://www.w3.org/1999/xhtml">// second network comment</xhtml></content></comment>
+        <vendorElement localId="4"><position x="0" y="0" /><alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml">Title of network two</xhtml></alternativeText>
+          <addData><data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation"><ElementType xmlns="">networktitle</ElementType></data></addData></vendorElement>
+        <inVariable localId="5"><position x="0" y="0" /><connectionPointOut /><expression>xIn</expression></inVariable>
+        <outVariable localId="6"><position x="0" y="0" /><connectionPointIn><connection refLocalId="5" /></connectionPointIn><expression>xOut</expression></outVariable>
+      </FBD></body>
+    </pou>
+      <pou name="FBD_EMPTY_TWO" pouType="program">
+      <interface><localVars><variable name="x"><type><BOOL /></type></variable></localVars></interface>
+      <body><FBD>
+        <comment localId="1" height="0" width="0"><position x="0" y="0" /><content><xhtml xmlns="http://www.w3.org/1999/xhtml">// Section header: E-STOP CHAIN (documentation-only network)</xhtml></content></comment>
+        <vendorElement localId="2"><position x="0" y="0" /><alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml">Title of network one</xhtml></alternativeText>
+          <addData><data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation"><ElementType xmlns="">networktitle</ElementType></data></addData></vendorElement>
+        <comment localId="3" height="0" width="0"><position x="0" y="0" /><content><xhtml xmlns="http://www.w3.org/1999/xhtml">// second network comment</xhtml></content></comment>
+        <vendorElement localId="4"><position x="0" y="0" /><alternativeText><xhtml xmlns="http://www.w3.org/1999/xhtml">Title of network two</xhtml></alternativeText>
+          <addData><data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation"><ElementType xmlns="">networktitle</ElementType></data></addData></vendorElement>
+        <inVariable localId="5"><position x="0" y="0" /><connectionPointOut /><expression>xInTwo</expression></inVariable>
+        <outVariable localId="6"><position x="0" y="0" /><connectionPointIn><connection refLocalId="5" /></connectionPointIn><expression>xOutTwo</expression></outVariable>
+      </FBD></body>
+    </pou>
+  </pous></types>
+</project>

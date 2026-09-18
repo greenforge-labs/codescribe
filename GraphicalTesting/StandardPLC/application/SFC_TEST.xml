@@ -1,0 +1,1959 @@
+<ExportFile>
+  <StructuredView Guid="{d9b2b2cc-ea99-4c3b-aa42-1e5c49e65b84}">
+<Single xml:space="preserve" Type="{3daac5e4-660e-42e4-9cea-3711b98bfb63}" Method="IArchivable">
+  <Null Name="Profile" />
+  <List2 Name="EntryList">
+    <Single Type="{6198ad31-4b98-445c-927f-3258a0e82fe3}" Method="IArchivable">
+      <Single Name="IsRoot" Type="bool">True</Single>
+      <Single Name="MetaObject" Type="{81297157-7ec9-45ce-845e-84cab2b88ade}" Method="IArchivable">
+        <Single Name="Guid" Type="System.Guid">d158652c-96fd-4ed4-aadb-28e74dfb74df</Single>
+        <Single Name="ParentGuid" Type="System.Guid">f9c00bdb-2f18-4e80-863e-6da977e8f304</Single>
+        <Single Name="Name" Type="string">SFC_TEST</Single>
+        <Dictionary Type="{2c41fa04-1834-41c1-816e-303c7aa2c05b}" Name="Properties">
+          <Entry>
+            <Key>
+              <Single Type="System.Guid">58548d2c-f1b1-453d-9195-66c94e2a3ae0</Single>
+            </Key>
+            <Value>
+              <Single Type="{58548d2c-f1b1-453d-9195-66c94e2a3ae0}" Method="IArchivable">
+                <Null Name="SFCErrorAnalyzation" />
+                <Null Name="SFCErrorAnalyzationTable" />
+                <Single Name="Title" Type="string">IecSfc</Single>
+                <Single Name="Company" Type="string">System</Single>
+                <Single Name="Version" Type="string">3.4.2.0</Single>
+                <Single Name="Namespace" Type="string">IecSfc</Single>
+                <Dictionary2 Name="Flags">
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">CurrentStep</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">EnableLimit</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">Error</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">ErrorPOU</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">ErrorStep</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">Init</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">Pause</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">QuitError</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">Reset</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">Tip</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">TipMode</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">Trans</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">SFCErrorAnalyzation</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                  <Entry>
+                    <Key>
+                      <Single Type="{27d8150b-ef58-4fff-8da1-1f7dd5f9ea51}">SFCErrorAnalyzationTable</Single>
+                    </Key>
+                    <Value>
+                      <Single Type="{24565a38-6368-4874-ab9a-0ef7ec269521}" Method="IArchivable">
+                        <Single Name="Use" Type="bool">False</Single>
+                        <Single Name="Declare" Type="bool">True</Single>
+                      </Single>
+                    </Value>
+                  </Entry>
+                </Dictionary2>
+                <Single Name="CalcActiveTransOnly" Type="bool">False</Single>
+                <Single Name="UseDefaults" Type="bool">True</Single>
+              </Single>
+            </Value>
+          </Entry>
+        </Dictionary>
+        <Single Name="TypeGuid" Type="System.Guid">6f9dac99-8de1-4efc-8465-68ac443b7d08</Single>
+        <Array Name="EmbeddedTypeGuids" Type="System.Guid">
+          <Single Type="System.Guid">a9ed5b7e-75c5-4651-af16-d2c27e98cb94</Single>
+          <Single Type="System.Guid">74f81948-1328-492c-b6c1-a9ea72048b28</Single>
+        </Array>
+        <Single Name="Timestamp" Type="long">0</Single>
+      </Single>
+      <Single Name="Object" Type="{6f9dac99-8de1-4efc-8465-68ac443b7d08}" Method="IArchivable">
+        <Single Name="SpecialFunc" Type="{0db3d7bb-cde0-4416-9a7b-ce49a0124323}">None</Single>
+        <Single Name="Implementation" Type="{74f81948-1328-492c-b6c1-a9ea72048b28}" Method="IArchivable">
+          <Single Name="Root" Type="{f1db7f6f-4774-46a6-ad9b-a94414f875fc}" Method="IArchivable">
+            <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+              <List2 Name="InnerList">
+                <Single Type="{86ee92a2-d863-4136-be27-82b36d84211c}" Method="IArchivable">
+                  <Null Name="EmbeddedMainAction" />
+                  <Null Name="EmbeddedEntryAction" />
+                  <Null Name="EmbeddedExitAction" />
+                  <List2 Name="EmbeddedMainActionProperties" />
+                  <List2 Name="EmbeddedEntryActionProperties" />
+                  <List2 Name="EmbeddedExitActionProperties" />
+                  <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+                    <List2 Name="InnerList">
+                      <Single Type="{a94bb75d-5fb3-40ad-9d01-41d5b980784d}" Method="IArchivable">
+                        <List2 Name="Attributes">
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                            <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                              <Single Name="Value" Type="string">CmdBarriers</Single>
+                              <Single Name="DefaultValue" Type="string"></Single>
+                            </Single>
+                            <Single Name="Id" Type="long">285</Single>
+                            <Single Name="IdParent" Type="long">284</Single>
+                          </Single>
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                            <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                              <Single Name="Value" Type="string"></Single>
+                              <Single Name="DefaultValue" Type="string"></Single>
+                            </Single>
+                            <Single Name="Id" Type="long">286</Single>
+                            <Single Name="IdParent" Type="long">284</Single>
+                          </Single>
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                            <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                              <Single Name="Value" Type="string">FALSE</Single>
+                              <Single Name="DefaultValue" Type="string">FALSE</Single>
+                            </Single>
+                            <Single Name="Id" Type="long">287</Single>
+                            <Single Name="IdParent" Type="long">284</Single>
+                          </Single>
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                            <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                              <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                              <Null Name="BaseType" />
+                              <Single Name="Value" Type="string">0</Single>
+                              <Single Name="DefaultValue" Type="string">0</Single>
+                            </Single>
+                            <Single Name="Id" Type="long">288</Single>
+                            <Single Name="IdParent" Type="long">284</Single>
+                          </Single>
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">e174fc0d-80b0-4a9e-a530-ca239c249a50</Single>
+                            <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                              <Single Name="Value" Type="string">R</Single>
+                              <Single Name="DefaultValue" Type="string"></Single>
+                            </Single>
+                            <Single Name="Id" Type="long">289</Single>
+                            <Single Name="IdParent" Type="long">284</Single>
+                          </Single>
+                        </List2>
+                        <Single Name="Id" Type="long">284</Single>
+                        <Single Name="IdParent" Type="long">5</Single>
+                      </Single>
+                    </List2>
+                  </Single>
+                  <List2 Name="Attributes">
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string">WaitingForTrain</Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">6</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string"></Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">7</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                      <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                        <Single Name="Value" Type="string">FALSE</Single>
+                        <Single Name="DefaultValue" Type="string">FALSE</Single>
+                      </Single>
+                      <Single Name="Id" Type="long">8</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                      <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                        <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                        <Null Name="BaseType" />
+                        <Single Name="Value" Type="string">0</Single>
+                        <Single Name="DefaultValue" Type="string">0</Single>
+                      </Single>
+                      <Single Name="Id" Type="long">9</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">6844a48e-46c2-4cc8-a185-a478f3b99cc0</Single>
+                      <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                        <Single Name="Value" Type="string">TRUE</Single>
+                        <Single Name="DefaultValue" Type="string">FALSE</Single>
+                      </Single>
+                      <Single Name="Id" Type="long">10</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                      <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                        <Single Name="Value" Type="string">FALSE</Single>
+                        <Single Name="DefaultValue" Type="string">FALSE</Single>
+                      </Single>
+                      <Single Name="Id" Type="long">11</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">cacf1a68-236e-47c2-b7b1-1cf9199718cb</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string"></Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">12</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">b693554c-1b01-4a8d-afde-9e3a46f7465d</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string"></Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">13</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">700a583f-b4d4-43e4-8c14-629c7cd3bec8</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string"></Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">14</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">a6b08bd8-b696-47e3-9cbf-7408b61c9ff8</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string"></Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">15</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">a2621e18-7de3-4ea6-ae6d-89e9e0b7befd</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string"></Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">16</Single>
+                      <Single Name="IdParent" Type="long">5</Single>
+                    </Single>
+                  </List2>
+                  <Single Name="Id" Type="long">5</Single>
+                  <Single Name="IdParent" Type="long">4</Single>
+                </Single>
+                <Single Type="{e221b778-bb8f-44ba-8a6a-f796287d4e62}" Method="IArchivable">
+                  <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+                    <List2 Name="InnerList">
+                      <Single Type="{f1db7f6f-4774-46a6-ad9b-a94414f875fc}" Method="IArchivable">
+                        <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+                          <List2 Name="InnerList">
+                            <Single Type="{4ecb29e8-a90a-4646-84ac-2ff54215ab29}" Method="IArchivable">
+                              <Single Name="VariableName" Type="string">Branch0__WaitingForTrain__to__TrainFromAboveA</Single>
+                              <Null Name="EmbeddedTransition" />
+                              <List2 Name="EmbeddedTransitionProperties" />
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">SensorA</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">18</Single>
+                                  <Single Name="IdParent" Type="long">17</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">19</Single>
+                                  <Single Name="IdParent" Type="long">17</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">20</Single>
+                                  <Single Name="IdParent" Type="long">17</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">21</Single>
+                                  <Single Name="IdParent" Type="long">17</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">22</Single>
+                                  <Single Name="IdParent" Type="long">17</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">8294df19-5962-4dee-a874-1051dabb0e3e</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">6ecff51c-9b8f-4338-aab0-67c2b31b07e9</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">23</Single>
+                                  <Single Name="IdParent" Type="long">17</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">17</Single>
+                              <Single Name="IdParent" Type="long">136</Single>
+                            </Single>
+                            <Single Type="{86ee92a2-d863-4136-be27-82b36d84211c}" Method="IArchivable">
+                              <Null Name="EmbeddedMainAction" />
+                              <Null Name="EmbeddedEntryAction" />
+                              <Null Name="EmbeddedExitAction" />
+                              <List2 Name="EmbeddedMainActionProperties" />
+                              <List2 Name="EmbeddedEntryActionProperties" />
+                              <List2 Name="EmbeddedExitActionProperties" />
+                              <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+                                <List2 Name="InnerList">
+                                  <Single Type="{a94bb75d-5fb3-40ad-9d01-41d5b980784d}" Method="IArchivable">
+                                    <List2 Name="Attributes">
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                        <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                          <Single Name="Value" Type="string">CmdBarriers</Single>
+                                          <Single Name="DefaultValue" Type="string"></Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">190</Single>
+                                        <Single Name="IdParent" Type="long">189</Single>
+                                      </Single>
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                        <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                          <Single Name="Value" Type="string"></Single>
+                                          <Single Name="DefaultValue" Type="string"></Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">191</Single>
+                                        <Single Name="IdParent" Type="long">189</Single>
+                                      </Single>
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                        <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                          <Single Name="Value" Type="string">FALSE</Single>
+                                          <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">192</Single>
+                                        <Single Name="IdParent" Type="long">189</Single>
+                                      </Single>
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                        <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                          <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                          <Null Name="BaseType" />
+                                          <Single Name="Value" Type="string">0</Single>
+                                          <Single Name="DefaultValue" Type="string">0</Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">193</Single>
+                                        <Single Name="IdParent" Type="long">189</Single>
+                                      </Single>
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">e174fc0d-80b0-4a9e-a530-ca239c249a50</Single>
+                                        <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                          <Single Name="Value" Type="string">S</Single>
+                                          <Single Name="DefaultValue" Type="string"></Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">194</Single>
+                                        <Single Name="IdParent" Type="long">189</Single>
+                                      </Single>
+                                    </List2>
+                                    <Single Name="Id" Type="long">189</Single>
+                                    <Single Name="IdParent" Type="long">170</Single>
+                                  </Single>
+                                </List2>
+                              </Single>
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">TrainFromAboveA</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">171</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">172</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">173</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">174</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">6844a48e-46c2-4cc8-a185-a478f3b99cc0</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">175</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">176</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">cacf1a68-236e-47c2-b7b1-1cf9199718cb</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">177</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">b693554c-1b01-4a8d-afde-9e3a46f7465d</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">178</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">700a583f-b4d4-43e4-8c14-629c7cd3bec8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">179</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">a6b08bd8-b696-47e3-9cbf-7408b61c9ff8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">180</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">a2621e18-7de3-4ea6-ae6d-89e9e0b7befd</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">181</Single>
+                                  <Single Name="IdParent" Type="long">170</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">170</Single>
+                              <Single Name="IdParent" Type="long">136</Single>
+                            </Single>
+                            <Single Type="{4ecb29e8-a90a-4646-84ac-2ff54215ab29}" Method="IArchivable">
+                              <Single Name="VariableName" Type="string">TrainFromAboveA__to__TrainFromAboveB</Single>
+                              <Null Name="EmbeddedTransition" />
+                              <List2 Name="EmbeddedTransitionProperties" />
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">SensorB</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">183</Single>
+                                  <Single Name="IdParent" Type="long">182</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">184</Single>
+                                  <Single Name="IdParent" Type="long">182</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">185</Single>
+                                  <Single Name="IdParent" Type="long">182</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">186</Single>
+                                  <Single Name="IdParent" Type="long">182</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">187</Single>
+                                  <Single Name="IdParent" Type="long">182</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">8294df19-5962-4dee-a874-1051dabb0e3e</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">6ecff51c-9b8f-4338-aab0-67c2b31b07e9</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">188</Single>
+                                  <Single Name="IdParent" Type="long">182</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">182</Single>
+                              <Single Name="IdParent" Type="long">136</Single>
+                            </Single>
+                            <Single Type="{86ee92a2-d863-4136-be27-82b36d84211c}" Method="IArchivable">
+                              <Null Name="EmbeddedMainAction" />
+                              <Null Name="EmbeddedEntryAction" />
+                              <Null Name="EmbeddedExitAction" />
+                              <List2 Name="EmbeddedMainActionProperties" />
+                              <List2 Name="EmbeddedEntryActionProperties" />
+                              <List2 Name="EmbeddedExitActionProperties" />
+                              <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+                                <List2 Name="InnerList" />
+                              </Single>
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">TrainFromAboveB</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">202</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">203</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">204</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">205</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">6844a48e-46c2-4cc8-a185-a478f3b99cc0</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">206</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">207</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">cacf1a68-236e-47c2-b7b1-1cf9199718cb</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">208</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">b693554c-1b01-4a8d-afde-9e3a46f7465d</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">209</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">700a583f-b4d4-43e4-8c14-629c7cd3bec8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">210</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">a6b08bd8-b696-47e3-9cbf-7408b61c9ff8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">211</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">a2621e18-7de3-4ea6-ae6d-89e9e0b7befd</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">212</Single>
+                                  <Single Name="IdParent" Type="long">201</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">201</Single>
+                              <Single Name="IdParent" Type="long">136</Single>
+                            </Single>
+                            <Single Type="{4ecb29e8-a90a-4646-84ac-2ff54215ab29}" Method="IArchivable">
+                              <Single Name="VariableName" Type="string">TrainFromAboveB__to__WaitingForTrain</Single>
+                              <Null Name="EmbeddedTransition" />
+                              <List2 Name="EmbeddedTransitionProperties" />
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">Not SensorB</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">252</Single>
+                                  <Single Name="IdParent" Type="long">251</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">253</Single>
+                                  <Single Name="IdParent" Type="long">251</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">254</Single>
+                                  <Single Name="IdParent" Type="long">251</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">255</Single>
+                                  <Single Name="IdParent" Type="long">251</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">256</Single>
+                                  <Single Name="IdParent" Type="long">251</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">8294df19-5962-4dee-a874-1051dabb0e3e</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">6ecff51c-9b8f-4338-aab0-67c2b31b07e9</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">257</Single>
+                                  <Single Name="IdParent" Type="long">251</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">251</Single>
+                              <Single Name="IdParent" Type="long">136</Single>
+                            </Single>
+                          </List2>
+                        </Single>
+                        <List2 Name="Attributes">
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                            <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                              <Single Name="Value" Type="string"></Single>
+                              <Single Name="DefaultValue" Type="string"></Single>
+                            </Single>
+                            <Single Name="Id" Type="long">137</Single>
+                            <Single Name="IdParent" Type="long">136</Single>
+                          </Single>
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                            <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                              <Single Name="Value" Type="string"></Single>
+                              <Single Name="DefaultValue" Type="string"></Single>
+                            </Single>
+                            <Single Name="Id" Type="long">138</Single>
+                            <Single Name="IdParent" Type="long">136</Single>
+                          </Single>
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                            <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                              <Single Name="Value" Type="string">FALSE</Single>
+                              <Single Name="DefaultValue" Type="string">FALSE</Single>
+                            </Single>
+                            <Single Name="Id" Type="long">139</Single>
+                            <Single Name="IdParent" Type="long">136</Single>
+                          </Single>
+                        </List2>
+                        <Single Name="Id" Type="long">136</Single>
+                        <Single Name="IdParent" Type="long">131</Single>
+                      </Single>
+                      <Single Type="{f1db7f6f-4774-46a6-ad9b-a94414f875fc}" Method="IArchivable">
+                        <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+                          <List2 Name="InnerList">
+                            <Single Type="{4ecb29e8-a90a-4646-84ac-2ff54215ab29}" Method="IArchivable">
+                              <Single Name="VariableName" Type="string">Branch1__WaitingForTrain__to__TrainFromBelowB</Single>
+                              <Null Name="EmbeddedTransition" />
+                              <List2 Name="EmbeddedTransitionProperties" />
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">SensorB</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">145</Single>
+                                  <Single Name="IdParent" Type="long">144</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">146</Single>
+                                  <Single Name="IdParent" Type="long">144</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">147</Single>
+                                  <Single Name="IdParent" Type="long">144</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">148</Single>
+                                  <Single Name="IdParent" Type="long">144</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">149</Single>
+                                  <Single Name="IdParent" Type="long">144</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">8294df19-5962-4dee-a874-1051dabb0e3e</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">6ecff51c-9b8f-4338-aab0-67c2b31b07e9</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">150</Single>
+                                  <Single Name="IdParent" Type="long">144</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">144</Single>
+                              <Single Name="IdParent" Type="long">140</Single>
+                            </Single>
+                            <Single Type="{86ee92a2-d863-4136-be27-82b36d84211c}" Method="IArchivable">
+                              <Null Name="EmbeddedMainAction" />
+                              <Null Name="EmbeddedEntryAction" />
+                              <Null Name="EmbeddedExitAction" />
+                              <List2 Name="EmbeddedMainActionProperties" />
+                              <List2 Name="EmbeddedEntryActionProperties" />
+                              <List2 Name="EmbeddedExitActionProperties" />
+                              <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+                                <List2 Name="InnerList">
+                                  <Single Type="{a94bb75d-5fb3-40ad-9d01-41d5b980784d}" Method="IArchivable">
+                                    <List2 Name="Attributes">
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                        <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                          <Single Name="Value" Type="string">CmdBarriers</Single>
+                                          <Single Name="DefaultValue" Type="string"></Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">196</Single>
+                                        <Single Name="IdParent" Type="long">195</Single>
+                                      </Single>
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                        <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                          <Single Name="Value" Type="string"></Single>
+                                          <Single Name="DefaultValue" Type="string"></Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">197</Single>
+                                        <Single Name="IdParent" Type="long">195</Single>
+                                      </Single>
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                        <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                          <Single Name="Value" Type="string">FALSE</Single>
+                                          <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">198</Single>
+                                        <Single Name="IdParent" Type="long">195</Single>
+                                      </Single>
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                        <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                          <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                          <Null Name="BaseType" />
+                                          <Single Name="Value" Type="string">0</Single>
+                                          <Single Name="DefaultValue" Type="string">0</Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">199</Single>
+                                        <Single Name="IdParent" Type="long">195</Single>
+                                      </Single>
+                                      <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                        <Single Name="AttributeId" Type="System.Guid">e174fc0d-80b0-4a9e-a530-ca239c249a50</Single>
+                                        <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                          <Single Name="Value" Type="string">S</Single>
+                                          <Single Name="DefaultValue" Type="string"></Single>
+                                        </Single>
+                                        <Single Name="Id" Type="long">200</Single>
+                                        <Single Name="IdParent" Type="long">195</Single>
+                                      </Single>
+                                    </List2>
+                                    <Single Name="Id" Type="long">195</Single>
+                                    <Single Name="IdParent" Type="long">151</Single>
+                                  </Single>
+                                </List2>
+                              </Single>
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">TrainFromBelowB</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">152</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">153</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">154</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">155</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">6844a48e-46c2-4cc8-a185-a478f3b99cc0</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">156</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">157</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">cacf1a68-236e-47c2-b7b1-1cf9199718cb</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">158</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">b693554c-1b01-4a8d-afde-9e3a46f7465d</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">159</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">700a583f-b4d4-43e4-8c14-629c7cd3bec8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">160</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">a6b08bd8-b696-47e3-9cbf-7408b61c9ff8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">161</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">a2621e18-7de3-4ea6-ae6d-89e9e0b7befd</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">162</Single>
+                                  <Single Name="IdParent" Type="long">151</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">151</Single>
+                              <Single Name="IdParent" Type="long">140</Single>
+                            </Single>
+                            <Single Type="{4ecb29e8-a90a-4646-84ac-2ff54215ab29}" Method="IArchivable">
+                              <Single Name="VariableName" Type="string">TrainFromBelowB__to__TrainFromBelowA</Single>
+                              <Null Name="EmbeddedTransition" />
+                              <List2 Name="EmbeddedTransitionProperties" />
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">SensorA</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">164</Single>
+                                  <Single Name="IdParent" Type="long">163</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">165</Single>
+                                  <Single Name="IdParent" Type="long">163</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">166</Single>
+                                  <Single Name="IdParent" Type="long">163</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">167</Single>
+                                  <Single Name="IdParent" Type="long">163</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">168</Single>
+                                  <Single Name="IdParent" Type="long">163</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">8294df19-5962-4dee-a874-1051dabb0e3e</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">6ecff51c-9b8f-4338-aab0-67c2b31b07e9</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">169</Single>
+                                  <Single Name="IdParent" Type="long">163</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">163</Single>
+                              <Single Name="IdParent" Type="long">140</Single>
+                            </Single>
+                            <Single Type="{86ee92a2-d863-4136-be27-82b36d84211c}" Method="IArchivable">
+                              <Null Name="EmbeddedMainAction" />
+                              <Null Name="EmbeddedEntryAction" />
+                              <Null Name="EmbeddedExitAction" />
+                              <List2 Name="EmbeddedMainActionProperties" />
+                              <List2 Name="EmbeddedEntryActionProperties" />
+                              <List2 Name="EmbeddedExitActionProperties" />
+                              <Single Name="ElementList" Type="{587d6556-cfe6-4e76-9cc9-fc0daf0c8c29}" Method="IArchivable">
+                                <List2 Name="InnerList" />
+                              </Single>
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">TrainFromBelowA</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">220</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">221</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">222</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">223</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">6844a48e-46c2-4cc8-a185-a478f3b99cc0</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">224</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">225</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">cacf1a68-236e-47c2-b7b1-1cf9199718cb</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">226</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">b693554c-1b01-4a8d-afde-9e3a46f7465d</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">227</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">700a583f-b4d4-43e4-8c14-629c7cd3bec8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">228</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">a6b08bd8-b696-47e3-9cbf-7408b61c9ff8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">229</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">a2621e18-7de3-4ea6-ae6d-89e9e0b7befd</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">230</Single>
+                                  <Single Name="IdParent" Type="long">219</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">219</Single>
+                              <Single Name="IdParent" Type="long">140</Single>
+                            </Single>
+                            <Single Type="{4ecb29e8-a90a-4646-84ac-2ff54215ab29}" Method="IArchivable">
+                              <Single Name="VariableName" Type="string">TrainFromBelowA__to__WaitingForTrain</Single>
+                              <Null Name="EmbeddedTransition" />
+                              <List2 Name="EmbeddedTransitionProperties" />
+                              <List2 Name="Attributes">
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">Not SensorA</Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">259</Single>
+                                  <Single Name="IdParent" Type="long">258</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                                  <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                                    <Single Name="Value" Type="string"></Single>
+                                    <Single Name="DefaultValue" Type="string"></Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">260</Single>
+                                  <Single Name="IdParent" Type="long">258</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">261</Single>
+                                  <Single Name="IdParent" Type="long">258</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">262</Single>
+                                  <Single Name="IdParent" Type="long">258</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                                  <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                                    <Single Name="Value" Type="string">FALSE</Single>
+                                    <Single Name="DefaultValue" Type="string">FALSE</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">263</Single>
+                                  <Single Name="IdParent" Type="long">258</Single>
+                                </Single>
+                                <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                                  <Single Name="AttributeId" Type="System.Guid">8294df19-5962-4dee-a874-1051dabb0e3e</Single>
+                                  <Single Name="Value" Type="{4dd7572b-4b9d-4d35-963e-6a34a4aaa5c1}" Method="IArchivable">
+                                    <Single Name="TemplateGuid" Type="System.Guid">6ecff51c-9b8f-4338-aab0-67c2b31b07e9</Single>
+                                    <Null Name="BaseType" />
+                                    <Single Name="Value" Type="string">0</Single>
+                                    <Single Name="DefaultValue" Type="string">0</Single>
+                                  </Single>
+                                  <Single Name="Id" Type="long">264</Single>
+                                  <Single Name="IdParent" Type="long">258</Single>
+                                </Single>
+                              </List2>
+                              <Single Name="Id" Type="long">258</Single>
+                              <Single Name="IdParent" Type="long">140</Single>
+                            </Single>
+                          </List2>
+                        </Single>
+                        <List2 Name="Attributes">
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                            <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                              <Single Name="Value" Type="string"></Single>
+                              <Single Name="DefaultValue" Type="string"></Single>
+                            </Single>
+                            <Single Name="Id" Type="long">141</Single>
+                            <Single Name="IdParent" Type="long">140</Single>
+                          </Single>
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                            <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                              <Single Name="Value" Type="string"></Single>
+                              <Single Name="DefaultValue" Type="string"></Single>
+                            </Single>
+                            <Single Name="Id" Type="long">142</Single>
+                            <Single Name="IdParent" Type="long">140</Single>
+                          </Single>
+                          <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                            <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                            <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                              <Single Name="Value" Type="string">FALSE</Single>
+                              <Single Name="DefaultValue" Type="string">FALSE</Single>
+                            </Single>
+                            <Single Name="Id" Type="long">143</Single>
+                            <Single Name="IdParent" Type="long">140</Single>
+                          </Single>
+                        </List2>
+                        <Single Name="Id" Type="long">140</Single>
+                        <Single Name="IdParent" Type="long">131</Single>
+                      </Single>
+                    </List2>
+                  </Single>
+                  <List2 Name="Attributes">
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string">Branch0</Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">132</Single>
+                      <Single Name="IdParent" Type="long">131</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string"></Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">133</Single>
+                      <Single Name="IdParent" Type="long">131</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                      <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                        <Single Name="Value" Type="string">FALSE</Single>
+                        <Single Name="DefaultValue" Type="string">FALSE</Single>
+                      </Single>
+                      <Single Name="Id" Type="long">134</Single>
+                      <Single Name="IdParent" Type="long">131</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">23bdaa98-72ec-41f7-817b-9dede5697086</Single>
+                      <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                        <Single Name="Value" Type="string">FALSE</Single>
+                        <Single Name="DefaultValue" Type="string">FALSE</Single>
+                      </Single>
+                      <Single Name="Id" Type="long">135</Single>
+                      <Single Name="IdParent" Type="long">131</Single>
+                    </Single>
+                  </List2>
+                  <Single Name="Id" Type="long">131</Single>
+                  <Single Name="IdParent" Type="long">4</Single>
+                </Single>
+                <Single Type="{7e39ac27-154f-419a-a255-6a6cf37d5ed0}" Method="IArchivable">
+                  <List2 Name="Attributes">
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string">WaitingForTrain</Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">25</Single>
+                      <Single Name="IdParent" Type="long">24</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                      <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                        <Single Name="Value" Type="string"></Single>
+                        <Single Name="DefaultValue" Type="string"></Single>
+                      </Single>
+                      <Single Name="Id" Type="long">26</Single>
+                      <Single Name="IdParent" Type="long">24</Single>
+                    </Single>
+                    <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                      <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                      <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                        <Single Name="Value" Type="string">FALSE</Single>
+                        <Single Name="DefaultValue" Type="string">FALSE</Single>
+                      </Single>
+                      <Single Name="Id" Type="long">27</Single>
+                      <Single Name="IdParent" Type="long">24</Single>
+                    </Single>
+                  </List2>
+                  <Single Name="Id" Type="long">24</Single>
+                  <Single Name="IdParent" Type="long">4</Single>
+                </Single>
+              </List2>
+            </Single>
+            <List2 Name="Attributes">
+              <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                <Single Name="AttributeId" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                  <Single Name="Value" Type="string"></Single>
+                  <Single Name="DefaultValue" Type="string"></Single>
+                </Single>
+                <Single Name="Id" Type="long">28</Single>
+                <Single Name="IdParent" Type="long">4</Single>
+              </Single>
+              <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                <Single Name="AttributeId" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                <Single Name="Value" Type="{778c8bac-3fa0-41e1-99d3-2b628d12d3e5}" Method="IArchivable">
+                  <Single Name="Value" Type="string"></Single>
+                  <Single Name="DefaultValue" Type="string"></Single>
+                </Single>
+                <Single Name="Id" Type="long">29</Single>
+                <Single Name="IdParent" Type="long">4</Single>
+              </Single>
+              <Single Type="{21f3f16e-04fa-4637-b6b7-d84e4192e99f}" Method="IArchivable">
+                <Single Name="AttributeId" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                <Single Name="Value" Type="{89e1c7bb-c9f8-4be3-b8a7-019cdbb9f7e8}" Method="IArchivable">
+                  <Single Name="Value" Type="string">FALSE</Single>
+                  <Single Name="DefaultValue" Type="string">FALSE</Single>
+                </Single>
+                <Single Name="Id" Type="long">30</Single>
+                <Single Name="IdParent" Type="long">4</Single>
+              </Single>
+            </List2>
+            <Single Name="Id" Type="long">4</Single>
+            <Single Name="IdParent" Type="long">-1</Single>
+          </Single>
+          <Dictionary2 Name="Categories">
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">6f37ae05-4d8f-4ddc-9e69-c0e6bd6962c2</Single>
+              </Key>
+              <Value>
+                <Single Type="{679adacf-f2a4-4167-a3f7-d21cfc5d451f}" Method="IArchivable">
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">6f37ae05-4d8f-4ddc-9e69-c0e6bd6962c2</Single>
+                  <Single Name="Identifier" Type="string">Common</Single>
+                  <Single Name="Parent" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+                  <Single Name="Description" Type="string">Common properties</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+              </Key>
+              <Value>
+                <Single Type="{679adacf-f2a4-4167-a3f7-d21cfc5d451f}" Method="IArchivable">
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+                  <Single Name="Identifier" Type="string">Specific</Single>
+                  <Single Name="Parent" Type="System.Guid">00000000-0000-0000-0000-000000000000</Single>
+                  <Single Name="Description" Type="string">Element type specific properties</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">d336ba06-8a67-4e6b-9697-50f83ba6bdde</Single>
+              </Key>
+              <Value>
+                <Single Type="{679adacf-f2a4-4167-a3f7-d21cfc5d451f}" Method="IArchivable">
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">d336ba06-8a67-4e6b-9697-50f83ba6bdde</Single>
+                  <Single Name="Identifier" Type="string">Times</Single>
+                  <Single Name="Parent" Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+                  <Single Name="Description" Type="string">Time definitions</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">20f0fc67-978d-438b-979f-eef294f34ee4</Single>
+              </Key>
+              <Value>
+                <Single Type="{679adacf-f2a4-4167-a3f7-d21cfc5d451f}" Method="IArchivable">
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">20f0fc67-978d-438b-979f-eef294f34ee4</Single>
+                  <Single Name="Identifier" Type="string">Actions</Single>
+                  <Single Name="Parent" Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+                  <Single Name="Description" Type="string">Action definitions</Single>
+                </Single>
+              </Value>
+            </Entry>
+          </Dictionary2>
+          <Dictionary2 Name="Attributes">
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">False</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">38391c6d-6d4a-42f8-8ee7-9f45e5adafa8</Single>
+                  <Single Name="Identifier" Type="string">Name</Single>
+                  <Single Name="Parent" Type="System.Guid">6f37ae05-4d8f-4ddc-9e69-c0e6bd6962c2</Single>
+                  <Single Name="Description" Type="string">Name of the element</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">True</Single>
+                  <Single Name="MultiLineEdit" Type="bool">True</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">7d894980-aeea-405c-a0f6-e2b26429c58f</Single>
+                  <Single Name="Identifier" Type="string">Comment</Single>
+                  <Single Name="Parent" Type="System.Guid">6f37ae05-4d8f-4ddc-9e69-c0e6bd6962c2</Single>
+                  <Single Name="Description" Type="string">Comment of the element</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">True</Single>
+                  <Single Name="EditorVisibility" Type="bool">False</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">01580b27-6378-448b-8ecb-0e4b795b58d6</Single>
+                  <Single Name="Identifier" Type="string">Exclude</Single>
+                  <Single Name="Parent" Type="System.Guid">6f37ae05-4d8f-4ddc-9e69-c0e6bd6962c2</Single>
+                  <Single Name="Description" Type="string">Exclude this element from build</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">True</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">bc882c11-1e91-4dd8-a6b8-2075724ed18b</Single>
+                  <Single Name="Identifier" Type="string">Symbol</Single>
+                  <Single Name="Parent" Type="System.Guid">6f37ae05-4d8f-4ddc-9e69-c0e6bd6962c2</Single>
+                  <Single Name="Description" Type="string">Symbol configuration setting of the element</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">e174fc0d-80b0-4a9e-a530-ca239c249a50</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">False</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">e174fc0d-80b0-4a9e-a530-ca239c249a50</Single>
+                  <Single Name="Identifier" Type="string">Qualifier</Single>
+                  <Single Name="Parent" Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+                  <Single Name="Description" Type="string">Qualifier of the action association</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">6844a48e-46c2-4cc8-a185-a478f3b99cc0</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">False</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">6844a48e-46c2-4cc8-a185-a478f3b99cc0</Single>
+                  <Single Name="Identifier" Type="string">InitStep</Single>
+                  <Single Name="Parent" Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+                  <Single Name="Description" Type="string">Sets the step as the initial step</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">23bdaa98-72ec-41f7-817b-9dede5697086</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">False</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">23bdaa98-72ec-41f7-817b-9dede5697086</Single>
+                  <Single Name="Identifier" Type="string">Parallel</Single>
+                  <Single Name="Parent" Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+                  <Single Name="Description" Type="string">Sets the branch to parallel mode</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">cacf1a68-236e-47c2-b7b1-1cf9199718cb</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">True</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">cacf1a68-236e-47c2-b7b1-1cf9199718cb</Single>
+                  <Single Name="Identifier" Type="string">MinTime</Single>
+                  <Single Name="Parent" Type="System.Guid">d336ba06-8a67-4e6b-9697-50f83ba6bdde</Single>
+                  <Single Name="Description" Type="string">Defines the minimal active time for the step</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">b693554c-1b01-4a8d-afde-9e3a46f7465d</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">True</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">b693554c-1b01-4a8d-afde-9e3a46f7465d</Single>
+                  <Single Name="Identifier" Type="string">MaxTime</Single>
+                  <Single Name="Parent" Type="System.Guid">d336ba06-8a67-4e6b-9697-50f83ba6bdde</Single>
+                  <Single Name="Description" Type="string">Defines the maximal active time for the step</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">False</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">62e1754b-7629-4e63-9cec-10ae0c536f1f</Single>
+                  <Single Name="Identifier" Type="string">Duplication</Single>
+                  <Single Name="Parent" Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+                  <Single Name="Description" Type="string">Copies the implementation of step actions or transitions with the element. Otherwise, copies the reference to an existing implementation.</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">8294df19-5962-4dee-a874-1051dabb0e3e</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">False</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">8294df19-5962-4dee-a874-1051dabb0e3e</Single>
+                  <Single Name="Identifier" Type="string">Monitoring</Single>
+                  <Single Name="Parent" Type="System.Guid">1c5c6e05-2bb7-4258-bcee-fd16a540c63c</Single>
+                  <Single Name="Description" Type="string">Indicates transition monitoring setting.</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">700a583f-b4d4-43e4-8c14-629c7cd3bec8</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">True</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">700a583f-b4d4-43e4-8c14-629c7cd3bec8</Single>
+                  <Single Name="Identifier" Type="string">MainAction</Single>
+                  <Single Name="Parent" Type="System.Guid">20f0fc67-978d-438b-979f-eef294f34ee4</Single>
+                  <Single Name="Description" Type="string">Name of the action to be called if the step is active</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">a6b08bd8-b696-47e3-9cbf-7408b61c9ff8</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">True</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">a6b08bd8-b696-47e3-9cbf-7408b61c9ff8</Single>
+                  <Single Name="Identifier" Type="string">EntryAction</Single>
+                  <Single Name="Parent" Type="System.Guid">20f0fc67-978d-438b-979f-eef294f34ee4</Single>
+                  <Single Name="Description" Type="string">Name of the action to be called if the step is activated</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">a2621e18-7de3-4ea6-ae6d-89e9e0b7befd</Single>
+              </Key>
+              <Value>
+                <Single Type="{d851789d-af2c-4990-9d48-a7bdc9181773}" Method="IArchivable">
+                  <Single Name="ReadOnly" Type="bool">False</Single>
+                  <Single Name="Hidden" Type="bool">False</Single>
+                  <Single Name="EditorVisibility" Type="bool">True</Single>
+                  <Single Name="MultiLineEdit" Type="bool">False</Single>
+                  <Single Name="Factory" Type="System.Guid">11e03a9d-fc7b-4112-850c-ae33fb04a2b4</Single>
+                  <Single Name="Id" Type="System.Guid">a2621e18-7de3-4ea6-ae6d-89e9e0b7befd</Single>
+                  <Single Name="Identifier" Type="string">ExitAction</Single>
+                  <Single Name="Parent" Type="System.Guid">20f0fc67-978d-438b-979f-eef294f34ee4</Single>
+                  <Single Name="Description" Type="string">Name of the action to be called if the step is deactivated</Single>
+                </Single>
+              </Value>
+            </Entry>
+          </Dictionary2>
+          <Dictionary2 Name="EnumTemplates">
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+              </Key>
+              <Value>
+                <Single Type="{d6bfe4f0-d62f-4b5f-9f95-2bbeb1950e28}" Method="IArchivable">
+                  <Single Name="TemplateGuid" Type="System.Guid">79a4fdd5-c859-4de4-aa8d-c03372c880c2</Single>
+                  <List Name="Values" Type="System.Collections.ArrayList">
+                    <Single Type="{4185e6da-1717-44c9-b705-102861764479}" Method="IArchivable">
+                      <Single Name="Identifier" Type="string">Unspecified</Single>
+                      <Single Name="Value" Type="long">0</Single>
+                      <Single Name="Key" Type="string">Unspecified</Single>
+                    </Single>
+                    <Single Type="{4185e6da-1717-44c9-b705-102861764479}" Method="IArchivable">
+                      <Single Name="Identifier" Type="string">None</Single>
+                      <Single Name="Value" Type="long">1</Single>
+                      <Single Name="Key" Type="string">None</Single>
+                    </Single>
+                    <Single Type="{4185e6da-1717-44c9-b705-102861764479}" Method="IArchivable">
+                      <Single Name="Identifier" Type="string">Read</Single>
+                      <Single Name="Value" Type="long">2</Single>
+                      <Single Name="Key" Type="string">Read</Single>
+                    </Single>
+                    <Single Type="{4185e6da-1717-44c9-b705-102861764479}" Method="IArchivable">
+                      <Single Name="Identifier" Type="string">Write</Single>
+                      <Single Name="Value" Type="long">3</Single>
+                      <Single Name="Key" Type="string">Write</Single>
+                    </Single>
+                    <Single Type="{4185e6da-1717-44c9-b705-102861764479}" Method="IArchivable">
+                      <Single Name="Identifier" Type="string">ReadWrite</Single>
+                      <Single Name="Value" Type="long">4</Single>
+                      <Single Name="Key" Type="string">ReadWrite</Single>
+                    </Single>
+                  </List>
+                  <Single Name="BaseType" Type="string">INT</Single>
+                </Single>
+              </Value>
+            </Entry>
+            <Entry>
+              <Key>
+                <Single Type="System.Guid">6ecff51c-9b8f-4338-aab0-67c2b31b07e9</Single>
+              </Key>
+              <Value>
+                <Single Type="{d6bfe4f0-d62f-4b5f-9f95-2bbeb1950e28}" Method="IArchivable">
+                  <Single Name="TemplateGuid" Type="System.Guid">6ecff51c-9b8f-4338-aab0-67c2b31b07e9</Single>
+                  <List Name="Values" Type="System.Collections.ArrayList">
+                    <Single Type="{4185e6da-1717-44c9-b705-102861764479}" Method="IArchivable">
+                      <Single Name="Identifier" Type="string">None</Single>
+                      <Single Name="Value" Type="long">0</Single>
+                      <Single Name="Key" Type="string">None</Single>
+                    </Single>
+                    <Single Type="{4185e6da-1717-44c9-b705-102861764479}" Method="IArchivable">
+                      <Single Name="Identifier" Type="string">Variable</Single>
+                      <Single Name="Value" Type="long">1</Single>
+                      <Single Name="Key" Type="string">Variable</Single>
+                    </Single>
+                    <Single Type="{4185e6da-1717-44c9-b705-102861764479}" Method="IArchivable">
+                      <Single Name="Identifier" Type="string">Call</Single>
+                      <Single Name="Value" Type="long">2</Single>
+                      <Single Name="Key" Type="string">Call</Single>
+                    </Single>
+                  </List>
+                  <Single Name="BaseType" Type="string">INT</Single>
+                </Single>
+              </Value>
+            </Entry>
+          </Dictionary2>
+        </Single>
+        <Single Name="Interface" Type="{a9ed5b7e-75c5-4651-af16-d2c27e98cb94}" Method="IArchivable">
+          <Single Name="TextDocument" Type="{f3878285-8e4f-490b-bb1b-9acbb7eb04db}" Method="IArchivable">
+            <Array Name="TextLines" Type="{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}">
+              <Single Type="{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}" Method="IArchivable">
+                <Single Name="Id" Type="long">290</Single>
+                <Null Name="Tag" />
+                <Single Name="Text" Type="string">PROGRAM SFC_TEST</Single>
+              </Single>
+              <Single Type="{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}" Method="IArchivable">
+                <Single Name="Id" Type="long">291</Single>
+                <Null Name="Tag" />
+                <Single Name="Text" Type="string">VAR</Single>
+              </Single>
+              <Single Type="{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}" Method="IArchivable">
+                <Single Name="Id" Type="long">292</Single>
+                <Null Name="Tag" />
+                <Single Name="Text" Type="string">	SensorA: BOOL;</Single>
+              </Single>
+              <Single Type="{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}" Method="IArchivable">
+                <Single Name="Id" Type="long">293</Single>
+                <Null Name="Tag" />
+                <Single Name="Text" Type="string">	SensorB: BOOL;</Single>
+              </Single>
+              <Single Type="{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}" Method="IArchivable">
+                <Single Name="Id" Type="long">294</Single>
+                <Null Name="Tag" />
+                <Single Name="Text" Type="string">END_VAR</Single>
+              </Single>
+            </Array>
+          </Single>
+        </Single>
+        <Single Name="UniqueIdGenerator" Type="string">293</Single>
+        <Single Name="POULevel" Type="{8e575c5b-1d37-49c6-941b-5c0ec7874787}">Standard</Single>
+        <List Name="ChildObjectGuids" Type="System.Collections.ArrayList" />
+        <Single Name="AddAttributeSubsequent" Type="bool">False</Single>
+      </Single>
+      <Single Name="ParentSVNodeGuid" Type="System.Guid">f9c00bdb-2f18-4e80-863e-6da977e8f304</Single>
+      <Array Name="Path" Type="string">
+        <Single Type="string">StandardPLC</Single>
+        <Single Type="string">PLC Logic</Single>
+        <Single Type="string">Application</Single>
+      </Array>
+      <Single Name="Index" Type="int">-1</Single>
+    </Single>
+  </List2>
+  <Null Name="ProfileName" />
+</Single>  </StructuredView>
+</ExportFile>

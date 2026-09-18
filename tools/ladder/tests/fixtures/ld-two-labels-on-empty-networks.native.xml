@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjectList>
+  <List2 Name="NetworkList">
+    <Single Type="{a}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string"></Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems"><Single Name="BoxType" Type="string">Contact</Single></List2>
+    </Single>
+    <Single Type="{a}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string">LONELY1</Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems" />
+    </Single>
+    <Single Type="{a}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string">LONELY2</Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems" />
+    </Single>
+    <Single Type="{a}" Method="IArchivable">
+      <Single Name="Comment" Type="string"></Single>
+      <Single Name="Title" Type="string"></Single>
+      <Single Name="Label" Type="string"></Single>
+      <Single Name="OutCommented" Type="bool">False</Single>
+      <List2 Name="NetworkItems"><Single Name="BoxType" Type="string">Contact</Single></List2>
+    </Single>
+  </List2>
+</ObjectList>

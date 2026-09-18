@@ -1,0 +1,57 @@
+PROGRAM LD_TEST
+VAR
+	Sensor1: BOOL;
+	Sensor2: BOOL;
+	sensor3: BOOL;
+	PowerOn: BOOL;
+	TON_0: TON;
+	CTU_0: CTU;
+	PowerOff: BOOL;
+	edgetrigger: BOOL;
+	answer: UINT;
+	BLINK_0: BLINK;
+END_VAR
+
+(* Network 1: Try me Codesys I swear *)
+(* comment without backslash *)
+│    Sensor1   Sensor2  PowerOn
+├──┬───┤ ├───┬───┤/├──────(S)─────┤
+│  │ sensor3 │
+│  └───┤ ├───┘
+
+(* Network 2: That'll do pig, that'll do. (Babe) *)
+│
+├────>>TestJump────┤
+
+(* Network 3: header text *)
+(* Comment *)
+│    PowerOff                                                             PowerOff  PowerOff
+├──┬───┤ ├──────────────────────────────────────────────────────────────┬───┤/├───────(R)──────┤
+│  │                 TON_0 : TON                  CTU_0 : CTU           │
+│  │ PowerOn        ┌───────────┐                ┌───────────┐  PowerOn │
+│  ├───┤ ├──────────┤IN        Q├────────────────┤CU        Q├────┤ ├───┤
+│  │          T#5S──┤PT       ET│  PowerOff ┤P├──PRESET    CV│          │
+│  │                └───────────┘  10────────────┤PV         │          │
+│  │                                             └───────────┘          │
+│  │ PowerOn                                                            │
+│  └───┤ ├──────────────────────────────────────────────────────────────┘
+
+(* Network 4: (Babe in the big City) *)
+TestJump:
+(* empty network *)
+
+(* Network 5 *)
+│                             ADD
+│   PowerOff  PowerOn     ┌──────────┐
+├─────┤/├───────┤ ├───────┤EN     ENO├────────────┬──<RETURN>───────────────┤
+│                      1──┤In2   Out2├───> answer │ edgetrigger  PowerOff
+│                      2──┤In3       │            └─────┤P├────────( )──────┤
+│                         └──────────┘
+
+(* Network 6 *)
+│                          BLINK_0 : BLINK
+│   edgetrigger           ┌───────────────┐  PowerOn
+├───────┤ ├───────────────┤ENABLE      OUT├────( )─────┤
+│                T#500ms──┤TIMELOW        │
+│                T#500ms──┤TIMEHIGH       │
+│                         └───────────────┘

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xGo</variable></contact>
+<block localId="3" typeName="EXECUTE"><inputVariables><variable formalParameter="EN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="ENO"><connectionPointOut/></variable></outputVariables><addData><data name="http://www.3s-software.com/plcopenxml/fbdcalltype" handleUnknown="implementation"><CallType xmlns="">execute</CallType></data><data name="http://www.3s-software.com/plcopenxml/stcode" handleUnknown="implementation"><STCode xmlns="">nCount := nCount + 1;</STCode></data></addData></block>
+<coil localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="ENO"/></connectionPointIn><connectionPointOut/><variable>xA</variable></coil>
+<coil localId="5"><connectionPointIn><connection refLocalId="3" formalParameter="ENO"/></connectionPointIn><connectionPointOut/><variable>xB</variable></coil>
+<rightPowerRail localId="19"><connectionPointIn><connection refLocalId="4"/><connection refLocalId="5"/></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

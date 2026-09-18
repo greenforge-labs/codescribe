@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars/></interface><body><LD>
+<leftPowerRail localId="0"><connectionPointOut/></leftPowerRail>
+<contact localId="1"><connectionPointIn><connection refLocalId="0"/></connectionPointIn><connectionPointOut/><variable>xGo</variable></contact>
+<block localId="3" typeName="OR"><inputVariables><variable formalParameter="In1"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn/></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<coil localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="Out1"/></connectionPointIn><connectionPointOut/><variable>xA</variable></coil>
+<rightPowerRail localId="9"><connectionPointIn><connection refLocalId="4"/></connectionPointIn></rightPowerRail>
+<leftPowerRail localId="10"><connectionPointOut/></leftPowerRail>
+<coil localId="11"><connectionPointIn><connection refLocalId="3" formalParameter="Out1"/></connectionPointIn><connectionPointOut/><variable>xB</variable></coil>
+<rightPowerRail localId="19"><connectionPointIn><connection refLocalId="11"/></connectionPointIn></rightPowerRail>
+</LD></body></pou></pous></types></project>

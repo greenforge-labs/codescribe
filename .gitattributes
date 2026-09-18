@@ -1,0 +1,17 @@
+# Without this file, line endings are decided by each developer's
+# core.autocrlf. The same commit then checks out differently on different
+# machines, and whoever has it set the other way sees every exported file
+# rewritten the next time they export - a diff of the whole tree that says
+# nothing about what changed.
+* text=auto
+
+# CODESYS writes CRLF, and so does the export. These files are compared
+# against what CODESYS writes and imported back into it, so they check out
+# CRLF everywhere, whatever git is configured to do locally. Only the working
+# tree is pinned; git still stores them normalised, so diffs stay line by
+# line rather than whole-file.
+GraphicalTesting/** text eol=crlf
+tools/ladder/tests/fixtures/codesys/** text eol=crlf
+
+# A .project is a zip. Converting one would corrupt it.
+*.project binary

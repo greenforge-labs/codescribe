@@ -26,6 +26,19 @@ MODULES = [
     "device_tree_import_export",
     "import_from_files",
     "project_template",
+    # Renderers for graphical POUs. No scriptengine dependency of their own,
+    # but they have to load under IronPython 2.7 like everything else here.
+    "charset",
+    "xmlbackend",
+    "layout",
+    "model",
+    "plcopen",
+    "parse_ld",
+    "parse_fbd",
+    "ld_render",
+    "fbd_render",
+    "st_render",
+    "graphical_export",
 ]
 
 failures = []

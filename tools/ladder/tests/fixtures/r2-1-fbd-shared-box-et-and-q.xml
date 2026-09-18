@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"><types><dataTypes/><pous><pou name="P" pouType="program"><interface><localVars><variable name="tmr"><type><derived name="TON"/></type></variable></localVars></interface><body><FBD>
+<inVariable localId="1"><connectionPointOut/><expression>xStart</expression></inVariable>
+<inVariable localId="2"><connectionPointOut/><expression>T#5S</expression></inVariable>
+<block localId="3" typeName="TON" instanceName="tmr"><inputVariables><variable formalParameter="IN"><connectionPointIn><connection refLocalId="1"/></connectionPointIn></variable><variable formalParameter="PT"><connectionPointIn><connection refLocalId="2"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Q"><connectionPointOut/></variable><variable formalParameter="ET"><connectionPointOut/></variable></outputVariables></block>
+<inVariable localId="5"><connectionPointOut/><expression>xManual</expression></inVariable>
+<block localId="6" typeName="OR"><inputVariables><variable formalParameter="In1"><connectionPointIn><connection refLocalId="3" formalParameter="Q"/></connectionPointIn></variable><variable formalParameter="In2"><connectionPointIn><connection refLocalId="5"/></connectionPointIn></variable></inputVariables><inOutVariables/><outputVariables><variable formalParameter="Out1"><connectionPointOut/></variable></outputVariables></block>
+<outVariable localId="7"><connectionPointIn><connection refLocalId="6" formalParameter="Out1"/></connectionPointIn><expression>xAny</expression></outVariable>
+<outVariable localId="4"><connectionPointIn><connection refLocalId="3" formalParameter="ET"/></connectionPointIn><expression>tElapsed</expression></outVariable>
+
+</FBD></body></pou></pous></types></project>
